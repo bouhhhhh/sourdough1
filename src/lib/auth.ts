@@ -3,6 +3,9 @@ import { type JWTPayload, jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
+import argon2 from "argon2";
+import { connectDB } from "@/lib/db";
+import { User } from "@/models/user";
 
 if (!process.env.SECRET) {
 	throw new Error("SECRET must be defined");
@@ -41,29 +44,33 @@ export async function decrypt(input: string): Promise<SessionData | null | undef
 	}
 }
 
-export async function login(_state: unknown, formData: FormData): Promise<{ error?: string } | undefined> {
-	"use server";
 
-	const email = formData.get("email") as string;
-	const password = formData.get("password") as string;
+export async function login(_state: unknown, formData: FormData) {
+  "use server";
 
-	if (email !== process.env.EMAIL || password !== process.env.PASSWORD) {
-		return { error: "Invalid credentials" };
-	}
+  const email = String(formData.get("email") || "");
+  const password = String(formData.get("password") || "");
 
-	const expires = Date.now() + SessionDuration;
-	const session = await encrypt({ user: { email }, expires });
+  await connectDB();
+  const user = await User.findOne({ email });
+  if (!user) return { error: "Invalid credentials" };
 
-	(await cookies()).set("session", session, {
-		expires: new Date(expires),
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "strict",
-	});
+  const ok = await argon2.verify(user.passwordHash, password);
+  if (!ok) return { error: "Invalid credentials" };
 
-	redirect("/orders");
-	return;
+  const expires = Date.now() + 24 * 60 * 60 * 1000;
+  const session = await encrypt({ user: { email: user.email }, expires });
+  (await cookies()).set("session", session, {
+    expires: new Date(expires),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  // ex: redirect("/orders") si tu veux garder ce comportement
+  return;
 }
+
 
 export async function logout() {
 	"use server";

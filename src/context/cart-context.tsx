@@ -2,12 +2,7 @@
 
 import type { Cart, ProductInfo } from "commerce-kit";
 import { createContext, type ReactNode, useContext, useEffect, useOptimistic, useState } from "react";
-import {
-	addToCartAction,
-	getCartAction,
-	removeFromCartAction,
-	updateCartItemAction,
-} from "@/actions/cart-actions";
+import { getCartClient, addToCartClient } from "@/lib/cart-client";
 
 type CartAction =
 	| { type: "ADD_ITEM"; variantId: string; quantity: number; product?: ProductInfo }
@@ -140,7 +135,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 	// Load initial cart
 	useEffect(() => {
-		getCartAction().then((cart) => {
+		getCartClient().then((cart: any) => {
 			setActualCart(cart);
 		});
 	}, []);
@@ -158,9 +153,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		setOptimisticCart({ type: "ADD_ITEM", variantId, quantity, product });
 
 		try {
-			// Perform server action
-			const updatedCart = await addToCartAction(variantId, quantity);
-			setActualCart(updatedCart);
+			// Perform client action
+			const updatedCart = await addToCartClient(variantId, quantity);
+			setActualCart(updatedCart as any);
 		} catch (error) {
 			// Rollback will happen automatically via useEffect
 			console.error("Failed to add to cart:", error);
@@ -173,11 +168,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		setOptimisticCart({ type: "UPDATE_ITEM", variantId, quantity });
 
 		try {
-			// Perform server action
-			const updatedCart = await updateCartItemAction(variantId, quantity);
-			setActualCart(updatedCart);
+			// TODO: implement client-side update
+			console.log("Update not implemented yet");
 		} catch (error) {
-			// Rollback will happen automatically via useEffect
 			console.error("Failed to update cart item:", error);
 			throw error;
 		}
@@ -188,11 +181,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		setOptimisticCart({ type: "REMOVE_ITEM", variantId });
 
 		try {
-			// Perform server action
-			const updatedCart = await removeFromCartAction(variantId);
-			setActualCart(updatedCart);
+			// TODO: implement client-side remove  
+			console.log("Remove not implemented yet");
 		} catch (error) {
-			// Rollback will happen automatically via useEffect
 			console.error("Failed to remove from cart:", error);
 			throw error;
 		}

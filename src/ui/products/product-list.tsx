@@ -1,7 +1,7 @@
 import type { Product } from "commerce-kit";
 import Image from "next/image";
 import { getLocale } from "@/i18n/server";
-import { formatMoney } from "@/lib/utils";
+import { formatMoney, getStripeAmountFromDecimal } from "@/lib/utils";
 import { JsonLd, mappedProductsToJsonLd } from "@/ui/json-ld";
 import { YnsLink } from "@/ui/yns-link";
 
@@ -35,11 +35,18 @@ export const ProductList = async ({ products }: { products: Product[] }) => {
 										<footer className="text-base font-normal text-neutral-900">
 											{product.price && (
 												<p>
-													{formatMoney({
-														amount: product.price,
-														currency: product.currency,
-														locale,
-													})}
+													{product.currency?.length === 3 ? (
+														formatMoney({
+															amount: getStripeAmountFromDecimal({
+																amount: product.price,
+																currency: product.currency,
+															}),
+															currency: product.currency,
+															locale,
+														})
+													) : (
+														`${product.price} ${product.currency || ""}`
+													)}
 												</p>
 											)}
 										</footer>
