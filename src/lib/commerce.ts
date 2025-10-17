@@ -9,6 +9,7 @@ export type Product = {
   name: string;
   slug: string;
   price: number;         // major units (e.g., 49.99)
+  discountedPrice?: number; // optional discounted price
   currency: "CAD";       // uppercase
   image: string;
   images: string[];
@@ -23,7 +24,8 @@ const PRODUCTS: Product[] = [
     id: "p_1001",
     name: "Sourdough Starter",
     slug: "sourdough-starter",
-    price: 49.99,
+    discountedPrice: 14.99,
+    price: 20.00,
     currency: "CAD",
     image: "/Starter.jpg",
     images: ["/Starter.jpg"],
@@ -34,9 +36,10 @@ const PRODUCTS: Product[] = [
   },
   {
     id: "p_1002",
-    name: "Basic Sourdough Guide",
-    slug: "basic-sourdough-guide",
-    price: 19.99,
+    name: "Beginner's Guide to Sourdough",
+    slug: "beginners-guide-to-sourdough",
+    price: 12.99,
+    discountedPrice: 9.99,
     currency: "CAD",
     image: "/Starter.jpg",
     images: ["/Starter.jpg"],
@@ -49,7 +52,8 @@ const PRODUCTS: Product[] = [
     id: "p_1003",
     name: "Advanced Techniques Manual",
     slug: "advanced-techniques-manual",
-    price: 29.99,
+    price: 39.99,
+    discountedPrice: 29.99,
     currency: "CAD",
     image: "/Starter.jpg",
     images: ["/Starter.jpg"],
@@ -64,8 +68,8 @@ const PRODUCTS: Product[] = [
     slug: "pizza-dough-kit",
     price: 39.99,
     currency: "CAD",
-    image: "/Starter.jpg",
-    images: ["/Starter.jpg"],
+    image: "/pizzarecipe.jpg",
+    images: ["/pizzarecipe.jpg"],
     category: "recipes",
     description: "Everything you need for perfect sourdough pizza.",
     inStock: true,
@@ -178,7 +182,7 @@ export const commerce = {
         PRODUCTS.find((p) => p.id === variantId || p.slug === variantId) ?? null;
       if (!prod) throw new Error("Product not found");
 
-      const priceCents = Math.round(prod.price * 100);
+      const priceCents = Math.round((prod.discountedPrice || prod.price) * 100);
       const existing = cart.items.find((i) => i.productId === prod.id);
 
       if (existing) {

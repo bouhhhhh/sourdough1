@@ -96,13 +96,42 @@ export default async function SingleProductPage(props: {
             {product.name}
           </h1>
 
-			<p className="mt-2 text-2xl font-medium leading-none tracking-tight text-foreground/70">
-			{formatMoney({
-				amount: Math.round(product.price * 100), // <-- convert to cents
-				currency: (product.currency || "CAD").toUpperCase(), // e.g., "CAD"
-				locale,
-			})}
-			</p>
+          {/* Price Section with Discount Support */}
+          <div className="mt-2 flex items-center gap-3">
+            {product.discountedPrice ? (
+              <>
+                {/* Discounted Price */}
+                <p className="text-2xl font-bold leading-none tracking-tight text-red-600">
+                  {formatMoney({
+                    amount: Math.round(product.discountedPrice * 100),
+                    currency: (product.currency || "CAD").toUpperCase(),
+                    locale,
+                  })}
+                </p>
+                {/* Original Price (crossed out) */}
+                <p className="text-lg font-medium leading-none tracking-tight text-foreground/50 line-through">
+                  {formatMoney({
+                    amount: Math.round(product.price * 100),
+                    currency: (product.currency || "CAD").toUpperCase(),
+                    locale,
+                  })}
+                </p>
+                {/* Discount Percentage */}
+                <span className="bg-red-100 text-red-800 text-sm font-bold px-3 py-1 rounded-full">
+                  {Math.round(((product.price - product.discountedPrice) / product.price) * 100)}% OFF
+                </span>
+              </>
+            ) : (
+              /* Regular Price */
+              <p className="text-2xl font-medium leading-none tracking-tight text-foreground/70">
+                {formatMoney({
+                  amount: Math.round(product.price * 100),
+                  currency: (product.currency || "CAD").toUpperCase(),
+                  locale,
+                })}
+              </p>
+            )}
+          </div>
 
           <div className="mt-2">{!product.inStock && <div>Out of stock</div>}</div>
         </div>
@@ -117,24 +146,28 @@ export default async function SingleProductPage(props: {
               return (
                 <Link key={image + idx} href={`?${qs}`} scroll={false}>
                   {idx === 0 ? (
-                    <MainProductImage
-                      className="w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
-                      src={image}
-                      loading="eager"
-                      priority
-                      alt={product.name}
-                    />
+                    <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+                      <MainProductImage
+                        className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
+                        src={image}
+                        loading="eager"
+                        priority
+                        alt={product.name}
+                        fill
+                      />
+                    </div>
                   ) : (
-                    <Image
-                      className="w-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
-                      src={image}
-                      width={700 / 3}
-                      height={700 / 3}
-                      sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 225px"
-                      loading="eager"
-                      priority
-                      alt={`${product.name} ${idx + 1}`}
-                    />
+                    <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+                      <Image
+                        className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
+                        src={image}
+                        sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 225px"
+                        loading="eager"
+                        priority
+                        alt={`${product.name} ${idx + 1}`}
+                        fill
+                      />
+                    </div>
                   )}
                 </Link>
               );

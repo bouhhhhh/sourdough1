@@ -4,6 +4,7 @@ import StoreConfig from "@/store.config";
 import { Newsletter } from "@/ui/footer/newsletter.client";
 import { YnsLink } from "@/ui/yns-link";
 import { LanguageSwitcherWrapper } from "@/components/language-switcher-wrapper";
+import { PaymentMethodsDisplay } from "@/components/payment-methods-display";
 
 const sections = [
 	{
@@ -69,6 +70,9 @@ export async function Footer() {
 				</div>
 				
 				<div className="flex flex-col items-center gap-4 sm:flex-row">
+					{/* Payment Methods */}
+					<PaymentMethodsDisplay />
+					
 					{/* Language Switcher */}
 					<LanguageSwitcherWrapper />
 					

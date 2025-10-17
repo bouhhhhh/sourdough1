@@ -1,6 +1,6 @@
 "use client";
 
-import type { Product } from "commerce-kit";
+import type { Product } from "@/lib/commerce";
 import Image from "next/image";
 import { formatMoney, getStripeAmountFromDecimal } from "@/lib/utils";
 import { YnsLink } from "@/ui/yns-link";
@@ -27,14 +27,13 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 					<div className="relative rounded-lg aspect-square w-full overflow-hidden bg-neutral-100">
 						<YnsLink href={`/product/${product.slug}`}>
 							<Image
-								className="group-hover:rotate hover-perspective w-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"
+								className="group-hover:rotate hover-perspective w-full h-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"
 								src={product.images[0]}
-								width={768}
-								height={768}
 								loading={priority ? "eager" : "lazy"}
 								priority={priority}
 								sizes="(max-width: 1024x) 100vw, (max-width: 1280px) 50vw, 700px"
 								alt=""
+								fill
 							/>
 						</YnsLink>
 						
@@ -63,20 +62,62 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 						<h2 className="text-xl font-medium text-neutral-700">{product.name}</h2>
 						<footer className="text-base font-normal text-neutral-900">
 							{product.price && (
-								<p>
-									{product.currency?.length === 3 ? (
-										formatMoney({
-											amount: getStripeAmountFromDecimal({
-												amount: product.price,
-												currency: product.currency,
-											}),
-											currency: product.currency,
-											locale,
-										})
+								<div className="flex items-center gap-2">
+									{product.discountedPrice ? (
+										<>
+											{/* Discounted Price */}
+											<p className="text-lg font-semibold text-red-600">
+												{product.currency?.length === 3 ? (
+													formatMoney({
+														amount: getStripeAmountFromDecimal({
+															amount: product.discountedPrice,
+															currency: product.currency,
+														}),
+														currency: product.currency,
+														locale,
+													})
+												) : (
+													`${product.discountedPrice} ${product.currency || ""}`
+												)}
+											</p>
+											{/* Original Price (crossed out) */}
+											<p className="text-sm text-gray-500 line-through">
+												{product.currency?.length === 3 ? (
+													formatMoney({
+														amount: getStripeAmountFromDecimal({
+															amount: product.price,
+															currency: product.currency,
+														}),
+														currency: product.currency,
+														locale,
+													})
+												) : (
+													`${product.price} ${product.currency || ""}`
+												)}
+											</p>
+											{/* Discount Badge */}
+											<span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">
+												{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}% OFF
+											</span>
+										</>
 									) : (
-										`${product.price} ${product.currency || ""}`
+										/* Regular Price */
+										<p>
+											{product.currency?.length === 3 ? (
+												formatMoney({
+													amount: getStripeAmountFromDecimal({
+														amount: product.price,
+														currency: product.currency,
+													}),
+													currency: product.currency,
+													locale,
+												})
+											) : (
+												`${product.price} ${product.currency || ""}`
+											)}
+										</p>
 									)}
-								</p>
+								</div>
 							)}
 						</footer>
 					</div>
