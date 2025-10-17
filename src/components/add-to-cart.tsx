@@ -9,16 +9,19 @@ interface AddToCartProps {
 	className?: string;
 	children?: React.ReactNode;
 	onSuccess?: () => void;
+	openCartOnAdd?: boolean; // New prop to control cart opening
 }
 
-export function AddToCart({ variantId, quantity = 1, className = "", children, onSuccess }: AddToCartProps) {
+export function AddToCart({ variantId, quantity = 1, className = "", children, onSuccess, openCartOnAdd = true }: AddToCartProps) {
 	const { openCart, optimisticAdd } = useCart();
 
 	const handleAddToCart = async () => {
 		try {
 			await optimisticAdd(variantId, quantity);
 			onSuccess?.();
-			openCart(); // Open cart sidebar after adding item
+			if (openCartOnAdd) {
+				openCart(); // Only open cart if specified
+			}
 		} catch (error) {
 			// Error is already logged in context, could show error toast here
 		}

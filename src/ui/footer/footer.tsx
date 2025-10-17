@@ -3,6 +3,7 @@ import { getTranslations } from "@/i18n/server";
 import StoreConfig from "@/store.config";
 import { Newsletter } from "@/ui/footer/newsletter.client";
 import { YnsLink } from "@/ui/yns-link";
+import { LanguageSwitcherWrapper } from "@/components/language-switcher-wrapper";
 
 const sections = [
 	{
@@ -63,24 +64,31 @@ export async function Footer() {
 			</div>
 			<div className="container mt-8 flex max-w-7xl flex-col items-center justify-between gap-4 text-sm text-neutral-500 md:flex-row">
 				<div>
-					<p>© 2024 Your Next Store</p>
-					<p>Delightful commerce for everyone</p>
+					<p>© 2025 St-henri Sourdough</p>
+					<p>From starter to loaf - Du levain au pain</p>
 				</div>
-				<div className="flex items-center gap-4">
-					<YnsLink
-						className="inline-flex items-center gap-1 transition-colors hover:text-neutral-700"
-						href="https://x.com/zaiste"
-					>
-						<TwitterIcon className="h-4 w-4" /> @zaiste
-						<span className="sr-only">Twitter</span>
-					</YnsLink>
-					<YnsLink
-						className="inline-flex items-center gap-1 transition-colors hover:text-neutral-700"
-						href="https://x.com/typeofweb"
-					>
-						<TwitterIcon className="h-4 w-4" /> @typeofweb
-						<span className="sr-only">Twitter</span>
-					</YnsLink>
+				
+				<div className="flex flex-col items-center gap-4 sm:flex-row">
+					{/* Language Switcher */}
+					<LanguageSwitcherWrapper />
+					
+					{/* Social Links */}
+					<div className="flex items-center gap-4">
+						<YnsLink
+							className="inline-flex items-center gap-1 transition-colors hover:text-neutral-700"
+							href="https://x.com/zaiste" // mettre ma page facebook
+						>
+							<TwitterIcon className="h-4 w-4" /> @StHenriSourdough
+							<span className="sr-only">Facebook</span>
+						</YnsLink>
+						<YnsLink
+							className="inline-flex items-center gap-1 transition-colors hover:text-neutral-700"
+							href="https://x.com/typeofweb"  //instagram?
+						>
+							<TwitterIcon className="h-4 w-4" /> @StHenriSourdough
+							<span className="sr-only">Instagram</span>
+						</YnsLink>
+					</div>
 				</div>
 			</div>
 		</footer>

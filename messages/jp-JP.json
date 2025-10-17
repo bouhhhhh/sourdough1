@@ -34,7 +34,7 @@
 	"/.hero.title": "厳選されたコレクションを発見",
 	"/.hero.description": "家庭やライフスタイルのために慎重に選ばれた製品を探る。",
 	"/.hero.action": "今すぐ購入",
-	"/.hero.link": "/category/accessories",
+	"/.hero.link": "/category/recipes",
 	"/search.notFound.title": "\"{query}\"の結果は見つかりませんでした",
 	"/search.notFound.description": "申し訳ありませんが、検索クエリに一致する結果が見つかりませんでした。検索条件を変更してみてください",
 	"/search.metadata.title": "検索: {query} · Your Next Store",

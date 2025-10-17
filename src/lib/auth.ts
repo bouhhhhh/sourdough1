@@ -3,7 +3,7 @@ import { type JWTPayload, jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { User } from "@/models/user";
 
@@ -55,7 +55,7 @@ export async function login(_state: unknown, formData: FormData) {
   const user = await User.findOne({ email });
   if (!user) return { error: "Invalid credentials" };
 
-  const ok = await argon2.verify(user.passwordHash, password);
+  const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) return { error: "Invalid credentials" };
 
   const expires = Date.now() + 24 * 60 * 60 * 1000;

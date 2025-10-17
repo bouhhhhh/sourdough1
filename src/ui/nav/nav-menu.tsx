@@ -12,8 +12,8 @@ const links = [
 		href: `/category/${slug}`,
 	})),
 	{
-		label: "Digital",
-		href: "/category/digital",
+		label: "Recipes",
+		href: "/category/recipes",
 	},
 ];
 

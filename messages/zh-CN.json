@@ -34,7 +34,7 @@
 	"/.hero.title": "探索精选系列",
 	"/.hero.description": "探索我们精心挑选的家居和生活产品。",
 	"/.hero.action": "立即选购",
-	"/.hero.link": "/category/accessories",
+	"/.hero.link": "/category/recipes",
 	"/search.notFound.title": "没有与 \"{query}\" 相关的结果",
 	"/search.notFound.description": "抱歉，我们找不到与您的搜索匹配的结果。请尝试优化您的搜索条件。",
 	"/search.metadata.title": "搜索：{query} · Your Next Store",

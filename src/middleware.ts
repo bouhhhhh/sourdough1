@@ -8,8 +8,17 @@ export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const isProtectedPath = ProtectedPaths.some((p) => pathname.startsWith(p));
 
+	// Handle language preference
+	const languageCookie = request.cookies.get("NEXT_LOCALE")?.value;
+	const response = NextResponse.next();
+	
+	// Pass language preference to the environment if it exists
+	if (languageCookie) {
+		response.headers.set("x-preferred-locale", languageCookie);
+	}
+
 	if (!isProtectedPath) {
-		return NextResponse.next();
+		return response;
 	}
 
 	const session = request.cookies.get("session")?.value;
@@ -22,9 +31,18 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
 
-	return updateSession(request);
+	const sessionResponse = await updateSession(request);
+	
+	// Preserve language header in session response
+	if (languageCookie && sessionResponse) {
+		sessionResponse.headers.set("x-preferred-locale", languageCookie);
+	}
+	
+	return sessionResponse || response;
 }
 
 export const config = {
-	matcher: ["/orders"],
+	matcher: [
+		"/((?!api|_next/static|_next/image|favicon.ico).*)",
+	],
 };

@@ -1,10 +1,10 @@
-import AccessoriesImage from "@/images/accessories.jpg";
-import ApparelImage from "@/images/apparel.jpg";
+import RecipesImage from "@/images/accessories.jpg"; // Using existing image for recipes
+import InstructionsImage from "@/images/apparel.jpg"; // Using existing image for instructions
 
 export const config = {
 	categories: [
-		{ name: "Apparel", slug: "apparel", image: ApparelImage },
-		{ name: "Accessories", slug: "accessories", image: AccessoriesImage },
+		{ name: "Instructions", slug: "instructions", image: InstructionsImage },
+		{ name: "Recipes", slug: "recipes", image: RecipesImage },
 	],
 
 	social: {

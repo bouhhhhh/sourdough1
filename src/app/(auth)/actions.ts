@@ -1,6 +1,6 @@
 "use server";
 import { z } from "zod";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { User } from "@/models/user";
 import { encrypt } from "@/app/(auth)/session"; // <- ta fonction existante
@@ -23,7 +23,7 @@ export async function signup(_state: unknown, formData: FormData) {
   const existing = await User.findOne({ email });
   if (existing) return { error: "Email already in use" };
 
-  const passwordHash = await argon2.hash(password); // Argon2 par défaut (salé + params sûrs)
+  const passwordHash = await bcrypt.hash(password, 12); // bcrypt with salt rounds
   const user = await User.create({ email, passwordHash });
 
   // Optionnel: envoyer un email de vérification ici
