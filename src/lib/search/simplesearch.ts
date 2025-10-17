@@ -1,4 +1,4 @@
-import type { Product } from "commerce-kit";
+import type { Product } from "@/lib/commerce";
 
 const NO_MATCH = 0;
 const EXACT_MATCH = 5;
@@ -32,7 +32,7 @@ export function simpleSearch(products: Product[], query: string) {
 		.flatMap((product) => {
 			const fieldsWithWeights = [
 				[product.name, 1.5],
-				[product.summary, 1],
+				[product.description || "", 1],
 				[product.slug, 1],
 			] as const;
 

@@ -1,4 +1,4 @@
-import type { Product as CommerceProduct } from "commerce-kit";
+import type { Product as LocalProduct } from "@/lib/commerce";
 import type { ItemList, Product, Thing, WebSite, WithContext } from "schema-dts";
 import type Stripe from "stripe";
 
@@ -6,24 +6,24 @@ export const JsonLd = <T extends Thing>({ jsonLd }: { jsonLd: WithContext<T> }) 
 	return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />;
 };
 
-export const mappedProductToJsonLd = (product: CommerceProduct): WithContext<Product> => {
+export const mappedProductToJsonLd = (product: LocalProduct): WithContext<Product> => {
 	return {
 		"@context": "https://schema.org",
 		"@type": "Product",
 		name: product.name,
 		image: product.images[0],
-		description: product.summary ?? undefined,
+		description: product.description ?? undefined,
 		sku: product.id,
 		offers: {
 			"@type": "Offer",
-			price: product.price.toString(),
+			price: (product.discountedPrice || product.price).toString(),
 			priceCurrency: product.currency,
-			availability: (product.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+			availability: product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
 		},
 	};
 };
 
-export const mappedProductsToJsonLd = (products: readonly CommerceProduct[]): WithContext<ItemList> => {
+export const mappedProductsToJsonLd = (products: readonly LocalProduct[]): WithContext<ItemList> => {
 	return {
 		"@context": "https://schema.org",
 		"@type": "ItemList",

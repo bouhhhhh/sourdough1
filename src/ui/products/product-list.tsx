@@ -1,4 +1,4 @@
-import type { Product } from "commerce-kit";
+import type { Product } from "@/lib/commerce";
 import { getLocale } from "@/i18n/server";
 import { JsonLd, mappedProductsToJsonLd } from "@/ui/json-ld";
 import { ProductCard } from "./product-card";
