@@ -139,7 +139,7 @@ function ensureCart(id?: string): Cart {
 export const commerce = {
   product: {
     list: listProducts,
-    get: ({ slug }: { slug: string }) => getProductBySlug(slug),
+    get: async ({ slug }: { slug: string }) => getProductBySlug(slug),
     // compat wrapper used by your sitemap/products page
     browse: async ({ first, category }: { first?: number; category?: string }) => {
       const data = await listProducts({ limit: first, category });

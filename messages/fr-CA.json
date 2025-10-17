@@ -32,7 +32,7 @@
 	"Global.deliveryEstimates.month": "{count, plural, =1 {# mois} other {# mois}}",
 	"Global.deliveryEstimates.week": "{count, plural, =1 {# semaine} other {# semaines}}",
 	"Global.actions.shopNow": "Magasinez maintenant",
-	"/.hero.title": "Découvrez notre collection",
+	"/.hero.title": "Bienvenue chez HeirBloom",
 	"/.hero.description": "Explorez nos produits soigneusement sélectionnés pour votre maison et votre style de vie.",
 	"/.hero.action": "Magasiner maintenant",
 	"/.hero.link": "/category/recipes",

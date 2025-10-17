@@ -58,7 +58,19 @@ export const getMessagesInternal = <TNamespaceKey extends IntlNamespaceKeys = ne
 	) => {
 		const completeKey = namespaceKey + "." + key;
 		const msg = messages[completeKey as keyof typeof messages];
-		const message = new IntlMessageFormat(msg, locale).format(values)?.toString() ?? "";
-		return message;
+		
+		// Handle missing or invalid messages
+		if (!msg || typeof msg !== 'string') {
+			console.warn(`Missing translation for key: ${completeKey}`);
+			return completeKey; // Return the key as fallback
+		}
+		
+		try {
+			const message = new IntlMessageFormat(msg, locale).format(values)?.toString() ?? "";
+			return message;
+		} catch (error) {
+			console.warn(`Failed to format message for key: ${completeKey}`, error);
+			return msg; // Return the raw message as fallback
+		}
 	};
 };

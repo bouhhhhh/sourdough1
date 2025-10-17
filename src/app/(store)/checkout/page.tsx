@@ -202,7 +202,7 @@ export default function CheckoutPage() {
             {clientSecret && options && (
               <Elements stripe={stripePromise} options={options}>
                 <CheckoutForm 
-                  returnUrl={`${window.location.origin}/orders/thank-you`}
+                  returnUrl={`${window.location.origin}/confirmation`}
                   shippingAddress={shippingAddress}
                   billingAddress={billingSameAsShipping ? shippingAddress : billingAddress}
                   onValidationError={setFormErrors}

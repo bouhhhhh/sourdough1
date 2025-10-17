@@ -1,6 +1,6 @@
 {
-	"Global.metadata.title": "Your Next Store - Demo",
-	"Global.metadata.description": "A Next.js boilerplate for building your online store instantly: simple, quick, powerful.",
+	"Global.metadata.title": "HeirBloom - Artisan Sourdough",
+	"Global.metadata.description": "Discover premium sourdough starters, guides, and recipes. Master the art of artisan baking with HeirBloom.",
 	"Global.notFound.title": "Not found",
 	"Global.notFound.description": "The page you were looking for does not exist.",
 	"Global.notFound.goBackLink": "Go back home",
@@ -32,7 +32,7 @@
 	"Global.deliveryEstimates.month": "{count, plural, =1 {# month} other {# months}}",
 	"Global.deliveryEstimates.week": "{count, plural, =1 {# week} other {# weeks}}",
 	"Global.actions.shopNow": "Shop now",
-	"/.hero.title": "Discover our Curated Collection",
+	"/.hero.title": "Welcome to HeirBloom",
 	"/.hero.description": "Explore our carefully selected products for your home and lifestyle.",
 	"/.hero.action": "Shop Now",
 	"/.hero.link": "/category/recipes",
@@ -164,5 +164,17 @@
 	"/recipes.page.tips.tip1.title": "Temperature Matters",
 	"/recipes.page.tips.tip1.description": "Warmer environments speed up fermentation, cooler slows it down.",
 	"/recipes.page.tips.tip2.title": "Hydration Control",
-	"/recipes.page.tips.tip2.description": "Adjust water content based on flour type and humidity levels."
+	"/recipes.page.tips.tip2.description": "Adjust water content based on flour type and humidity levels.",
+	"/confirmation.metadata.title": "Order Confirmation · HeirBloom",
+	"/confirmation.page.success.title": "Payment Successful!",
+	"/confirmation.page.success.description": "Thank you for your order. We've received your payment and will process your order shortly.",
+	"/confirmation.page.failed.title": "Payment Failed",
+	"/confirmation.page.failed.description": "Unfortunately, your payment could not be processed. Please try again.",
+	"/confirmation.page.order.title": "Order Details",
+	"/confirmation.page.order.number": "Order Number",
+	"/confirmation.page.order.amount": "Total Amount",
+	"/confirmation.page.order.status": "Payment Status",
+	"/confirmation.page.actions.continueShopping": "Continue Shopping",
+	"/confirmation.page.actions.viewOrders": "View My Orders",
+	"/confirmation.page.actions.backToCheckout": "Back to Checkout"
 }

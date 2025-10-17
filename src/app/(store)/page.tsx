@@ -1,11 +1,11 @@
 import Image from "next/image";
 import type { Metadata } from "next/types";
 import { publicUrl } from "@/env.mjs";
-import { getTranslations } from "@/i18n/server";
+import { getTranslations, getLocale } from "@/i18n/server";
 import { commerce } from "@/lib/commerce";
 import StoreConfig from "@/store.config";
 import { CategoryBox } from "@/ui/category-box";
-import { ProductList } from "@/ui/products/product-list";
+import { ResponsiveProductSection } from "@/ui/products/responsive-product-section";
 import { YnsLink } from "@/ui/yns-link";
 
 export const metadata: Metadata = {
@@ -14,9 +14,10 @@ export const metadata: Metadata = {
 
 export default async function Home() {
 	try {
-		// Load products from YNS using REST API (default behavior)
+		// Load enough products for both mobile (1) and desktop (3) display
 		const result = await commerce.product.browse({ first: 6 });
 		const t = await getTranslations("/");
+		const locale = await getLocale();
 
 		const products = result.data || [];
 
@@ -43,7 +44,7 @@ export default async function Home() {
 							className="rounded"
 							height={450}
 							width={450}
-							src="https://files.stripe.com/links/MDB8YWNjdF8xT3BaeG5GSmNWbVh6bURsfGZsX3Rlc3RfaDVvWXowdU9ZbWlobUIyaHpNc1hCeDM200NBzvUjqP"
+							src="/st-henri.webp"
 							style={{
 								objectFit: "cover",
 							}}
@@ -52,7 +53,7 @@ export default async function Home() {
 					</div>
 				</section>
 
-				<ProductList products={products} />
+				<ResponsiveProductSection allProducts={products} locale={locale} />
 
 				<section className="w-full py-8">
 					<div className="grid gap-8 lg:grid-cols-2">
@@ -66,8 +67,9 @@ export default async function Home() {
 	} catch (error) {
 		console.error("Error in Home component:", error);
 		const t = await getTranslations("/");
+		const locale = await getLocale();
 
-		// Fallback to empty products if YNS fails
+		// Fallback to empty products if commerce fails
 		const products: never[] = [];
 
 		return (
@@ -102,7 +104,7 @@ export default async function Home() {
 					</div>
 				</section>
 
-				<ProductList products={products} />
+				<ResponsiveProductSection allProducts={products} locale={locale} />
 
 				<section className="w-full py-8">
 					<div className="grid gap-8 lg:grid-cols-2">

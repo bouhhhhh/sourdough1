@@ -1,5 +1,5 @@
-import RecipesImage from "@/images/accessories.jpg"; // Using existing image for recipes
-import InstructionsImage from "@/images/apparel.jpg"; // Using existing image for instructions
+const RecipesImage = "/recipe.webp";
+const InstructionsImage = "/instructions.jpg";
 
 export const config = {
 	categories: [

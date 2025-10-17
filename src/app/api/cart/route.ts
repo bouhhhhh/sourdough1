@@ -23,12 +23,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as { variantId: string; quantity?: number };
     const { variantId, quantity = 1 } = body;
 
+    console.log("Cart API - Adding to cart:", { cartId, variantId, quantity });
+
     const cart = await commerce.cart.add({
       cartId,
       variantId,
       quantity,
     });
 
+    console.log("Cart API - Success:", cart);
     return NextResponse.json(cart);
   } catch (error) {
     console.error("API Error adding to cart:", error);

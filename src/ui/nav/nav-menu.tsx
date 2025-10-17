@@ -11,10 +11,6 @@ const links = [
 		label: name,
 		href: `/category/${slug}`,
 	})),
-	{
-		label: "Recipes",
-		href: "/category/recipes",
-	},
 ];
 
 export const NavMenu = () => {
