@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
@@ -8,7 +8,7 @@ import { YnsLink } from "@/ui/yns-link";
 import { formatMoney } from "@/lib/utils";
 import { clearCartAction } from "@/actions/cart-actions";
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const searchParams = useSearchParams();
   const { cart } = useCart();
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
@@ -159,5 +159,18 @@ export default function ConfirmationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-10 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p>Loading...</p>
+      </div>
+    }>
+      <ConfirmationContent />
+    </Suspense>
   );
 }

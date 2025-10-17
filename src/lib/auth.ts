@@ -1,47 +1,13 @@
 "use server";
-import { type JWTPayload, jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { type NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { User } from "@/models/user";
-
-if (!process.env.SECRET) {
-	throw new Error("SECRET must be defined");
-}
-
-const key = new TextEncoder().encode(process.env.SECRET);
-const SessionDuration = 24 * 60 * 60 * 1000;
+import { encrypt, decrypt } from "./auth-middleware";
 
 interface User {
 	email: string;
-}
-
-interface SessionData extends JWTPayload {
-	user: User;
-	expires: number;
-}
-
-export async function encrypt(payload: SessionData): Promise<string> {
-	return await new SignJWT(payload)
-		.setProtectedHeader({ alg: "HS256" })
-		.setIssuedAt()
-		.setExpirationTime(payload.expires)
-		.sign(key);
-}
-
-export async function decrypt(input: string): Promise<SessionData | null | undefined> {
-	try {
-		const r = await jwtVerify(input, key, {
-			algorithms: ["HS256"],
-		});
-		return r.payload as SessionData;
-	} catch (e) {
-		if (e instanceof Error) {
-			console.log(e.message);
-		}
-	}
 }
 
 
@@ -91,27 +57,4 @@ export async function auth() {
 	return data;
 }
 
-export async function updateSession(request: NextRequest) {
-	const session = (await cookies()).get("session")?.value;
-	if (!session) return;
 
-	const data = await decrypt(session);
-	if (!data) return;
-
-	if (data.expires - Date.now() < 60 * 60 * 1000) {
-		data.expires = Date.now() + SessionDuration;
-
-		const res = NextResponse.next();
-		res.cookies.set({
-			name: "session",
-			value: await encrypt(data),
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
-			expires: new Date(data.expires),
-		});
-		return res;
-	}
-
-	return NextResponse.next();
-}

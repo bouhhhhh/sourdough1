@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { decrypt, updateSession } from "./lib/auth";
+import { decrypt, updateSession } from "./lib/auth-middleware";
 
 const ProtectedPaths = ["/orders"];
 

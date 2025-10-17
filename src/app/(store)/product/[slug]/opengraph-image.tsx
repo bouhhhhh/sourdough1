@@ -55,7 +55,7 @@ export default async function Image(props: { params: Promise<{ slug: string }> }
 							locale,
 						})}
 					</p>
-					<p tw="font-normal text-xl max-h-[7rem]">{product.summary || ""}</p>
+					<p tw="font-normal text-xl max-h-[7rem]">{product.description || ""}</p>
 				</div>
 			</div>
 		</div>,

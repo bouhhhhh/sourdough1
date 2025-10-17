@@ -8,7 +8,7 @@ import { login } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
-	const [_state, action] = useActionState(login, {});
+	const [_state, action] = useActionState(login, { error: "" });
 
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
