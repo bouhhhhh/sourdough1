@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
 	try {
-		// Load enough products for both mobile (1) and desktop (3) display
-		const result = await commerce.product.browse({ first: 6 });
+		// Load only products from "products" category for the homepage
+		const result = await commerce.product.browse({ first: 6, category: "products" });
 		const t = await getTranslations("/");
 		const locale = await getLocale();
 

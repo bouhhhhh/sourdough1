@@ -1,9 +1,9 @@
 const RecipesImage = "/recipe.webp";
-const InstructionsImage = "/instructions.jpg";
+const ProductsImage = "/Starter.jpg";
 
 export const config = {
 	categories: [
-		{ name: "Instructions", slug: "instructions", image: InstructionsImage },
+		{ name: "Products", slug: "products", image: ProductsImage },
 		{ name: "Recipes", slug: "recipes", image: RecipesImage },
 	],
 

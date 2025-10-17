@@ -16,7 +16,7 @@ export const NavMobileMenu = ({ children }: { children: ReactNode }) => {
 	const menuId = useId();
 	
 	return (
-		<div suppressHydrationWarning>
+		<div>
 			<Drawer open={isOpen} onOpenChange={setIsOpen}>
 				<DrawerTrigger asChild>
 					<button
@@ -24,11 +24,12 @@ export const NavMobileMenu = ({ children }: { children: ReactNode }) => {
 						aria-label="Open navigation menu"
 						aria-controls={menuId}
 						aria-expanded={isOpen}
+						suppressHydrationWarning
 					>
 						<MenuIcon />
 					</button>
 				</DrawerTrigger>
-				<DrawerContent id={menuId}>
+				<DrawerContent id={menuId} suppressHydrationWarning>
 					<DrawerHeader>
 						<DrawerTitle className="text-center">Menu</DrawerTitle>
 						<DrawerDescription className="sr-only">Navigation menu</DrawerDescription>

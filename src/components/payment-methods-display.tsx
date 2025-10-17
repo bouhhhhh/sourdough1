@@ -44,7 +44,7 @@ export function PaymentMethodsDisplay() {
                 alt={methodInfo.alt}
                 width={48}
                 height={32}
-                className="h-8 w-12 object-contain filter brightness-0 opacity-60 hover:opacity-100 transition-opacity"
+                className="h-8 w-12 object-contain opacity-80 hover:opacity-100 transition-opacity"
               />
             );
           })}
@@ -68,7 +68,7 @@ export function PaymentMethodsDisplay() {
               alt={methodInfo.alt}
               width={48}
               height={32}
-              className="h-8 w-12 object-contain filter brightness-0 opacity-60 hover:opacity-100 transition-opacity"
+              className="h-8 w-12 object-contain opacity-80 hover:opacity-100 transition-opacity"
             />
           );
         })}
