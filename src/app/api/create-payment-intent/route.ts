@@ -16,14 +16,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing currency" }, { status: 400 });
     }
 
+    // Generate order number
+    const orderNumber = `ORD-${Date.now()}`;
+
     const pi = await stripe.paymentIntents.create({
       amount,                                       // cents
       currency: currency.toLowerCase(),             // e.g., "cad"
       automatic_payment_methods: { enabled: true }, // Payment Element
-      metadata: { cartId: String(cartId ?? "") },
+      metadata: { 
+        cartId: String(cartId ?? ""),
+        orderNumber: orderNumber,
+      },
     });
 
-    return NextResponse.json({ clientSecret: pi.client_secret });
+    return NextResponse.json({ clientSecret: pi.client_secret, orderNumber });
   } catch (err: any) {
     console.error("create-payment-intent error:", err);
     return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });

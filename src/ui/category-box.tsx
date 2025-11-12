@@ -1,13 +1,13 @@
 import Image, { type ImageProps } from "next/image";
+import Link from "next/link";
 import { getTranslations } from "@/i18n/server";
 import { deslugify } from "@/lib/utils";
-import { YnsLink } from "@/ui/yns-link";
 
 export async function CategoryBox({ categorySlug, src }: { categorySlug: string; src: ImageProps["src"] }) {
 	const t = await getTranslations("Global.actions");
 
 	return (
-		<YnsLink href={`/category/${categorySlug}`} className="group relative">
+		<Link href={`/category/${categorySlug}`} className="group relative">
 			<div className="relative overflow-hidden rounded-lg aspect-[4/3]">
 				<Image
 					alt="Cover image"
@@ -22,6 +22,6 @@ export async function CategoryBox({ categorySlug, src }: { categorySlug: string;
 				<h3 className="text-lg font-bold tracking-tight">{deslugify(categorySlug)}</h3>
 				<p>{t("shopNow")}</p>
 			</div>
-		</YnsLink>
+		</Link>
 	);
 }

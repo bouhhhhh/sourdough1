@@ -12,7 +12,20 @@ export const getLocale = async (localeFromProps?: string) => {
 		return localeFromProps;
 	}
 	
-	// Try to dynamically import headers only when needed
+	// Try to read from cookies directly
+	try {
+		const { cookies } = await import("next/headers");
+		const cookieStore = await cookies();
+		const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;
+		
+		if (localeCookie && SUPPORTED_LOCALES.includes(localeCookie)) {
+			return localeCookie;
+		}
+	} catch (error) {
+		console.warn("Could not read cookie for locale");
+	}
+	
+	// Try to read from headers (set by middleware)
 	try {
 		const { headers } = await import("next/headers");
 		const headersList = await headers();

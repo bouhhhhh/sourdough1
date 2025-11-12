@@ -294,8 +294,9 @@ export default function CheckoutPage() {
               console.error("Payment intent creation failed:", errorData);
               setClientSecret(null);
             } else {
-              const data = (await res.json()) as { clientSecret?: string };
+              const data = (await res.json()) as { clientSecret?: string; orderNumber?: string };
               console.log("Payment intent created, clientSecret:", data.clientSecret ? "✓ present" : "✗ missing");
+              console.log("Order number:", data.orderNumber);
               setClientSecret(data.clientSecret || null);
             }
           } catch (error) {
@@ -343,7 +344,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Order Summary */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+          <h2 className="text-xl font-semibold mb-4">{tPage("orderSummary")}</h2>
           
           <ul className="divide-y border rounded-lg">
             {cart.items.map((it: any) => {
@@ -354,7 +355,7 @@ export default function CheckoutPage() {
                 <li key={it.id} className="p-4 flex items-center justify-between">
                   <div className="mr-4">
                     <div className="font-medium">{itemName}</div>
-                    <div className="text-sm text-gray-500">Qty: {it.quantity}</div>
+                    <div className="text-sm text-gray-500">{tPage("quantity")}: {it.quantity}</div>
                   </div>
                   <div className="text-right">
                     {formatMoney({
@@ -370,7 +371,7 @@ export default function CheckoutPage() {
 
           <div className="mt-4 p-4 border rounded-lg bg-gray-50">
             <div className="flex items-center justify-between mb-2">
-              <span>Subtotal</span>
+              <span>{tPage("subtotal")}</span>
               <span>
                 {formatMoney({
                   amount: cart.total || cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
@@ -381,7 +382,7 @@ export default function CheckoutPage() {
             </div>
             {selectedShipping && (
               <div className="flex items-center justify-between mb-2 text-sm">
-                <span>Shipping ({selectedShipping.name})</span>
+                <span>{tPage("shipping")} ({selectedShipping.name})</span>
                 <span>
                   {formatMoney({
                     amount: selectedShipping.price,
@@ -392,7 +393,7 @@ export default function CheckoutPage() {
               </div>
             )}
             <div className="border-t pt-2 mt-2 flex items-center justify-between text-lg font-semibold">
-              <span>Total</span>
+              <span>{tPage("total")}</span>
               <span>
                 {formatMoney({
                   amount: (cart.total || cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)) + (selectedShipping?.price || 0),
@@ -409,7 +410,7 @@ export default function CheckoutPage() {
           {/* Email */}
           <div>
             <Label htmlFor="email" className="text-lg font-semibold mb-2 block">
-              Email Address
+              {tPage("emailAddress")}
             </Label>
             <Input
               id="email"
@@ -431,7 +432,7 @@ export default function CheckoutPage() {
 
           {/* Shipping Address */}
           <AddressForm
-            title="Shipping Address"
+            title={tPage("shippingAddress")}
             data={shippingAddress}
             onChange={setShippingAddress}
             errors={formErrors.shipping}
@@ -440,17 +441,17 @@ export default function CheckoutPage() {
 
           {/* Shipping Rates Display */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Shipping Options</h3>
+            <h3 className="text-lg font-semibold mb-4">{tPage("shippingMethod")}</h3>
             
             {loadingRates && (
               <div className="p-4 border rounded-lg bg-gray-50">
-                <p className="text-sm text-gray-600">Loading shipping options...</p>
+                <p className="text-sm text-gray-600">{tPage("loadingShipping")}</p>
               </div>
             )}
 
             {!loadingRates && shippingRates.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold mb-3">Available Shipping Options</h4>
+                <h4 className="text-sm font-semibold mb-3">{tPage("shippingMethod")}</h4>
                 <RadioGroup 
                   value={selectedShipping?.id || ""} 
                   onValueChange={(value) => {
@@ -485,7 +486,7 @@ export default function CheckoutPage() {
                   ))}
                 </RadioGroup>
                 {formErrors.shipping_selection && (
-                  <p className="text-sm text-red-600 mt-2">{formErrors.shipping_selection}</p>
+                  <p className="text-sm text-red-600 mt-2">{tPage("selectShipping")}</p>
                 )}
               </div>
             )}
@@ -493,10 +494,10 @@ export default function CheckoutPage() {
             {!loadingRates && shippingRates.length === 0 && shippingAddress.country && shippingAddress.country !== 'CA' && (
               <div className="mt-4 p-4 border border-red-200 rounded-lg bg-red-50">
                 <p className="text-sm text-red-800 font-semibold">
-                  ⚠️ We only ship to Canada for now.
+                  {tPage("onlyCanada")}
                 </p>
                 <p className="text-xs text-red-700 mt-1">
-                  Subscribe to our newsletter for updates on shipping outside Canada.
+                  {tPage("subscribeNewsletter")}
                 </p>
               </div>
             )}
@@ -504,7 +505,7 @@ export default function CheckoutPage() {
             {!loadingRates && shippingRates.length === 0 && shippingAddress.postalCode && shippingAddress.country === 'CA' && (
               <div className="mt-4 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
                 <p className="text-sm text-yellow-800">
-                  Please complete your shipping address to see shipping options.
+                  {tPage("completeAddress")}
                 </p>
               </div>
             )}
@@ -541,7 +542,7 @@ export default function CheckoutPage() {
                 onClick={handleContinueToPayment}
                 className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
               >
-                Continue to Payment
+                {tPage("continueToPayment")}
               </button>
             </div>
           )}
@@ -549,7 +550,7 @@ export default function CheckoutPage() {
           {/* Payment Section */}
           {showPaymentForm && (
           <div id="payment-section">
-            <h3 className="text-lg font-semibold mb-4">Payment Information</h3>
+            <h3 className="text-lg font-semibold mb-4">{tPage("paymentDetails")}</h3>
             {creatingPI && <div className="text-center py-4">Preparing payment…</div>}
             {clientSecret && options && (
               <Elements stripe={stripePromise} options={options}>

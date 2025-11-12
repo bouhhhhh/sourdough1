@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { Product } from "@/lib/commerce";
 import { ProductCard } from "./product-card";
 import { JsonLd, mappedProductsToJsonLd } from "@/ui/json-ld";
-import { YnsLink } from "@/ui/yns-link";
 
 interface ResponsiveProductSectionProps {
 	allProducts: Product[];
@@ -52,12 +52,12 @@ export function ResponsiveProductSection({ allProducts, locale }: ResponsiveProd
 			<JsonLd jsonLd={mappedProductsToJsonLd(productsToShow)} />
 			
 			<div className="flex justify-center mt-8">
-				<YnsLink
+				<Link
 					className="inline-flex h-12 items-center justify-center rounded-lg bg-gray-500 px-8 font-medium text-white transition-colors hover:bg-gray-600 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
 					href="/products"
 				>
 					Shop More
-				</YnsLink>
+				</Link>
 			</div>
 		</section>
 	);

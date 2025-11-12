@@ -199,14 +199,54 @@ export async function POST(req: Request) {
       `,
 		});
 
-		if (error) {
-			console.error("Error sending email:", error);
-			return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
-		}
-
-		return NextResponse.json({ success: true, emailId: data?.id });
-	} catch (error: unknown) {
-		console.error("Error sending confirmation email:", error);
-		return NextResponse.json({ error: "Failed to send confirmation email" }, { status: 500 });
+	if (error) {
+		console.error("Error sending email:", error);
+		return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
 	}
+
+	// Send notification to store owner
+	const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM;
+	if (adminEmail) {
+		try {
+			// Build a minimal admin notification email
+			await resend.emails.send({
+				from,
+				to: [adminEmail],
+				subject: `One more command`,
+				html: `
+					<!DOCTYPE html>
+					<html>
+						<head>
+							<meta charset="utf-8">
+							<meta name="viewport" content="width=device-width, initial-scale=1.0">
+						</head>
+						<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; max-width: 400px; margin: 0 auto;">
+							<div style="background-color: #10b981; color: white; padding: 12px; text-align: center; border-radius: 4px; margin-bottom: 16px;">
+								<strong style="font-size: 18px;">One more command</strong>
+							</div>
+							<div style="background-color: #f9fafb; padding: 12px; border-radius: 4px; margin-bottom: 12px;">
+								<div style="margin-bottom: 8px;"><strong>${orderNumber}</strong> • ${orderDate}</div>
+								<div style="color: #6b7280; font-size: 14px;">${email}</div>
+							</div>
+							<div style="background-color: #f0fdf4; padding: 12px; border-radius: 4px; margin-bottom: 12px;">
+								<strong style="color: #10b981; font-size: 20px;">${formatMoney(total, currency)}</strong>
+							</div>
+							<div style="font-size: 14px; color: #6b7280;">
+								${items.map(item => `${item.quantity}× ${item.name}`).join('<br>')}
+							</div>
+						</body>
+					</html>
+				`,
+			});
+		} catch (adminError) {
+			// Don't fail the main request if admin email fails
+			console.error("Error sending admin notification:", adminError);
+		}
+	}
+
+	return NextResponse.json({ success: true, emailId: data?.id });
+} catch (error: unknown) {
+	console.error("Error sending confirmation email:", error);
+	return NextResponse.json({ error: "Failed to send confirmation email" }, { status: 500 });
+}
 }

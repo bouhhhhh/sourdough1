@@ -2,8 +2,8 @@
 
 import type { Product } from "@/lib/commerce";
 import Image from "next/image";
+import Link from "next/link";
 import { formatMoney, getStripeAmountFromDecimal } from "@/lib/utils";
-import { YnsLink } from "@/ui/yns-link";
 import { AddToCart } from "@/components/add-to-cart";
 import { useState } from "react";
 
@@ -25,7 +25,7 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 			<article className="overflow-hidden bg-white">
 				{product.images[0] && (
 					<div className="relative rounded-lg aspect-square w-full overflow-hidden bg-neutral-100">
-						<YnsLink href={`/product/${product.slug}`}>
+						<Link href={`/product/${product.slug}`}>
 							<Image
 								className="group-hover:rotate hover-perspective w-full h-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"
 								src={product.images[0]}
@@ -35,7 +35,7 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 								alt=""
 								fill
 							/>
-						</YnsLink>
+						</Link>
 						
 						{/* Bottom Positioned Add to Cart Button */}
 						<div 
@@ -57,7 +57,7 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 						</div>
 					</div>
 				)}
-				<YnsLink href={`/product/${product.slug}`}>
+				<Link href={`/product/${product.slug}`}>
 					<div className="p-2">
 						<h2 className="text-xl font-medium text-neutral-700">{product.name}</h2>
 						<footer className="text-base font-normal text-neutral-900">
@@ -121,7 +121,7 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 							)}
 						</footer>
 					</div>
-				</YnsLink>
+				</Link>
 			</article>
 		</li>
 	);

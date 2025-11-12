@@ -11,7 +11,7 @@ export const generateMetadata = async (props: { params: Promise<{ slug: string }
 	const locale = await getLocale();
 	const result = await commerce.product.browse({
 		first: 100,
-		category: params.slug, // YNS SDK uses direct category parameter
+		category: params.slug,
 		locale,
 	});
 
@@ -32,7 +32,7 @@ export default async function CategoryPage(props: { params: Promise<{ slug: stri
 	const locale = await getLocale();
 	const result = await commerce.product.browse({
 		first: 100,
-		category: params.slug, // YNS SDK uses direct category parameter
+		category: params.slug,
 		locale,
 	});
 

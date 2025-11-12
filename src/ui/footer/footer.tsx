@@ -1,8 +1,7 @@
-import type { SVGAttributes } from "react";
+import Link from "next/link";
 import { getTranslations } from "@/i18n/server";
 import StoreConfig from "@/store.config";
 import { Newsletter } from "@/ui/footer/newsletter.client";
-import { YnsLink } from "@/ui/yns-link";
 import { LanguageSwitcherWrapper } from "@/components/language-switcher-wrapper";
 import { PaymentMethodsDisplay } from "@/components/payment-methods-display";
 
@@ -42,16 +41,16 @@ export async function Footer() {
 				<nav className="grid grid-cols-2 gap-16">
 					{sections.map((section) => (
 						<section key={section.header}>
-							<h3 className="mb-2 font-semibold">{section.header}</h3>
-							<ul role="list" className="grid gap-1">
-								{section.links.map((link) => (
-									<li key={link.label}>
-										<YnsLink className="underline-offset-4 hover:underline" href={link.href}>
-											{link.label}
-										</YnsLink>
-									</li>
-								))}
-							</ul>
+						<h3 className="mb-2 font-semibold">{section.header}</h3>
+						<ul role="list" className="grid gap-1">
+							{section.links.map((link) => (
+								<li key={link.label}>
+									<Link className="underline-offset-4 hover:underline" href={link.href}>
+										{link.label}
+									</Link>
+								</li>
+							))}
+						</ul>
 						</section>
 					))}
 				</nav>

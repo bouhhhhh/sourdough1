@@ -2,9 +2,9 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
-import { YnsLink } from "@/ui/yns-link";
 import { formatMoney } from "@/lib/utils";
 import { clearCartAction } from "@/actions/cart-actions";
 import { ShippingMap } from "@/components/shipping-map";
@@ -42,14 +42,15 @@ function ConfirmationContent() {
       fetch(`/api/payment-intent?payment_intent=${paymentIntent}`)
         .then(res => res.json())
         .then((data: any) => {
+          // Get order number from payment intent metadata or generate new one
+          const orderNumber = data.paymentIntent?.metadata?.orderNumber || `ORD-${Date.now()}`;
+          const orderDate = new Date().toLocaleDateString();
+          
           if (data.paymentIntent?.shipping) {
             setShippingAddress(data.paymentIntent.shipping);
             
             // Send confirmation email if we have all the data
             if (cart && !emailSent) {
-              const orderNumber = `ORD-${Date.now()}`;
-              const orderDate = new Date().toLocaleDateString();
-              
               // Get email from URL or use a default
               const email = customerEmail || 'customer@example.com';
               
@@ -75,24 +76,22 @@ function ConfirmationContent() {
                 .catch(error => console.error('Error sending confirmation email:', error));
             }
           }
+          
+          // Payment succeeded - save order details with order number from Stripe
+          setPaymentStatus('succeeded');
+          if (cart) {
+            setOrderDetails({
+              items: cart.items,
+              total: cart.total,
+              currency: cart.currency,
+              orderNumber: orderNumber,
+              orderDate: orderDate,
+            });
+            // Clear the cart after successful payment
+            clearCartAction();
+          }
         })
         .catch(error => console.error('Error fetching payment intent:', error));
-
-      // Payment succeeded
-      setPaymentStatus('succeeded');
-      // Save order details before clearing cart
-      if (cart) {
-        setOrderDetails({
-          items: cart.items,
-          total: cart.total,
-          currency: cart.currency,
-          paymentIntent: paymentIntent,
-          orderNumber: `ORD-${Date.now()}`, // Simple order number generation
-          orderDate: new Date().toLocaleDateString(),
-        });
-        // Clear the cart after successful payment
-        clearCartAction();
-      }
     } else if (redirectStatus === 'failed') {
       // Payment failed - this shouldn't normally happen as failures 
       // should stay on checkout page
@@ -112,22 +111,20 @@ function ConfirmationContent() {
   if (paymentStatus === 'failed') {
     return (
       <div className="container py-10 text-center">
-        <XCircleIcon className="h-16 w-16 text-red-600 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-4 text-red-600">Payment Failed</h1>
-        <p className="text-gray-600 mb-6">
-          There was an issue processing your payment. Please try again.
-        </p>
-        <YnsLink 
-          href="/checkout"
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-6 font-medium text-white hover:bg-blue-700"
-        >
-          Try Again
-        </YnsLink>
-      </div>
-    );
-  }
-
-  return (
+      <XCircleIcon className="h-16 w-16 text-red-600 mx-auto mb-4" />
+      <h1 className="text-3xl font-bold mb-4 text-red-600">Payment Failed</h1>
+      <p className="text-gray-600 mb-6">
+        There was an issue processing your payment. Please try again.
+      </p>
+      <Link 
+        href="/checkout"
+        className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-6 font-medium text-white hover:bg-blue-700"
+      >
+        Try Again
+      </Link>
+    </div>
+  );
+}  return (
     <div className="container py-10">
       <div className="max-w-2xl mx-auto text-center">
         {/* Success Icon */}
@@ -158,7 +155,6 @@ function ConfirmationContent() {
             <div className="space-y-2 mb-4">
               <p><strong>Order Number:</strong> {orderDetails.orderNumber}</p>
               <p><strong>Order Date:</strong> {orderDetails.orderDate}</p>
-              <p><strong>Payment ID:</strong> {orderDetails.paymentIntent}</p>
             </div>
 
             <h3 className="font-semibold mb-2">Items Ordered:</h3>
@@ -214,18 +210,18 @@ function ConfirmationContent() {
 
         {/* Action Buttons */}
         <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-          <YnsLink 
+          <Link 
             href="/products"
             className="inline-flex h-12 items-center justify-center rounded-lg bg-gray-600 px-6 font-medium text-white hover:bg-gray-700 w-full sm:w-auto"
           >
             Continue Shopping
-          </YnsLink>
-          <YnsLink 
+          </Link>
+          <Link 
             href="/"
             className="inline-flex h-12 items-center justify-center rounded-lg bg-blue-600 px-6 font-medium text-white hover:bg-blue-700 w-full sm:w-auto"
           >
             Back to Home
-          </YnsLink>
+          </Link>
         </div>
       </div>
     </div>

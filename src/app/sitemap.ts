@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		(product) =>
 			({
 				url: `${publicUrl}/product/${product.slug || product.id}`,
-				lastModified: new Date(), // YNS Product doesn't have updated field
+				lastModified: new Date(),
 				changeFrequency: "daily",
 				priority: 0.8,
 			}) satisfies Item,
