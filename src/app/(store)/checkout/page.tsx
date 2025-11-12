@@ -9,8 +9,18 @@ import { AddressForm, type AddressFormData } from "@/components/address-form";
 import { useTranslations } from "@/i18n/client";
 import { Checkbox } from "@/ui/shadcn/checkbox";
 import { Label } from "@/ui/shadcn/label";
+import { Input } from "@/ui/shadcn/input";
+import { RadioGroup, RadioGroupItem } from "@/ui/shadcn/radio-group";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+interface ShippingRate {
+  id: string;
+  name: string;
+  price: number;
+  estimatedDays: string;
+  serviceCode?: string;
+}
 
 export default function CheckoutPage() {
   const { cart } = useCart();
@@ -20,6 +30,12 @@ export default function CheckoutPage() {
   const [creatingPI, setCreatingPI] = useState(false);
   const currency = cart?.currency || "CAD";
   
+  // Email and shipping state
+  const [email, setEmail] = useState("");
+  const [selectedShipping, setSelectedShipping] = useState<ShippingRate | null>(null);
+  const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
+  const [loadingRates, setLoadingRates] = useState(false);
+  
   // Address form state
   const [shippingAddress, setShippingAddress] = useState<AddressFormData>({
     fullName: '',
@@ -28,7 +44,7 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     postalCode: '',
-    country: '',
+    country: 'CA',
     phone: '',
   });
   
@@ -39,7 +55,7 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     postalCode: '',
-    country: '',
+    country: 'CA',
     phone: '',
   });
   
@@ -47,7 +63,74 @@ export default function CheckoutPage() {
   const [formErrors, setFormErrors] = useState<{
     shipping?: Partial<AddressFormData>;
     billing?: Partial<AddressFormData>;
+    email?: string;
+    shipping_selection?: string;
   }>({});
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+
+  // Validation function
+  const validateForm = (): boolean => {
+    const errors: typeof formErrors = {};
+    
+    // Validate email
+    if (!email || !email.includes('@')) {
+      errors.email = 'Valid email is required';
+    }
+    
+    // Validate shipping address
+    const shippingErrors: Partial<AddressFormData> = {};
+    if (!shippingAddress.fullName) shippingErrors.fullName = 'Required';
+    if (!shippingAddress.address1) shippingErrors.address1 = 'Required';
+    if (!shippingAddress.city) shippingErrors.city = 'Required';
+    if (!shippingAddress.state) shippingErrors.state = 'Required';
+    if (!shippingAddress.postalCode) shippingErrors.postalCode = 'Required';
+    if (!shippingAddress.country) shippingErrors.country = 'Required';
+    
+    if (Object.keys(shippingErrors).length > 0) {
+      errors.shipping = shippingErrors;
+    }
+    
+    // Validate billing address if different from shipping
+    if (!billingSameAsShipping) {
+      const billingErrors: Partial<AddressFormData> = {};
+      if (!billingAddress.fullName) billingErrors.fullName = 'Required';
+      if (!billingAddress.address1) billingErrors.address1 = 'Required';
+      if (!billingAddress.city) billingErrors.city = 'Required';
+      if (!billingAddress.state) billingErrors.state = 'Required';
+      if (!billingAddress.postalCode) billingErrors.postalCode = 'Required';
+      if (!billingAddress.country) billingErrors.country = 'Required';
+      
+      if (Object.keys(billingErrors).length > 0) {
+        errors.billing = billingErrors;
+      }
+    }
+    
+    // Validate shipping selection
+    if (!selectedShipping) {
+      errors.shipping_selection = 'Please select a shipping method';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleContinueToPayment = () => {
+    if (validateForm()) {
+      setShowPaymentForm(true);
+      // Scroll to payment section
+      setTimeout(() => {
+        document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      // Scroll to first error
+      setTimeout(() => {
+        const firstError = document.querySelector('.border-red-500');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  };
 
   // Sync billing address with shipping when checkbox is checked
   useEffect(() => {
@@ -56,51 +139,139 @@ export default function CheckoutPage() {
     }
   }, [billingSameAsShipping, shippingAddress]);
 
+  // Fetch shipping rates when address changes
+  useEffect(() => {
+    const fetchRates = async () => {
+      if (!shippingAddress.postalCode || !shippingAddress.country) {
+        setShippingRates([]);
+        setSelectedShipping(null);
+        return;
+      }
+
+      setLoadingRates(true);
+      try {
+        const response = await fetch("/api/shipping-rates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            destination: {
+              postalCode: shippingAddress.postalCode,
+              country: shippingAddress.country,
+              city: shippingAddress.city,
+              province: shippingAddress.state,
+            },
+            package: { weight: 1 }, // Default 1kg
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json() as { rates: ShippingRate[] };
+          const allRates = data.rates || [];
+          
+          if (allRates.length === 0) {
+            setShippingRates([]);
+            return;
+          }
+          
+          // Find cheapest rate and xpresspost
+          const cheapestRate = allRates.reduce((min, rate) => 
+            rate.price < min.price ? rate : min);
+          
+          const xpresspostRate = allRates.find(rate => 
+            (rate.serviceCode?.includes('XP')) || 
+            rate.name.toLowerCase().includes('xpress'));
+          
+          // Create simplified rate list with free option and xpresspost
+          const simplifiedRates: ShippingRate[] = [];
+          
+          simplifiedRates.push({
+            ...cheapestRate,
+            id: 'free',
+            name: 'Free Shipping',
+            price: 0,
+          });
+          
+          if (xpresspostRate && xpresspostRate.id !== cheapestRate.id) {
+            // Subtract $10 (1000 cents) from Xpresspost to make it more attractive
+            simplifiedRates.push({
+              ...xpresspostRate,
+              price: Math.max(0, xpresspostRate.price - 1000),
+              
+            });
+          }
+          
+          setShippingRates(simplifiedRates);
+          // Auto-select free option
+          if (simplifiedRates.length > 0) {
+            setSelectedShipping(simplifiedRates[0] || null);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching shipping rates:", error);
+      } finally {
+        setLoadingRates(false);
+      }
+    };
+
+    fetchRates();
+  }, [shippingAddress.postalCode, shippingAddress.country, shippingAddress.city, shippingAddress.state]);
+
   useEffect(() => {
     (async () => {
       console.log("Checkout: cart from context:", cart);
 
-      if (cart && cart.items && cart.items.length > 0) {
+      if (cart?.items && cart.items.length > 0) {
         console.log("Checkout: cart has items, creating payment intent...");
         
         // Calculate total from items (cart might not have total field)
-        const total = cart.total || cart.items.reduce((sum, item) => {
+        const subtotal = cart.total || cart.items.reduce((sum, item) => {
           return sum + (item.price * item.quantity);
         }, 0);
         
-        console.log("Checkout: calculated total:", total);
+        // Add shipping cost if selected
+        const shippingCost = selectedShipping?.price || 0;
+        const total = subtotal + shippingCost;
+        
+        console.log("Checkout: calculated subtotal:", subtotal, "shipping:", shippingCost, "total:", total, "currency:", currency);
         
         if (total > 0) {
           setCreatingPI(true);
-          const res = await fetch("/api/create-payment-intent", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              amount: total,
-              currency: (currency || "CAD").toLowerCase(),
-              cartId: cart.id,
-            }),
-          });
-          const data = (await res.json()) as { clientSecret?: string };
-          setClientSecret(data.clientSecret || null);
-          setCreatingPI(false);
+          try {
+            const res = await fetch("/api/create-payment-intent", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                amount: total,
+                currency: (currency || "CAD").toLowerCase(),
+                cartId: cart.id,
+              }),
+            });
+            
+            if (!res.ok) {
+              const errorData = await res.json();
+              console.error("Payment intent creation failed:", errorData);
+              setClientSecret(null);
+            } else {
+              const data = (await res.json()) as { clientSecret?: string };
+              console.log("Payment intent created, clientSecret:", data.clientSecret ? "✓ present" : "✗ missing");
+              setClientSecret(data.clientSecret || null);
+            }
+          } catch (error) {
+            console.error("Error creating payment intent:", error);
+            setClientSecret(null);
+          } finally {
+            setCreatingPI(false);
+          }
+        } else {
+          console.warn("Checkout: total is 0, not creating payment intent");
         }
       } else {
         console.log("Checkout: cart is empty or has no items");
       }
     })();
-  }, [cart, currency]);
+  }, [cart, currency, selectedShipping]);
 
-
-  if (!cart || !cart.items || cart.items.length === 0) {
-    return (
-      <div className="container py-10">
-        <h1 className="text-3xl font-bold mb-4">Checkout</h1>
-        <p>Your cart is empty.</p>
-      </div>
-    );
-  }
-
+  // Stripe options must be defined before any conditional returns
   const options = useMemo(
     () =>
       clientSecret
@@ -112,6 +283,15 @@ export default function CheckoutPage() {
         : undefined,
     [clientSecret]
   );
+
+  if (!cart || !cart.items || cart.items.length === 0) {
+    return (
+      <div className="container py-10">
+        <h1 className="text-3xl font-bold mb-4">Checkout</h1>
+        <p>Your cart is empty.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-10">
@@ -147,11 +327,33 @@ export default function CheckoutPage() {
           </ul>
 
           <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-            <div className="flex items-center justify-between text-lg font-semibold">
-              <span>Total</span>
+            <div className="flex items-center justify-between mb-2">
+              <span>Subtotal</span>
               <span>
                 {formatMoney({
                   amount: cart.total || cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                  currency,
+                  locale: "en-CA",
+                })}
+              </span>
+            </div>
+            {selectedShipping && (
+              <div className="flex items-center justify-between mb-2 text-sm">
+                <span>Shipping ({selectedShipping.name})</span>
+                <span>
+                  {formatMoney({
+                    amount: selectedShipping.price,
+                    currency,
+                    locale: "en-CA",
+                  })}
+                </span>
+              </div>
+            )}
+            <div className="border-t pt-2 mt-2 flex items-center justify-between text-lg font-semibold">
+              <span>Total</span>
+              <span>
+                {formatMoney({
+                  amount: (cart.total || cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)) + (selectedShipping?.price || 0),
                   currency,
                   locale: "en-CA",
                 })}
@@ -162,6 +364,29 @@ export default function CheckoutPage() {
 
         {/* Right Column - Forms */}
         <div className="space-y-8">
+          {/* Email */}
+          <div>
+            <Label htmlFor="email" className="text-lg font-semibold mb-2 block">
+              Email Address
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full ${formErrors.email ? "border-red-500" : ""}`}
+            />
+            {formErrors.email && (
+              <p className="text-sm text-red-600 mt-1">{formErrors.email}</p>
+            )}
+            {!formErrors.email && (
+              <p className="text-sm text-gray-500 mt-1">
+                We'll send your order confirmation here
+              </p>
+            )}
+          </div>
+
           {/* Shipping Address */}
           <AddressForm
             title="Shipping Address"
@@ -170,6 +395,67 @@ export default function CheckoutPage() {
             errors={formErrors.shipping}
             showPhone={true}
           />
+
+          {/* Shipping Rates Display */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Shipping Options</h3>
+            
+            {loadingRates && (
+              <div className="p-4 border rounded-lg bg-gray-50">
+                <p className="text-sm text-gray-600">Loading shipping options...</p>
+              </div>
+            )}
+
+            {!loadingRates && shippingRates.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold mb-3">Available Shipping Options</h4>
+                <RadioGroup 
+                  value={selectedShipping?.id || ""} 
+                  onValueChange={(value) => {
+                    const rate = shippingRates.find(r => r.id === value);
+                    setSelectedShipping(rate || null);
+                  }}
+                >
+                  {shippingRates.map((rate) => (
+                    <div
+                      key={rate.id}
+                      className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                      onClick={() => setSelectedShipping(rate)}
+                    >
+                      <RadioGroupItem value={rate.id} id={`rate-${rate.id}`} />
+                      <Label
+                        htmlFor={`rate-${rate.id}`}
+                        className="flex-1 cursor-pointer flex justify-between items-start"
+                      >
+                        <div>
+                          <div className="font-medium">{rate.name}</div>
+                          <div className="text-sm text-gray-500">{rate.estimatedDays}</div>
+                        </div>
+                        <div className="font-semibold">
+                          {formatMoney({
+                            amount: rate.price,
+                            currency,
+                            locale: "en-CA",
+                          })}
+                        </div>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+                {formErrors.shipping_selection && (
+                  <p className="text-sm text-red-600 mt-2">{formErrors.shipping_selection}</p>
+                )}
+              </div>
+            )}
+
+            {!loadingRates && shippingRates.length === 0 && shippingAddress.postalCode && (
+              <div className="mt-4 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+                <p className="text-sm text-yellow-800">
+                  Please complete your shipping address to see shipping options.
+                </p>
+              </div>
+            )}
+          </div>
 
           {/* Billing Address */}
           <div>
@@ -195,8 +481,21 @@ export default function CheckoutPage() {
             )}
           </div>
 
+          {/* Continue to Payment Button */}
+          {!showPaymentForm && (
+            <div className="mt-6">
+              <button
+                onClick={handleContinueToPayment}
+                className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+              >
+                Continue to Payment
+              </button>
+            </div>
+          )}
+
           {/* Payment Section */}
-          <div>
+          {showPaymentForm && (
+          <div id="payment-section">
             <h3 className="text-lg font-semibold mb-4">Payment Information</h3>
             {creatingPI && <div className="text-center py-4">Preparing payment…</div>}
             {clientSecret && options && (
@@ -210,6 +509,7 @@ export default function CheckoutPage() {
               </Elements>
             )}
           </div>
+          )}
         </div>
       </div>
     </div>

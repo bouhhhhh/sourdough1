@@ -3,6 +3,7 @@
 import { useTranslations } from "@/i18n/client";
 import { Input } from "@/ui/shadcn/input";
 import { Label } from "@/ui/shadcn/label";
+import { AddressAutocomplete, type AddressComponents } from "@/components/address-autocomplete";
 
 export interface AddressFormData {
   fullName: string;
@@ -63,6 +64,17 @@ export function AddressForm({
     });
   };
 
+  const handleAddressSelect = (addressComponents: AddressComponents) => {
+    onChange({
+      ...data,
+      address1: addressComponents.address1,
+      city: addressComponents.city,
+      state: addressComponents.state,
+      postalCode: addressComponents.postalCode,
+      country: addressComponents.country,
+    });
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{title}</h3>
@@ -87,24 +99,15 @@ export function AddressForm({
           )}
         </div>
 
-        {/* Address Line 1 */}
-        <div>
-          <Label htmlFor={`${title}-address1`} className="text-sm font-medium">
-            {t("address1")} *
-          </Label>
-          <Input
-            id={`${title}-address1`}
-            type="text"
-            value={data.address1}
-            onChange={(e) => handleChange('address1', e.target.value)}
-            disabled={disabled}
-            className={errors.address1 ? "border-red-500" : ""}
-            placeholder="123 Main Street"
-          />
-          {errors.address1 && (
-            <p className="text-sm text-red-600 mt-1">{tErrors("line1Required")}</p>
-          )}
-        </div>
+        {/* Address Line 1 with Google Places Autocomplete */}
+        <AddressAutocomplete
+          title={title}
+          value={data.address1}
+          onAddressSelect={handleAddressSelect}
+          onChange={(value) => handleChange('address1', value)}
+          error={errors.address1 ? tErrors("line1Required") : undefined}
+          disabled={disabled}
+        />
 
         {/* Address Line 2 */}
         <div>

@@ -26,6 +26,8 @@ export const env = createEnv({
 		NEXT_PUBLIC_NEWSLETTER_ENDPOINT: z.string().optional(),
 
 		NEXT_PUBLIC_LANGUAGE: z.string().optional().default("en-US"),
+		
+		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().optional(),
 	},
 	runtimeEnv: {
 		STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
@@ -40,6 +42,7 @@ export const env = createEnv({
 		ENABLE_STRIPE_TAX: process.env.ENABLE_STRIPE_TAX,
 
 		NEXT_PUBLIC_LANGUAGE: process.env.NEXT_PUBLIC_LANGUAGE,
+		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
 	},
 });
 
