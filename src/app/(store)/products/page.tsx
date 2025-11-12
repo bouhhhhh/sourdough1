@@ -1,6 +1,6 @@
 import type { Metadata } from "next/types";
 import { publicUrl } from "@/env.mjs";
-import { getTranslations } from "@/i18n/server";
+import { getTranslations, getLocale } from "@/i18n/server";
 import { commerce } from "@/lib/commerce";
 import { ProductList } from "@/ui/products/product-list";
 
@@ -13,7 +13,8 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 export default async function AllProductsPage() {
-	const result = await commerce.product.browse({ first: 100 });
+	const locale = await getLocale();
+	const result = await commerce.product.browse({ first: 100, locale });
 	const products = result.data;
 	const t = await getTranslations("/products.page");
 

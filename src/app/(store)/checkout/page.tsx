@@ -86,6 +86,11 @@ export default function CheckoutPage() {
     if (!shippingAddress.postalCode) shippingErrors.postalCode = 'Required';
     if (!shippingAddress.country) shippingErrors.country = 'Required';
     
+    // Check if shipping to Canada
+    if (shippingAddress.country && shippingAddress.country !== 'CA') {
+      shippingErrors.country = 'We only ship to Canada for now';
+    }
+    
     if (Object.keys(shippingErrors).length > 0) {
       errors.shipping = shippingErrors;
     }
@@ -132,6 +137,36 @@ export default function CheckoutPage() {
     }
   };
 
+  // Auto-open payment form when all fields are valid
+  useEffect(() => {
+    if (showPaymentForm) return; // Already showing payment form
+    
+    // Check if all required fields are filled
+    const isEmailValid = email && email.includes('@');
+    const isShippingComplete = 
+      shippingAddress.fullName &&
+      shippingAddress.address1 &&
+      shippingAddress.city &&
+      shippingAddress.state &&
+      shippingAddress.postalCode &&
+      shippingAddress.country === 'CA';
+    const isShippingSelected = !!selectedShipping;
+    const isBillingComplete = billingSameAsShipping || (
+      billingAddress.fullName &&
+      billingAddress.address1 &&
+      billingAddress.city &&
+      billingAddress.state &&
+      billingAddress.postalCode &&
+      billingAddress.country
+    );
+    
+    if (isEmailValid && isShippingComplete && isShippingSelected && isBillingComplete) {
+      setShowPaymentForm(true);
+      // Clear any previous errors
+      setFormErrors({});
+    }
+  }, [email, shippingAddress, billingAddress, billingSameAsShipping, selectedShipping, showPaymentForm]);
+
   // Sync billing address with shipping when checkbox is checked
   useEffect(() => {
     if (billingSameAsShipping) {
@@ -143,6 +178,13 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchRates = async () => {
       if (!shippingAddress.postalCode || !shippingAddress.country) {
+        setShippingRates([]);
+        setSelectedShipping(null);
+        return;
+      }
+
+      // Only allow shipping to Canada
+      if (shippingAddress.country !== 'CA') {
         setShippingRates([]);
         setSelectedShipping(null);
         return;
@@ -448,7 +490,18 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {!loadingRates && shippingRates.length === 0 && shippingAddress.postalCode && (
+            {!loadingRates && shippingRates.length === 0 && shippingAddress.country && shippingAddress.country !== 'CA' && (
+              <div className="mt-4 p-4 border border-red-200 rounded-lg bg-red-50">
+                <p className="text-sm text-red-800 font-semibold">
+                  ⚠️ We only ship to Canada for now.
+                </p>
+                <p className="text-xs text-red-700 mt-1">
+                  Subscribe to our newsletter for updates on shipping outside Canada.
+                </p>
+              </div>
+            )}
+
+            {!loadingRates && shippingRates.length === 0 && shippingAddress.postalCode && shippingAddress.country === 'CA' && (
               <div className="mt-4 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
                 <p className="text-sm text-yellow-800">
                   Please complete your shipping address to see shipping options.
@@ -502,6 +555,7 @@ export default function CheckoutPage() {
               <Elements stripe={stripePromise} options={options}>
                 <CheckoutForm 
                   returnUrl={`${window.location.origin}/confirmation`}
+                  customerEmail={email}
                   shippingAddress={shippingAddress}
                   billingAddress={billingSameAsShipping ? shippingAddress : billingAddress}
                   onValidationError={setFormErrors}
@@ -518,6 +572,7 @@ export default function CheckoutPage() {
 
 interface CheckoutFormProps {
   returnUrl: string;
+  customerEmail: string;
   shippingAddress: AddressFormData;
   billingAddress: AddressFormData;
   onValidationError: (errors: {
@@ -526,7 +581,7 @@ interface CheckoutFormProps {
   }) => void;
 }
 
-function CheckoutForm({ returnUrl, shippingAddress, billingAddress, onValidationError }: CheckoutFormProps) {
+function CheckoutForm({ returnUrl, customerEmail, shippingAddress, billingAddress, onValidationError }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [submitting, setSubmitting] = useState(false);
@@ -573,7 +628,7 @@ function CheckoutForm({ returnUrl, shippingAddress, billingAddress, onValidation
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: { 
-          return_url: returnUrl,
+          return_url: `${returnUrl}?email=${encodeURIComponent(customerEmail)}`,
           shipping: {
             name: shippingAddress.fullName,
             address: {

@@ -7,19 +7,77 @@ import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { YnsLink } from "@/ui/yns-link";
 import { formatMoney } from "@/lib/utils";
 import { clearCartAction } from "@/actions/cart-actions";
+import { ShippingMap } from "@/components/shipping-map";
+import { useLocale } from "@/i18n/client";
+
+interface ShippingAddress {
+  name: string;
+  address: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  };
+}
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
   const { cart } = useCart();
+  const locale = useLocale();
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [shippingAddress, setShippingAddress] = useState<ShippingAddress | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     // Get payment intent status from URL parameters
     const paymentIntent = searchParams.get('payment_intent');
     const redirectStatus = searchParams.get('redirect_status');
+    const customerEmail = searchParams.get('email');
 
-    if (redirectStatus === 'succeeded') {
+    if (redirectStatus === 'succeeded' && paymentIntent) {
+      // Fetch payment intent details from Stripe
+      fetch(`/api/payment-intent?payment_intent=${paymentIntent}`)
+        .then(res => res.json())
+        .then((data: any) => {
+          if (data.paymentIntent?.shipping) {
+            setShippingAddress(data.paymentIntent.shipping);
+            
+            // Send confirmation email if we have all the data
+            if (cart && !emailSent) {
+              const orderNumber = `ORD-${Date.now()}`;
+              const orderDate = new Date().toLocaleDateString();
+              
+              // Get email from URL or use a default
+              const email = customerEmail || 'customer@example.com';
+              
+              fetch('/api/send-confirmation-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email,
+                  orderNumber,
+                  orderDate,
+                  items: cart.items.map((item: any) => ({
+                    name: item.name || item.product?.name || `Product ${item.productId}`,
+                    quantity: item.quantity,
+                    price: item.price,
+                  })),
+                  total: cart.total,
+                  currency: cart.currency,
+                  shippingAddress: data.paymentIntent.shipping,
+                  locale, // Pass the current locale to the email API
+                }),
+              })
+                .then(() => setEmailSent(true))
+                .catch(error => console.error('Error sending confirmation email:', error));
+            }
+          }
+        })
+        .catch(error => console.error('Error fetching payment intent:', error));
+
       // Payment succeeded
       setPaymentStatus('succeeded');
       // Save order details before clearing cart
@@ -81,6 +139,17 @@ function ConfirmationContent() {
           Thank you for your order. We've received your payment and will process your order shortly.
         </p>
 
+
+        {/* Shipping Address Map */}
+        {shippingAddress && (
+          <div className="mb-8">
+            <ShippingMap 
+              address={shippingAddress.address}
+              name={shippingAddress.name}
+            />
+          </div>
+        )}
+
         {/* Order Details */}
         {orderDetails && (
           <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left">
@@ -130,6 +199,7 @@ function ConfirmationContent() {
             </div>
           </div>
         )}
+
 
         {/* Next Steps */}
         <div className="bg-blue-50 rounded-lg p-6 mb-8 text-left">

@@ -1,5 +1,22 @@
 // src/lib/commerce.ts
 import "server-only";
+import path from "path";
+import fs from "fs";
+
+// Load translations from JSON files
+function loadTranslations(locale: string): Record<string, string> {
+	const messagesPath = path.join(process.cwd(), "messages", `${locale}.json`);
+	try {
+		const content = fs.readFileSync(messagesPath, "utf-8");
+		return JSON.parse(content) as Record<string, string>;
+	} catch (error) {
+		console.error(`Failed to load translations for ${locale}:`, error);
+		// Fallback to en-US
+		const fallbackPath = path.join(process.cwd(), "messages", "en-US.json");
+		const fallbackContent = fs.readFileSync(fallbackPath, "utf-8");
+		return JSON.parse(fallbackContent) as Record<string, string>;
+	}
+}
 
 /* =========================
  * Product mock
@@ -79,15 +96,30 @@ const PRODUCTS: Product[] = [
 /* =========================
  * Product helpers
  * ========================= */
-async function listProducts(opts?: { limit?: number; category?: string }) {
-  const { limit = 6, category } = opts ?? {};
-  let items = PRODUCTS;
-  if (category) items = items.filter((p) => p.category === category);
-  return items.slice(0, limit);
+// Helper to translate a product
+function translateProduct(product: Product, locale: string = "en-US"): Product {
+  const messages = loadTranslations(locale);
+  const nameKey = `Products.${product.id}.name`;
+  const descKey = `Products.${product.id}.description`;
+  
+  return {
+    ...product,
+    name: messages[nameKey] || product.name,
+    description: messages[descKey] || product.description,
+  };
 }
 
-async function getProductBySlug(slug: string) {
-  return PRODUCTS.find((p) => p.slug === slug) ?? null;
+async function listProducts(opts?: { limit?: number; category?: string; locale?: string }) {
+  const { limit = 6, category, locale = "en-US" } = opts ?? {};
+  let items = PRODUCTS;
+  if (category) items = items.filter((p) => p.category === category);
+  const sliced = items.slice(0, limit);
+  return sliced.map(p => translateProduct(p, locale));
+}
+
+async function getProductBySlug(slug: string, locale: string = "en-US") {
+  const product = PRODUCTS.find((p) => p.slug === slug);
+  return product ? translateProduct(product, locale) : null;
 }
 
 async function listCategories() {
@@ -142,10 +174,10 @@ function ensureCart(id?: string): Cart {
 export const commerce = {
   product: {
     list: listProducts,
-    get: async ({ slug }: { slug: string }) => getProductBySlug(slug),
+    get: async ({ slug, locale }: { slug: string; locale?: string }) => getProductBySlug(slug, locale),
     // compat wrapper used by your sitemap/products page
-    browse: async ({ first, category }: { first?: number; category?: string }) => {
-      const data = await listProducts({ limit: first, category });
+    browse: async ({ first, category, locale }: { first?: number; category?: string; locale?: string }) => {
+      const data = await listProducts({ limit: first, category, locale });
       return { data };
     },
   },

@@ -50,7 +50,7 @@ export default async function SingleProductPage(props: {
   const t = await getTranslations("/product.page");
   const locale = await getLocale();
 
-  const product = await commerce.product.get({ slug: params.slug });
+  const product = await commerce.product.get({ slug: params.slug, locale });
   if (!product) return notFound();
 
   const category = product.category ?? null;

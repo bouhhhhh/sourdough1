@@ -47,7 +47,9 @@ export function AddressAutocomplete({
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
       
-      if (!place.address_components) {
+      // Check if place exists and has address_components
+      if (!place || !place.address_components) {
+        console.warn('No address components found for selected place');
         return;
       }
 
@@ -57,7 +59,7 @@ export function AddressAutocomplete({
       let city = "";
       let state = "";
       let postalCode = "";
-      let country = "Canada";
+      let country = "CA";
 
       for (const component of place.address_components) {
         const types = component.types;
@@ -84,13 +86,16 @@ export function AddressAutocomplete({
 
       const address1 = `${streetNumber} ${route}`.trim();
 
-      onAddressSelect({
-        address1,
-        city,
-        state,
-        postalCode,
-        country,
-      });
+      // Only trigger callback if we have at least an address
+      if (address1 || city) {
+        onAddressSelect({
+          address1,
+          city,
+          state,
+          postalCode,
+          country,
+        });
+      }
     }
   };
 

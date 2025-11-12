@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 
 export default async function Home() {
 	try {
-		// Load only products from "products" category for the homepage
-		const result = await commerce.product.browse({ first: 6, category: "products" });
-		const t = await getTranslations("/");
 		const locale = await getLocale();
+		// Load only products from "products" category for the homepage
+		const result = await commerce.product.browse({ first: 6, category: "products", locale });
+		const t = await getTranslations("/");
 
 		const products = result.data || [];
 

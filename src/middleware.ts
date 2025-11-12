@@ -8,13 +8,15 @@ export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const isProtectedPath = ProtectedPaths.some((p) => pathname.startsWith(p));
 
-	// Handle language preference
+	// Handle language preference - read from cookie
 	const languageCookie = request.cookies.get("NEXT_LOCALE")?.value;
 	const response = NextResponse.next();
 	
-	// Pass language preference to the environment if it exists
+	// Pass language preference to the request headers if it exists
 	if (languageCookie) {
 		response.headers.set("x-preferred-locale", languageCookie);
+		// Also set it in the request for immediate use
+		request.headers.set("x-preferred-locale", languageCookie);
 	}
 
 	if (!isProtectedPath) {

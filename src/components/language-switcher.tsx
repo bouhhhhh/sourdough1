@@ -11,11 +11,7 @@ interface Language {
 
 const LANGUAGES: Language[] = [
   { code: "en-US", name: "English", flag: "🇺🇸" },
-  { code: "fr-CA", name: "Français", flag: "🇨🇦" },
-  { code: "de-DE", name: "Deutsch", flag: "🇩🇪" },
-  { code: "jp-JP", name: "日本語", flag: "🇯🇵" },
-  { code: "zh-CN", name: "中文 (简体)", flag: "🇨🇳" },
-  { code: "zh-TW", name: "中文 (繁體)", flag: "🇹🇼" },
+  { code: "fr-CA", name: "Français", flag: "🇨🇦" }
 ];
 
 interface LanguageSwitcherProps {

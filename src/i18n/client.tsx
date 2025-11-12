@@ -27,3 +27,9 @@ export const useTranslations = <TNamespaceKey extends IntlNamespaceKeys = never>
 	invariant(ctx, "useTranslations must be used within a IntlClientProvider");
 	return getMessagesInternal(namespaceKey, ctx.locale, ctx.messages);
 };
+
+export const useLocale = () => {
+	const ctx = use(IntlClientContext);
+	invariant(ctx, "useLocale must be used within a IntlClientProvider");
+	return ctx.locale;
+};

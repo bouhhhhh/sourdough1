@@ -1,15 +1,18 @@
 import Link from "next/link";
+import { getTranslations } from "@/i18n/server";
 import StoreConfig from "@/store.config";
 import { NavMobileMenu } from "@/ui/nav/nav-mobile-menu.client";
 
-const links = [
-	...StoreConfig.categories.map(({ name, slug }) => ({
-		label: name,
-		href: `/category/${slug}`,
-	})),
-];
+export const NavMenu = async () => {
+	const t = await getTranslations("Nav.category");
+	
+	const links = [
+		...StoreConfig.categories.map(({ slug }) => ({
+			label: slug === "products" ? t("products") : t("recipes"),
+			href: `/category/${slug}`,
+		})),
+	];
 
-export const NavMenu = () => {
 	return (
 		<>
 			<div className="sm:block hidden">

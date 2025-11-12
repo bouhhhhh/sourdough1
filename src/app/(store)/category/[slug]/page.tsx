@@ -1,16 +1,18 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next/types";
 import { publicUrl } from "@/env.mjs";
-import { getTranslations } from "@/i18n/server";
+import { getTranslations, getLocale } from "@/i18n/server";
 import { commerce } from "@/lib/commerce";
 import { deslugify } from "@/lib/utils";
 import { ProductList } from "@/ui/products/product-list";
 
 export const generateMetadata = async (props: { params: Promise<{ slug: string }> }): Promise<Metadata> => {
 	const params = await props.params;
+	const locale = await getLocale();
 	const result = await commerce.product.browse({
 		first: 100,
 		category: params.slug, // YNS SDK uses direct category parameter
+		locale,
 	});
 
 	if (!result.data || result.data.length === 0) {
@@ -27,9 +29,11 @@ export const generateMetadata = async (props: { params: Promise<{ slug: string }
 
 export default async function CategoryPage(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
+	const locale = await getLocale();
 	const result = await commerce.product.browse({
 		first: 100,
 		category: params.slug, // YNS SDK uses direct category parameter
+		locale,
 	});
 
 	if (!result.data || result.data.length === 0) {
