@@ -86,6 +86,18 @@ function ConfirmationContent() {
 
           // Send confirmation email (only once) using metadata-derived items
           if (!emailSent && payerEmail) {
+            console.log('[CONFIRMATION] Attempting to send email to:', payerEmail);
+            console.log('[CONFIRMATION] Email payload:', {
+              email: payerEmail,
+              orderNumber,
+              orderDate,
+              items: items.map((i: any) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+              total: totalPaid,
+              currency: pi.currency.toUpperCase(),
+              hasShippingAddress: !!pi.shipping,
+              locale,
+            });
+            
             fetch('/api/send-confirmation-email', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -100,8 +112,19 @@ function ConfirmationContent() {
                 locale,
               }),
             })
-              .then(() => setEmailSent(true))
+              .then(async (res) => {
+                console.log('[CONFIRMATION] Email API response status:', res.status);
+                const responseData = await res.json();
+                console.log('[CONFIRMATION] Email API response:', responseData);
+                if (res.ok) {
+                  setEmailSent(true);
+                } else {
+                  console.error('[CONFIRMATION] Email API returned error:', responseData);
+                }
+              })
               .catch(err => console.error('[CONFIRMATION] Email send error:', err));
+          } else {
+            console.log('[CONFIRMATION] Not sending email. emailSent?', emailSent, 'payerEmail?', !!payerEmail);
           }
 
           // Clear cart if it existed
