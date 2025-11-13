@@ -108,17 +108,34 @@ export async function POST(req: Request) {
 			},
 		};
 
-		// Call Canada Post API
-		const response = await fetch(`${apiUrl}/rs/ship/price`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/vnd.cpc.ship.rate-v4+xml",
-				"Accept": "application/vnd.cpc.ship.rate-v4+xml",
-				"Authorization": `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`,
-				"Accept-language": "en-CA",
-			},
-			body: buildCanadaPostXML(ratesRequest),
-		});
+
+		// Call Canada Post API with timeout
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 5000);
+		let response: Response;
+		try {
+			response = await fetch(`${apiUrl}/rs/ship/price`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/vnd.cpc.ship.rate-v4+xml",
+					"Accept": "application/vnd.cpc.ship.rate-v4+xml",
+					"Authorization": `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`,
+					"Accept-language": "en-CA",
+				},
+				body: buildCanadaPostXML(ratesRequest),
+				signal: controller.signal as any,
+			});
+		} catch (err: any) {
+			if (err?.name === "AbortError") {
+				console.warn("Canada Post API request timed out, falling back to mock rates");
+				return NextResponse.json({
+					rates: getMockRates(destination.country),
+				});
+			}
+			throw err;
+		} finally {
+			clearTimeout(timeoutId);
+		}
 
 		if (!response.ok) {
 			const errorText = await response.text();
