@@ -57,28 +57,36 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           province: addr.region || addr.administrativeArea || undefined,
         };
 
-        // Optional debug logging
-        if (process.env.NEXT_PUBLIC_DEBUG_SHIPPING === "1" || process.env.NEXT_PUBLIC_DEBUG_SHIPPING === "true") {
-          // eslint-disable-next-line no-console
-          console.log("[PRB] shippingaddresschange dest:", destination, "raw:", addr);
-        }
+        // Always log for debugging Canadian addresses
+        // eslint-disable-next-line no-console
+        console.log("[PRB] shippingaddresschange", {
+          country: destination.country,
+          postalCode: destination.postalCode,
+          rawCountry: addr.country,
+          rawPostal,
+          province: destination.province,
+        });
 
         // Validate postal/zip by country
         if (!destination.postalCode || !destination.country) {
+          console.log("[PRB] Invalid: missing postal or country");
           ev.updateWith({ status: "invalid_shipping_address" });
           return;
         }
 
         // CA postal: must be 6 chars matching A1A1A1 pattern
         if (destination.country === "CA") {
-          if (destination.postalCode.length !== 6 || !/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(destination.postalCode)) {
+          const isValidCA = destination.postalCode.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(destination.postalCode);
+          console.log("[PRB] CA validation:", { isValidCA, length: destination.postalCode.length, postal: destination.postalCode });
+          if (!isValidCA) {
             ev.updateWith({ status: "invalid_shipping_address" });
             return;
           }
         }
         // US ZIP: must be 5 or 9 digits
-        if (destination.country === "US") {
+        else if (destination.country === "US") {
           if (!/^\d{5}(\d{4})?$/.test(destination.postalCode)) {
+            console.log("[PRB] Invalid US ZIP");
             ev.updateWith({ status: "invalid_shipping_address" });
             return;
           }
