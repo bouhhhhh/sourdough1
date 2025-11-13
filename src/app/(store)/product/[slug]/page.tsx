@@ -7,6 +7,8 @@ import { Suspense } from "react";
 
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal";
 import { AddToCart } from "@/components/add-to-cart";
+import dynamic from "next/dynamic";
+const ProductApplePay = dynamic(() => import("@/components/product-apple-pay.client"), { ssr: false });
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -184,12 +186,24 @@ export default async function SingleProductPage(props: {
             </div>
           </section>
 
-          <AddToCart
-            variantId={product.id}
-            className={!product.inStock ? "opacity-50 cursor-not-allowed" : ""}
-          >
-            {!product.inStock ? "Out of Stock" : "Add to Cart"}
-          </AddToCart>
+          {/* Apple Pay / Payment Request Button with Add to Cart fallback */}
+          <div className="space-y-3">
+            <ProductApplePay
+              amount={Math.round((product.discountedPrice ?? product.price) * 100)}
+              currency={(product.currency || "CAD").toLowerCase()}
+              productId={product.id}
+              productName={product.name}
+              quantity={1}
+              fallback={
+                <AddToCart
+                  variantId={product.id}
+                  className={!product.inStock ? "opacity-50 cursor-not-allowed" : ""}
+                >
+                  {!product.inStock ? "Out of Stock" : "Add to Cart"}
+                </AddToCart>
+              }
+            />
+          </div>
         </div>
       </div>
 
