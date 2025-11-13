@@ -7,6 +7,7 @@ import { commerce } from "@/lib/commerce";
 import StoreConfig from "@/store.config";
 import { CategoryBox } from "@/ui/category-box";
 import { ResponsiveProductSection } from "@/ui/products/responsive-product-section";
+import ProductApplePay from "@/components/product-apple-pay.client";
 
 export const metadata: Metadata = {
 	alternates: { canonical: publicUrl },
@@ -44,12 +45,24 @@ export default async function Home() {
 							{t("hero.title")}
 						</h2>
 						<p className="text-pretty text-white/90 text-lg">{t("hero.description")}</p>
-						<Link
-							className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 font-medium text-neutral-900 transition-colors hover:bg-white/90 focus:outline-hidden focus:ring-2 focus:ring-white"
-							href={t("hero.link")}
-						>
-							{t("hero.action")}
-						</Link>
+						<div className="flex flex-col sm:flex-row gap-3">
+							<Link
+								className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 font-medium text-neutral-900 transition-colors hover:bg-white/90 focus:outline-hidden focus:ring-2 focus:ring-white"
+								href={t("hero.link")}
+							>
+								{t("hero.action")}
+							</Link>
+							<div className="w-full sm:w-64">
+								<ProductApplePay
+									amount={2000}
+									currency="cad"
+									productId="starter-kit"
+									productName="HeirBloom Starter Kit"
+									quantity={1}
+									fallback={null}
+								/>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>				<ResponsiveProductSection allProducts={products} locale={locale} />
