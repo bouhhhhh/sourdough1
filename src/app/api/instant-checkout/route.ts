@@ -64,10 +64,13 @@ export async function POST(req: Request) {
       return_url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/confirmation`,
       metadata: {
         productId: String(productId ?? ""),
+        productName: String(productName ?? ""),
         quantity: String(quantity ?? 1),
         orderNumber,
         shippingOptionId: String(shippingOptionId ?? ""),
         shippingAmount: String(shippingAmount ?? 0),
+        productAmount: String(amount),
+        payerEmail: String(payerEmail ?? ""),
       },
       shipping: shippingAddress
         ? {

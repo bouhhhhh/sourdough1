@@ -32,72 +32,91 @@ function ConfirmationContent() {
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
-    // Get payment intent status from URL parameters
-    const paymentIntent = searchParams.get('payment_intent');
+    const paymentIntentId = searchParams.get('payment_intent');
     const redirectStatus = searchParams.get('redirect_status');
-    const customerEmail = searchParams.get('email');
+    const urlEmail = searchParams.get('email');
 
-    if (redirectStatus === 'succeeded' && paymentIntent) {
-      // Fetch payment intent details from Stripe
-      fetch(`/api/payment-intent?payment_intent=${paymentIntent}`)
-        .then(res => res.json())
+    if (redirectStatus === 'succeeded' && paymentIntentId) {
+      fetch(`/api/payment-intent?payment_intent=${paymentIntentId}`)
+        .then(r => r.json())
         .then((data: any) => {
-          // Get order number from payment intent metadata or generate new one
-          const orderNumber = data.paymentIntent?.metadata?.orderNumber || `ORD-${Date.now()}`;
-          const orderDate = new Date().toLocaleDateString();
-          
-          if (data.paymentIntent?.shipping) {
-            setShippingAddress(data.paymentIntent.shipping);
-            
-            // Send confirmation email if we have all the data
-            if (cart && !emailSent) {
-              // Get email from URL or use a default
-              const email = customerEmail || 'customer@example.com';
-              
-              fetch('/api/send-confirmation-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  email,
-                  orderNumber,
-                  orderDate,
-                  items: cart.items.map((item: any) => ({
-                    name: item.name || item.product?.name || `Product ${item.productId}`,
-                    quantity: item.quantity,
-                    price: item.price,
-                  })),
-                  total: cart.total,
-                  currency: cart.currency,
-                  shippingAddress: data.paymentIntent.shipping,
-                  locale, // Pass the current locale to the email API
-                }),
-              })
-                .then(() => setEmailSent(true))
-                .catch(error => console.error('Error sending confirmation email:', error));
-            }
+          const pi = data.paymentIntent;
+          if (!pi) {
+            setPaymentStatus('failed');
+            return;
           }
-          
-          // Payment succeeded - save order details with order number from Stripe
-          setPaymentStatus('succeeded');
-          if (cart) {
+          const meta = pi.metadata || {};
+          const orderNumber = meta.orderNumber || `ORD-${Date.now()}`;
+          const orderDate = new Date().toLocaleDateString();
+          const shippingAmount = Number(meta.shippingAmount || 0);
+          const productAmount = Number(meta.productAmount || (pi.amount - shippingAmount));
+          const quantity = Number(meta.quantity || 1);
+          const productName = meta.productName || `Product ${meta.productId || ''}`;
+          const payerEmail = urlEmail || meta.payerEmail || '';
+
+          if (pi.shipping) {
+            setShippingAddress(pi.shipping);
+          }
+
+          // Build items from PaymentIntent metadata if cart empty
+          const items = (cart && cart.items && cart.items.length > 0)
+            ? cart.items
+            : [
+                {
+                  id: meta.productId || 'item-1',
+                  name: productName,
+                  quantity,
+                  price: Math.round(productAmount / Math.max(quantity,1)),
+                },
+              ];
+
+          const totalPaid = pi.amount; // includes shipping
+
             setOrderDetails({
-              items: cart.items,
-              total: cart.total,
-              currency: cart.currency,
-              orderNumber: orderNumber,
-              orderDate: orderDate,
+              items,
+              total: totalPaid,
+              currency: pi.currency.toUpperCase(),
+              orderNumber,
+              orderDate,
+              shippingAmount,
+              productAmount,
             });
-            // Clear the cart after successful payment
+
+          setPaymentStatus('succeeded');
+
+          // Send confirmation email (only once) using metadata-derived items
+          if (!emailSent && payerEmail) {
+            fetch('/api/send-confirmation-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: payerEmail,
+                orderNumber,
+                orderDate,
+                items: items.map((i: any) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+                total: totalPaid,
+                currency: pi.currency.toUpperCase(),
+                shippingAddress: pi.shipping || undefined,
+                locale,
+              }),
+            })
+              .then(() => setEmailSent(true))
+              .catch(err => console.error('[CONFIRMATION] Email send error:', err));
+          }
+
+          // Clear cart if it existed
+          if (cart && cart.items && cart.items.length) {
             clearCartAction();
           }
         })
-        .catch(error => console.error('Error fetching payment intent:', error));
+        .catch(err => {
+          console.error('[CONFIRMATION] PaymentIntent fetch error:', err);
+          setPaymentStatus('failed');
+        });
     } else if (redirectStatus === 'failed') {
-      // Payment failed - this shouldn't normally happen as failures 
-      // should stay on checkout page
       setPaymentStatus('failed');
     }
-  }, [searchParams, cart]);
+  }, [searchParams, cart, locale, emailSent]);
 
   if (paymentStatus === 'loading') {
     return (
@@ -181,16 +200,30 @@ function ConfirmationContent() {
               })}
             </ul>
 
-            <div className="mt-4 p-3 border rounded-lg bg-green-50 border-green-200">
-              <div className="flex items-center justify-between text-lg font-semibold text-green-800">
-                <span>Total Paid:</span>
-                <span>
-                  {formatMoney({
-                    amount: orderDetails.total,
-                    currency: orderDetails.currency,
-                    locale: "en-CA",
-                  })}
-                </span>
+            <div className="mt-4 space-y-2">
+              {typeof orderDetails.shippingAmount === 'number' && orderDetails.shippingAmount > 0 && (
+                <div className="flex items-center justify-between text-sm text-gray-700 px-2">
+                  <span>Shipping:</span>
+                  <span>
+                    {formatMoney({
+                      amount: orderDetails.shippingAmount,
+                      currency: orderDetails.currency,
+                      locale: 'en-CA',
+                    })}
+                  </span>
+                </div>
+              )}
+              <div className="p-3 border rounded-lg bg-green-50 border-green-200">
+                <div className="flex items-center justify-between text-lg font-semibold text-green-800">
+                  <span>Total Paid:</span>
+                  <span>
+                    {formatMoney({
+                      amount: orderDetails.total,
+                      currency: orderDetails.currency,
+                      locale: 'en-CA',
+                    })}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
