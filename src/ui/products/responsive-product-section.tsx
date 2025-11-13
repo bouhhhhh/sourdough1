@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "@/i18n/client";
 import type { ProductOrRecipe } from "@/lib/product-utils";
 import { isProduct } from "@/lib/product-utils";
 import { ProductCard } from "./product-card";
@@ -14,6 +15,7 @@ interface ResponsiveProductSectionProps {
 
 export function ResponsiveProductSection({ allProducts, locale }: ResponsiveProductSectionProps) {
 	const [displayCount, setDisplayCount] = useState(1); // Start with mobile-first approach
+	const t = useTranslations("Global.actions");
 
 	useEffect(() => {
 		const updateDisplayCount = () => {
@@ -58,7 +60,7 @@ export function ResponsiveProductSection({ allProducts, locale }: ResponsiveProd
 					className="inline-flex h-12 items-center justify-center rounded-lg bg-gray-500 px-8 font-medium text-white transition-colors hover:bg-gray-600 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
 					href="/products"
 				>
-					Shop More
+					{t("shopMore")}
 				</Link>
 			</div>
 		</section>

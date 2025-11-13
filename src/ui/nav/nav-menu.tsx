@@ -2,15 +2,18 @@ import Link from "next/link";
 import { getTranslations } from "@/i18n/server";
 import StoreConfig from "@/store.config";
 import { NavMobileMenu } from "@/ui/nav/nav-mobile-menu.client";
+import { LanguageSwitcherWrapper } from "@/components/language-switcher-wrapper";
 
 export const NavMenu = async () => {
-	const t = await getTranslations("Nav.category");
+	const tCat = await getTranslations("Nav.category");
+	const tNav = await getTranslations("Nav");
 	
 	const links = [
 		...StoreConfig.categories.map(({ slug }) => ({
-			label: slug === "products" ? t("products") : t("recipes"),
+			label: slug === "products" ? tCat("products") : tCat("recipes"),
 			href: `/category/${slug}`,
 		})),
+		{ label: tNav("link.contact"), href: "/contact" },
 	];
 
 	return (
@@ -31,7 +34,7 @@ export const NavMenu = async () => {
 			</div>
 			<div className="sm:hidden flex items-center">
 				<NavMobileMenu>
-					<ul className="flex pb-8 flex-col items-stretch justify-center gap-x-1">
+					<ul className="flex pb-4 flex-col items-stretch justify-center gap-x-1">
 						{links.map((link) => (
 							<li key={link.href}>
 								<Link
@@ -43,6 +46,9 @@ export const NavMenu = async () => {
 							</li>
 						))}
 					</ul>
+					<div className="border-t border-gray-200 pt-4 pb-8 px-4">
+						<LanguageSwitcherWrapper />
+					</div>
 				</NavMobileMenu>
 			</div>
 		</>

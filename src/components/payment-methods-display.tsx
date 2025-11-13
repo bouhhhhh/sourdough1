@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "@/i18n/client";
 
 // Map Stripe payment method types to our image files
 const PAYMENT_METHOD_IMAGES: Record<string, { image: string; alt: string }> = {
@@ -18,6 +19,7 @@ const DEFAULT_METHODS = ["visa", "mastercard", "amex", "google_pay", "klarna", "
 
 export function PaymentMethodsDisplay() {
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations("Global.payment");
 
   // Handle hydration
   useEffect(() => {
@@ -31,7 +33,7 @@ export function PaymentMethodsDisplay() {
   if (!mounted) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <span className="text-xs font-medium">Accepted Payment Methods</span>
+        <span className="text-xs font-medium">{t("acceptedMethods")}</span>
         <div className="flex items-center gap-2 flex-wrap justify-center">
           {DEFAULT_METHODS.map((methodType) => {
             const methodInfo = PAYMENT_METHOD_IMAGES[methodType];
@@ -55,7 +57,7 @@ export function PaymentMethodsDisplay() {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-xs font-medium">Accepted Payment Methods</span>
+      <span className="text-xs font-medium">{t("acceptedMethods")}</span>
       <div className="flex items-center gap-2 flex-wrap justify-center">
         {paymentMethods.map((methodType) => {
           const methodInfo = PAYMENT_METHOD_IMAGES[methodType];

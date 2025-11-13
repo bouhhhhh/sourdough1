@@ -6,12 +6,13 @@ import { useTranslations } from "@/i18n/client";
 interface Language {
   code: string;
   name: string;
+   shortName: string;
   flag: string;
 }
 
 const LANGUAGES: Language[] = [
-  { code: "en-US", name: "English", flag: "🇺🇸" },
-  { code: "fr-CA", name: "Français", flag: "🇨🇦" }
+   { code: "en-US", name: "English", shortName: "ENG", flag: "🇺🇸" },
+   { code: "fr-CA", name: "Français", shortName: "FR", flag: "🇨🇦" }
 ];
 
 interface LanguageSwitcherProps {
@@ -72,14 +73,13 @@ export function LanguageSwitcher({ currentLanguage }: LanguageSwitcherProps) {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:border-neutral-300"
+         className="flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2 py-1.5 text-xs font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 hover:border-neutral-300"
         aria-label={`${t("languageSwitch")}: ${currentLang.name}`}
         aria-expanded={isOpen}
       >
-        <span className="text-lg">{currentLang.flag}</span>
-        <span className="hidden sm:inline">{currentLang.name}</span>
+         <span>{currentLang.shortName}</span>
         <svg
-          className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+           className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

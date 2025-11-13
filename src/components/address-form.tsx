@@ -22,6 +22,7 @@ export interface AddressFormProps {
   onChange: (data: AddressFormData) => void;
   errors?: Partial<AddressFormData>;
   showPhone?: boolean;
+  showFullName?: boolean;
   disabled?: boolean;
 }
 
@@ -52,6 +53,7 @@ export function AddressForm({
   onChange, 
   errors = {}, 
   showPhone = true, 
+  showFullName = true, 
   disabled = false 
 }: AddressFormProps) {
   const t = useTranslations("/cart.page.stripePayment");
@@ -81,23 +83,25 @@ export function AddressForm({
       
       <div className="grid grid-cols-1 gap-4">
         {/* Full Name */}
-        <div>
-          <Label htmlFor={`${title}-fullName`} className="text-sm font-medium">
-            {t("fullName")} *
-          </Label>
-          <Input
-            id={`${title}-fullName`}
-            type="text"
-            value={data.fullName}
-            onChange={(e) => handleChange('fullName', e.target.value)}
-            disabled={disabled}
-            className={errors.fullName ? "border-red-500" : ""}
-            placeholder="John Doe"
-          />
-          {errors.fullName && (
-            <p className="text-sm text-red-600 mt-1">{tErrors("nameRequired")}</p>
-          )}
-        </div>
+        {showFullName && (
+          <div>
+            <Label htmlFor={`${title}-fullName`} className="text-sm font-medium">
+              {t("fullName")} *
+            </Label>
+            <Input
+              id={`${title}-fullName`}
+              type="text"
+              value={data.fullName}
+              onChange={(e) => handleChange('fullName', e.target.value)}
+              disabled={disabled}
+              className={errors.fullName ? "border-red-500" : ""}
+              placeholder="John Doe"
+            />
+            {errors.fullName && (
+              <p className="text-sm text-red-600 mt-1">{tErrors("nameRequired")}</p>
+            )}
+          </div>
+        )}
 
         {/* Address Line 1 with Google Places Autocomplete */}
         <AddressAutocomplete

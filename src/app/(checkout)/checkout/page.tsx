@@ -31,6 +31,7 @@ export default function CheckoutPage() {
   const currency = cart?.currency || "CAD";
   
   // Email and shipping state
+  const [contactName, setContactName] = useState("");
   const [email, setEmail] = useState("");
   const [selectedShipping, setSelectedShipping] = useState<ShippingRate | null>(null);
   const [shippingRates, setShippingRates] = useState<ShippingRate[]>([]);
@@ -164,8 +165,22 @@ export default function CheckoutPage() {
       setShowPaymentForm(true);
       // Clear any previous errors
       setFormErrors({});
+      // Smooth scroll to payment section after state update
+      setTimeout(() => {
+        document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   }, [email, shippingAddress, billingAddress, billingSameAsShipping, selectedShipping, showPaymentForm]);
+
+  // Ensure scroll lands when payment intent is ready as well
+  useEffect(() => {
+    if (showPaymentForm && clientSecret) {
+      const el = document.getElementById('payment-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [showPaymentForm, clientSecret]);
 
   // Sync billing address with shipping when checkbox is checked
   useEffect(() => {
@@ -378,18 +393,14 @@ export default function CheckoutPage() {
                 })}
               </span>
             </div>
-            {selectedShipping && (
-              <div className="flex items-center justify-between mb-2 text-sm">
-                <span>{tPage("shipping")} ({selectedShipping.name})</span>
-                <span>
-                  {formatMoney({
-                    amount: selectedShipping.price,
-                    currency,
-                    locale: "en-CA",
-                  })}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center justify-between mb-2 text-sm">
+              <span>{tPage("shipping")}</span>
+              <span>
+                {(selectedShipping?.price || 0) > 0
+                  ? formatMoney({ amount: selectedShipping!.price, currency, locale: "en-CA" })
+                  : tPage("free")}
+              </span>
+            </div>
             <div className="border-t pt-2 mt-2 flex items-center justify-between text-lg font-semibold">
               <span>{tPage("total")}</span>
               <span>
@@ -405,27 +416,47 @@ export default function CheckoutPage() {
 
         {/* Right Column - Forms */}
         <div className="space-y-8">
-          {/* Email */}
+          {/* Contact Information: Name + Email */}
           <div>
-            <Label htmlFor="email" className="text-lg font-semibold mb-2 block">
-              {tPage("emailAddress")}
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={`w-full ${formErrors.email ? "border-red-500" : ""}`}
-            />
-            {formErrors.email && (
-              <p className="text-sm text-red-600 mt-1">{formErrors.email}</p>
-            )}
-            {!formErrors.email && (
-              <p className="text-sm text-gray-500 mt-1">
-                We'll send your order confirmation here
-              </p>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="contactName" className="text-lg font-semibold mb-2 block">
+                  {t("fullName")}
+                </Label>
+                <Input
+                  id="contactName"
+                  type="text"
+                  placeholder="John Doe"
+                  value={contactName}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setContactName(value);
+                    setShippingAddress((prev) => ({ ...prev, fullName: value }));
+                  }}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email" className="text-lg font-semibold mb-2 block">
+                  {tPage("emailAddress")}
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`w-full ${formErrors.email ? "border-red-500" : ""}`}
+                />
+                {formErrors.email && (
+                  <p className="text-sm text-red-600 mt-1">{formErrors.email}</p>
+                )}
+                {!formErrors.email && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    We'll send your order confirmation here
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Shipping Address */}
@@ -435,6 +466,7 @@ export default function CheckoutPage() {
             onChange={setShippingAddress}
             errors={formErrors.shipping}
             showPhone={true}
+            showFullName={false}
           />
 
           {/* Shipping Rates Display */}

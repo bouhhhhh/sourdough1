@@ -18,11 +18,11 @@ export async function Footer() {
 			})),
 		},
 		{
-			header: "Support",
+			header: t("supportTitle"),
 			links: [
 				{
-					label: "Contact us",
-					href: "",
+					label: t("contact"),
+					href: "/contact",
 				}
 			],
 		},

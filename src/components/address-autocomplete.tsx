@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Input } from "@/ui/shadcn/input";
 import { Label } from "@/ui/shadcn/label";
 import { LoadScript, Autocomplete } from "@react-google-maps/api";
@@ -36,7 +36,6 @@ export function AddressAutocomplete({
   disabled = false,
 }: AddressAutocompleteProps) {
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
@@ -124,32 +123,19 @@ export function AddressAutocomplete({
     <LoadScript
       googleMapsApiKey={apiKey}
       libraries={libraries}
-      onLoad={() => setIsLoaded(true)}
     >
       <div>
         <Label htmlFor={`${title}-address1`} className="text-sm font-medium">
           Address *
         </Label>
-        {isLoaded ? (
-          <Autocomplete
-            onLoad={onLoad}
-            onPlaceChanged={onPlaceChanged}
-            options={{
-              types: ["address"],
-              componentRestrictions: { country: "ca" },
-            }}
-          >
-            <Input
-              id={`${title}-address1`}
-              type="text"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              disabled={disabled}
-              className={error ? "border-red-500" : ""}
-              placeholder="Start typing your address..."
-            />
-          </Autocomplete>
-        ) : (
+        <Autocomplete
+          onLoad={onLoad}
+          onPlaceChanged={onPlaceChanged}
+          options={{
+            types: ["address"],
+            componentRestrictions: { country: "ca" },
+          }}
+        >
           <Input
             id={`${title}-address1`}
             type="text"
@@ -157,9 +143,9 @@ export function AddressAutocomplete({
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled}
             className={error ? "border-red-500" : ""}
-            placeholder="Loading..."
+            placeholder="Start typing your address..."
           />
-        )}
+        </Autocomplete>
         {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
       </div>
     </LoadScript>
