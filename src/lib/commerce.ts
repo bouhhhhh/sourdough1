@@ -252,11 +252,24 @@ export const commerce = {
       quantity: number;
     }): Promise<Cart> {
       const cart = ensureCart(cartId);
+      
+      // If quantity is 0 or less, remove the item
+      if (quantity <= 0) {
+        const pid =
+          PRODUCTS.find((p) => p.id === variantId || p.slug === variantId)?.id ??
+          variantId;
+        cart.items = cart.items.filter((i) => i.productId !== pid);
+        const subtotal = computeSubtotal(cart.items);
+        cart.subtotal = subtotal;
+        cart.total = subtotal;
+        return cart;
+      }
+      
       const item = cart.items.find(
         (i) => i.productId === variantId || i.productId === PRODUCTS.find(p => p.slug === variantId)?.id
       );
       if (!item) throw new Error("Item not found");
-      item.quantity = Math.max(1, quantity);
+      item.quantity = quantity;
       const subtotal = computeSubtotal(cart.items);
       cart.subtotal = subtotal;
       cart.total = subtotal;

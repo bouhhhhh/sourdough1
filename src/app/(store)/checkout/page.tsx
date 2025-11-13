@@ -339,8 +339,6 @@ export default function CheckoutPage() {
   return (
     <div className="container py-10">
       <h1 className="text-3xl font-bold mb-6">{tPage("checkoutTitle")}</h1>
-      <p className="text-gray-600 mb-8">{tPage("checkoutDescription")}</p>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Order Summary */}
         <div>

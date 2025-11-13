@@ -2,7 +2,7 @@
 
 import type { Cart, ProductInfo } from "commerce-kit";
 import { createContext, type ReactNode, useContext, useEffect, useOptimistic, useState, startTransition } from "react";
-import { getCartClient, addToCartClient } from "@/lib/cart-client";
+import { getCartClient, addToCartClient, updateCartItemClient, removeFromCartClient } from "@/lib/cart-client";
 
 type CartAction =
 	| { type: "ADD_ITEM"; variantId: string; quantity: number; product?: ProductInfo }
@@ -136,18 +136,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	// Load initial cart
 	useEffect(() => {
 		getCartClient().then((cart: any) => {
-			startTransition(() => {
-				setActualCart(cart);
-			});
+			setActualCart(cart);
 		});
 	}, []);
-
-	// Sync optimistic cart with actual cart when it changes
-	useEffect(() => {
-		startTransition(() => {
-			setOptimisticCart({ type: "SYNC_CART", cart: actualCart });
-		});
-	}, [actualCart, setOptimisticCart]);
 
 	const openCart = () => setIsCartOpen(true);
 	const closeCart = () => setIsCartOpen(false);
@@ -161,12 +152,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		try {
 			// Perform client action
 			const updatedCart = await addToCartClient(variantId, quantity);
-			startTransition(() => {
-				setActualCart(updatedCart as any);
-			});
+			// Update actual cart without transition to avoid double render
+			setActualCart(updatedCart as any);
 		} catch (error) {
-			// Rollback will happen automatically via useEffect
+			// Rollback on error
 			console.error("Failed to add to cart:", error);
+			setActualCart(actualCart);
 			throw error;
 		}
 	};
@@ -178,10 +169,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		});
 
 		try {
-			// TODO: implement client-side update
-			console.log("Update not implemented yet");
+			const updatedCart = await updateCartItemClient(variantId, quantity);
+			// Update actual cart without transition to avoid double render
+			setActualCart(updatedCart as any);
 		} catch (error) {
 			console.error("Failed to update cart item:", error);
+			// Rollback on error
+			setActualCart(actualCart);
 			throw error;
 		}
 	};
@@ -193,10 +187,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		});
 
 		try {
-			// TODO: implement client-side remove  
-			console.log("Remove not implemented yet");
+			const updatedCart = await removeFromCartClient(variantId);
+			// Update actual cart without transition to avoid double render
+			setActualCart(updatedCart as any);
 		} catch (error) {
 			console.error("Failed to remove from cart:", error);
+			// Rollback on error
+			setActualCart(actualCart);
 			throw error;
 		}
 	};

@@ -1,4 +1,3 @@
-import { UserIcon } from "lucide-react";
 import Link from "next/link";
 import { CartIcon } from "@/components/cart-icon";
 import { NavMenu } from "@/ui/nav/nav-menu";
@@ -20,9 +19,6 @@ export const Nav = async () => {
 					<SearchNav />
 				</div>
 				<CartIcon />
-				<Link href="/login">
-					<UserIcon className="hover:text-neutral-500" />
-				</Link>
 			</div>
 		</header>
 	);
