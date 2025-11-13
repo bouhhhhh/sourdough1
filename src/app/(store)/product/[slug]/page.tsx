@@ -7,8 +7,7 @@ import { Suspense } from "react";
 
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal";
 import { AddToCart } from "@/components/add-to-cart";
-import dynamic from "next/dynamic";
-const ProductApplePay = dynamic(() => import("@/components/product-apple-pay.client"), { ssr: false });
+import ProductApplePay from "@/components/product-apple-pay.client";
 import {
   Breadcrumb,
   BreadcrumbItem,
