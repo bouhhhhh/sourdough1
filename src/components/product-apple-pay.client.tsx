@@ -46,14 +46,22 @@ function ProductApplePayInner(props: ProductApplePayProps) {
     pr.on("shippingaddresschange", async (ev: any) => {
       try {
         const addr = ev.shippingAddress || {};
+        // Normalize postal/zip
+        const rawPostal = (addr.postalCode || addr.postal_code || "") as string;
+        const normalizedPostal = rawPostal.replace(/\s+/g, "").toUpperCase();
         const destination = {
-          postalCode: addr.postalCode || addr.postal_code || "",
+          postalCode: normalizedPostal,
           country: (addr.country || "CA").toUpperCase(),
           city: addr.city || addr.locality || undefined,
           province: addr.region || addr.administrativeArea || undefined,
         };
 
-        if (!destination.postalCode || !destination.country) {
+        // Validate minimal postal/zip requirements before calling rates API
+        const needsMorePostal =
+          (destination.country === "CA" && destination.postalCode.length < 6) ||
+          (destination.country === "US" && destination.postalCode.length < 5);
+
+        if (!destination.postalCode || !destination.country || needsMorePostal) {
           ev.updateWith({ status: "invalid_shipping_address" });
           return;
         }
