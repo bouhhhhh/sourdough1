@@ -46,12 +46,10 @@ function ProductApplePayInner(props: ProductApplePayProps) {
     pr.on("shippingaddresschange", async (ev: any) => {
       try {
         const addr = ev.shippingAddress || {};
-        // Normalize postal/zip
+        // Normalize postal/zip: keep only alphanumeric and uppercase
         const rawPostal = (addr.postalCode || addr.postal_code || "") as string;
-        // Canada-only: keep only alphanumeric and uppercase (e.g., "A1A1A1")
         const normalizedPostal = rawPostal.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-        // Canada-only site: force country to CA if missing/other
-        const country = ((addr.country as string) || "CA").toUpperCase() === "CA" ? "CA" : "CA";
+        const country = ((addr.country as string) || "CA").toUpperCase();
         const destination = {
           postalCode: normalizedPostal,
           country,
@@ -65,15 +63,27 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           console.log("[PRB] shippingaddresschange dest:", destination, "raw:", addr);
         }
 
-        // For Canada-only: if postal missing or incomplete (<6) -> invalid
-        if (!destination.postalCode) {
+        // Validate postal/zip by country
+        if (!destination.postalCode || !destination.country) {
           ev.updateWith({ status: "invalid_shipping_address" });
           return;
         }
-        if (destination.postalCode.length < 6) {
-          ev.updateWith({ status: "invalid_shipping_address" });
-          return;
+
+        // CA postal: must be 6 chars matching A1A1A1 pattern
+        if (destination.country === "CA") {
+          if (destination.postalCode.length !== 6 || !/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(destination.postalCode)) {
+            ev.updateWith({ status: "invalid_shipping_address" });
+            return;
+          }
         }
+        // US ZIP: must be 5 or 9 digits
+        if (destination.country === "US") {
+          if (!/^\d{5}(\d{4})?$/.test(destination.postalCode)) {
+            ev.updateWith({ status: "invalid_shipping_address" });
+            return;
+          }
+        }
+        // Other countries: just require some postal code (no strict validation)
 
         // Helper: timeout for fetch
         const fetchWithTimeout = async (input: RequestInfo, init: RequestInit & { timeout?: number } = {}) => {
@@ -88,11 +98,28 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           }
         };
 
-        const mockRates = [
-          { id: "DOM.RP", name: "Regular Parcel", estimatedDays: "5-7 business days", price: 1200 },
-          { id: "DOM.EP", name: "Expedited Parcel", estimatedDays: "3-5 business days", price: 1500 },
-          { id: "DOM.XP", name: "Xpresspost", estimatedDays: "1-2 business days", price: 2000 },
-        ];
+        // Mock rates by country for fallback
+        const getMockRatesByCountry = (country: string) => {
+          if (country === "CA") {
+            return [
+              { id: "DOM.RP", name: "Regular Parcel", estimatedDays: "5-7 business days", price: 1200 },
+              { id: "DOM.EP", name: "Expedited Parcel", estimatedDays: "3-5 business days", price: 1500 },
+              { id: "DOM.XP", name: "Xpresspost", estimatedDays: "1-2 business days", price: 2000 },
+            ];
+          } else if (country === "US") {
+            return [
+              { id: "USA.EP", name: "Expedited Parcel USA", estimatedDays: "4-7 business days", price: 2500 },
+              { id: "USA.XP", name: "Xpresspost USA", estimatedDays: "2-3 business days", price: 3500 },
+            ];
+          } else {
+            return [
+              { id: "INT.SP", name: "Small Packet International", estimatedDays: "6-10 business days", price: 3000 },
+              { id: "INT.XP", name: "Xpresspost International", estimatedDays: "4-6 business days", price: 5000 },
+            ];
+          }
+        };
+
+        const mockRates = getMockRatesByCountry(destination.country);
 
         let res: Response | null = null;
         try {

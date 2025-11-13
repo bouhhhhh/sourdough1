@@ -67,19 +67,24 @@ export async function POST(req: Request) {
 		const cleanOriginPostalCode = originPostalCode.replace(/\s+/g, "").toUpperCase();
 		const cleanDestPostalCode = destination.postalCode.replace(/\s+/g, "").toUpperCase();
 
-		// Basic validation: CA postal codes require 6 chars (A1A1A1), US ZIP requires 5+ (allow ZIP+4 too)
-		if (destination.country === "CA" && cleanDestPostalCode.length < 6) {
-			return NextResponse.json(
-				{ error: "Invalid Canadian postal code" },
-				{ status: 400 }
-			);
+		// Strict validation for CA and US postal/zip codes
+		if (destination.country === "CA") {
+			if (cleanDestPostalCode.length !== 6 || !/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanDestPostalCode)) {
+				return NextResponse.json(
+					{ error: "Invalid Canadian postal code format (expected: A1A1A1)" },
+					{ status: 400 }
+				);
+			}
 		}
-		if (destination.country === "US" && cleanDestPostalCode.length < 5) {
-			return NextResponse.json(
-				{ error: "Invalid US ZIP code" },
-				{ status: 400 }
-			);
+		if (destination.country === "US") {
+			if (!/^\d{5}(\d{4})?$/.test(cleanDestPostalCode)) {
+				return NextResponse.json(
+					{ error: "Invalid US ZIP code format" },
+					{ status: 400 }
+				);
+			}
 		}
+		// For other countries, just require non-empty postal code
 
 		// Build Canada Post API request
 		const ratesRequest = {
