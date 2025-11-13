@@ -85,17 +85,31 @@ export async function POST(req: Request) {
 
 		// Strict validation for CA and US postal/zip codes
 		if (destination.country === "CA") {
-			const isValidCA = cleanDestPostalCode.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanDestPostalCode);
+			// Apple Pay only provides first 3 chars (A1A) for privacy, or full 6 chars
+			const isValid3 = cleanDestPostalCode.length === 3 && /^[A-Z]\d[A-Z]$/.test(cleanDestPostalCode);
+			const isValid6 = cleanDestPostalCode.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanDestPostalCode);
+			const isValidCA = isValid3 || isValid6;
 			console.log("[SHIPPING-RATES] CA validation:", {
 				postalCode: cleanDestPostalCode,
 				length: cleanDestPostalCode.length,
+				isValid3,
+				isValid6,
 				isValid: isValidCA,
 			});
 			if (!isValidCA) {
 				return NextResponse.json(
-					{ error: "Invalid Canadian postal code format (expected: A1A1A1)" },
+					{ error: "Invalid Canadian postal code format (expected: A1A or A1A1A1)" },
 					{ status: 400 }
 				);
+			}
+			// If only 3 chars, pad with zeros for Canada Post API (e.g., G6B -> G6B0A0)
+			if (cleanDestPostalCode.length === 3) {
+				console.log("[SHIPPING-RATES] Padding 3-char postal code for Canada Post API");
+				// Canada Post needs 6 chars, use pattern A1A0A0 for partial postal codes
+				const paddedPostal = `${cleanDestPostalCode}0A0`;
+				console.log("[SHIPPING-RATES] Padded postal code:", paddedPostal);
+				// Override the destination postal code with padded version
+				destination.postalCode = paddedPostal;
 			}
 		}
 		if (destination.country === "US") {
@@ -113,6 +127,9 @@ export async function POST(req: Request) {
 		}
 		// For other countries, just require non-empty postal code
 
+		// Re-clean destination postal code after potential padding
+		const finalDestPostalCode = destination.postalCode.replace(/\s+/g, "").toUpperCase();
+
 		// Build Canada Post API request
 		const ratesRequest = {
 			"mailing-scenario": {
@@ -128,7 +145,7 @@ export async function POST(req: Request) {
 				"origin-postal-code": cleanOriginPostalCode,
 				destination: {
 					domestic: destination.country === "CA" ? {
-						"postal-code": cleanDestPostalCode,
+						"postal-code": finalDestPostalCode,
 					} : undefined,
 					"united-states": destination.country === "US" ? {
 						"zip-code": cleanDestPostalCode,
