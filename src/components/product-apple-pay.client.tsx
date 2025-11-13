@@ -74,23 +74,23 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           return;
         }
 
-        // CA postal: must be 6 chars matching A1A1A1 pattern
-        if (destination.country === "CA") {
-          const isValidCA = destination.postalCode.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(destination.postalCode);
-          console.log("[PRB] CA validation:", { isValidCA, length: destination.postalCode.length, postal: destination.postalCode });
-          if (!isValidCA) {
-            ev.updateWith({ status: "invalid_shipping_address" });
-            return;
-          }
-        }
+        // // CA postal: must be 6 chars matching A1A1A1 pattern
+        // if (destination.country === "CA") {
+        //   const isValidCA = destination.postalCode.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(destination.postalCode);
+        //   console.log("[PRB] CA validation:", { isValidCA, length: destination.postalCode.length, postal: destination.postalCode });
+        //   if (!isValidCA) {
+        //     ev.updateWith({ status: "invalid_shipping_address" });
+        //     return;
+        //   }
+        // }
         // US ZIP: must be 5 or 9 digits
-        else if (destination.country === "US") {
-          if (!/^\d{5}(\d{4})?$/.test(destination.postalCode)) {
-            console.log("[PRB] Invalid US ZIP");
-            ev.updateWith({ status: "invalid_shipping_address" });
-            return;
-          }
-        }
+        // else if (destination.country === "US") {
+        //   if (!/^\d{5}(\d{4})?$/.test(destination.postalCode)) {
+        //     console.log("[PRB] Invalid US ZIP");
+        //     ev.updateWith({ status: "invalid_shipping_address" });
+        //     return;
+        //   }
+        // }
         // Other countries: just require some postal code (no strict validation)
 
         // Helper: timeout for fetch
