@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { Resend } from "resend";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil",
 });
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(req: Request) {
   try {
@@ -107,70 +104,6 @@ export async function POST(req: Request) {
     }
 
     if (intent.status === "succeeded") {
-      // Send confirmation email directly via Resend to avoid route auth/caching issues
-      (async () => {
-        try {
-          const orderDate = new Date().toLocaleString("en-CA", { timeZone: "America/Toronto" });
-          const toEmail = (payerEmail || "").trim();
-          const from = process.env.EMAIL_FROM;
-          const adminEmail = process.env.ADMIN_EMAIL || from;
-          const itemName = productName || String(productId || "Item");
-          const qty = Number(quantity || 1);
-          const productAmount = Number(amount);
-          const currencyUpper = currency.toUpperCase();
-
-          if (resend && from && toEmail) {
-            const html = `
-              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial;">
-                <h2 style="color:#16a34a;margin:0 0 8px;">Order confirmed</h2>
-                <div style="margin:8px 0;">Order <strong>${orderNumber}</strong> • ${orderDate}</div>
-                <table style="width:100%;border-collapse:collapse;margin-top:12px;">
-                  <tr>
-                    <td style="padding:8px 0;">${qty}× ${itemName}</td>
-                    <td style="padding:8px 0;text-align:right;">${new Intl.NumberFormat('en-CA',{style:'currency',currency:currencyUpper}).format((productAmount*qty)/100)}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:8px 0;">Shipping</td>
-                    <td style="padding:8px 0;text-align:right;">${new Intl.NumberFormat('en-CA',{style:'currency',currency:currencyUpper}).format(((intent.amount - productAmount)/100))}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:8px 0;font-weight:700;border-top:1px solid #e5e7eb;">Total paid</td>
-                    <td style="padding:8px 0;text-align:right;font-weight:700;border-top:1px solid #e5e7eb;">${new Intl.NumberFormat('en-CA',{style:'currency',currency:currencyUpper}).format((intent.amount)/100)}</td>
-                  </tr>
-                </table>
-              </div>`;
-
-            const { error } = await resend.emails.send({
-              from,
-              to: [toEmail],
-              subject: `Order Confirmation - ${orderNumber}`,
-              html,
-            });
-            if (error) {
-              console.error("[INSTANT-CHECKOUT] Resend customer email error:", error);
-            }
-          } else {
-            console.warn("[INSTANT-CHECKOUT] Skipping customer email. resend?, from?, to?", !!resend, !!from, !!toEmail);
-          }
-
-          // Admin notification (best-effort)
-          try {
-            if (resend && adminEmail) {
-              await resend.emails.send({
-                from: from || adminEmail,
-                to: [adminEmail],
-                subject: `New order - ${orderNumber}`,
-                html: `<div>Order ${orderNumber} • ${orderDate}<br/>Total: ${new Intl.NumberFormat('en-CA',{style:'currency',currency:currencyUpper}).format((intent.amount)/100)}</div>`,
-              });
-            }
-          } catch (e) {
-            console.error("[INSTANT-CHECKOUT] Resend admin email error:", e);
-          }
-        } catch (e) {
-          console.error("[INSTANT-CHECKOUT] Failed email dispatch:", e);
-        }
-      })();
-
       return NextResponse.json({ status: "succeeded", paymentIntentId: intent.id });
     }
 
