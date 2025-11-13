@@ -50,8 +50,16 @@ function ProductApplePayInner(props: ProductApplePayProps) {
         const rawPostal = (addr.postalCode || addr.postal_code || "") as string;
         const normalizedPostal = rawPostal.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
         const country = ((addr.country as string) || "CA").toUpperCase();
+        
+        // Format Canadian postal code with space (A1A 1A1) if valid
+        let formattedPostal = normalizedPostal;
+        if (country === "CA" && normalizedPostal.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(normalizedPostal)) {
+          formattedPostal = `${normalizedPostal.slice(0, 3)} ${normalizedPostal.slice(3)}`;
+        }
+        
         const destination = {
-          postalCode: normalizedPostal,
+          postalCode: normalizedPostal, // Send normalized for API
+          formattedPostalCode: formattedPostal, // Display formatted
           country,
           city: addr.city || addr.locality || undefined,
           province: addr.region || addr.administrativeArea || undefined,
@@ -62,6 +70,7 @@ function ProductApplePayInner(props: ProductApplePayProps) {
         console.log("[PRB] shippingaddresschange", {
           country: destination.country,
           postalCode: destination.postalCode,
+          formatted: destination.formattedPostalCode,
           rawCountry: addr.country,
           rawPostal,
           province: destination.province,
