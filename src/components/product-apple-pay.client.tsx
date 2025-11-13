@@ -48,21 +48,34 @@ function ProductApplePayInner(props: ProductApplePayProps) {
         const addr = ev.shippingAddress || {};
         // Normalize postal/zip
         const rawPostal = (addr.postalCode || addr.postal_code || "") as string;
-        const normalizedPostal = rawPostal.replace(/\s+/g, "").toUpperCase();
+        // Canada-only: keep only alphanumeric and uppercase (e.g., "A1A1A1")
+        const normalizedPostal = rawPostal.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+        // Canada-only site: force country to CA if missing/other
+        const country = ((addr.country as string) || "CA").toUpperCase() === "CA" ? "CA" : "CA";
         const destination = {
           postalCode: normalizedPostal,
-          country: (addr.country || "CA").toUpperCase(),
+          country,
           city: addr.city || addr.locality || undefined,
           province: addr.region || addr.administrativeArea || undefined,
         };
 
-        // Validate minimal postal/zip requirements before calling rates API
-        const needsMorePostal =
-          (destination.country === "CA" && destination.postalCode.length < 6) ||
-          (destination.country === "US" && destination.postalCode.length < 5);
+        // Optional debug logging
+        if (process.env.NEXT_PUBLIC_DEBUG_SHIPPING === "1" || process.env.NEXT_PUBLIC_DEBUG_SHIPPING === "true") {
+          // eslint-disable-next-line no-console
+          console.log("[PRB] shippingaddresschange dest:", destination, "raw:", addr);
+        }
 
-        if (!destination.postalCode || !destination.country || needsMorePostal) {
+        // For Canada-only: if postal missing -> invalid; if incomplete (<6) -> return success with no shipping options yet
+        if (!destination.postalCode) {
           ev.updateWith({ status: "invalid_shipping_address" });
+          return;
+        }
+        if (destination.postalCode.length < 6) {
+          ev.updateWith({
+            status: "success",
+            shippingOptions: [],
+            total: { label: productName || "HeirBloom", amount },
+          });
           return;
         }
 
@@ -74,6 +87,11 @@ function ProductApplePayInner(props: ProductApplePayProps) {
 
         const data = (await res.json()) as { rates: Array<{ id: string; name: string; estimatedDays: string; price: number; }> };
         const rates = data.rates || [];
+
+        if (process.env.NEXT_PUBLIC_DEBUG_SHIPPING === "1" || process.env.NEXT_PUBLIC_DEBUG_SHIPPING === "true") {
+          // eslint-disable-next-line no-console
+          console.log("[PRB] rates response:", res.status, rates);
+        }
 
         if (!res.ok || rates.length === 0) {
           ev.updateWith({ status: "fail" });
