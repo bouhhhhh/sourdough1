@@ -3,7 +3,7 @@ import "server-only";
 import path from "path";
 import fs from "fs";
 import type { Product, Recipe, ProductOrRecipe } from "./product-utils";
-import { isProduct, isRecipe } from "./product-utils";
+import { isProduct } from "./product-utils";
 
 // Re-export types for convenience
 export type { Product, Recipe, ProductOrRecipe } from "./product-utils";
