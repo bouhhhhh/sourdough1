@@ -2,20 +2,21 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next/types";
 import { publicUrl } from "@/env.mjs";
 import { getTranslations, getLocale } from "@/i18n/server";
-import { commerce } from "@/lib/commerce";
+import { listAllItems } from "@/lib/commerce";
 import { deslugify } from "@/lib/utils";
 import { ProductList } from "@/ui/products/product-list";
 
 export const generateMetadata = async (props: { params: Promise<{ slug: string }> }): Promise<Metadata> => {
 	const params = await props.params;
 	const locale = await getLocale();
-	const result = await commerce.product.browse({
-		first: 100,
+	
+	// Use listAllItems to get both products and recipes for the category
+	const items = await listAllItems({
 		category: params.slug,
 		locale,
 	});
 
-	if (!result.data || result.data.length === 0) {
+	if (!items || items.length === 0) {
 		return notFound();
 	}
 
@@ -30,17 +31,16 @@ export const generateMetadata = async (props: { params: Promise<{ slug: string }
 export default async function CategoryPage(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
 	const locale = await getLocale();
-	const result = await commerce.product.browse({
-		first: 100,
+	
+	// Use listAllItems to get both products and recipes for the category
+	const items = await listAllItems({
 		category: params.slug,
 		locale,
 	});
 
-	if (!result.data || result.data.length === 0) {
+	if (!items || items.length === 0) {
 		return notFound();
 	}
-
-	const products = result.data;
 
 	const t = await getTranslations("/category.page");
 
@@ -52,7 +52,7 @@ export default async function CategoryPage(props: { params: Promise<{ slug: stri
 					{t("title", { categoryName: deslugify(params.slug) })}
 				</div>
 			</h1>
-			<ProductList products={products} />
+			<ProductList products={items} />
 		</main>
 	);
 }

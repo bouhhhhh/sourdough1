@@ -2,6 +2,12 @@
 import "server-only";
 import path from "path";
 import fs from "fs";
+import type { Product, Recipe, ProductOrRecipe } from "./product-utils";
+import { isProduct, isRecipe } from "./product-utils";
+
+// Re-export types for convenience
+export type { Product, Recipe, ProductOrRecipe } from "./product-utils";
+export { isProduct, isRecipe } from "./product-utils";
 
 // Load translations from JSON files
 function loadTranslations(locale: string): Record<string, string> {
@@ -19,23 +25,8 @@ function loadTranslations(locale: string): Record<string, string> {
 }
 
 /* =========================
- * Product mock
+ * Product & Recipe data
  * ========================= */
-export type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;         // major units (e.g., 49.99)
-  discountedPrice?: number; // optional discounted price
-  currency: "CAD";       // uppercase
-  image: string;
-  images: string[];
-  category: string;
-  description?: string;
-  inStock: boolean;
-  active: boolean;
-};
-
 const PRODUCTS: Product[] = [
   {
     id: "p_1001",
@@ -50,6 +41,7 @@ const PRODUCTS: Product[] = [
     description: "Premium sourdough starter for making artisan bread.",
     inStock: true,
     active: true,
+    type: "product",
   },
   {
     id: "p_1002",
@@ -64,37 +56,37 @@ const PRODUCTS: Product[] = [
     description: "Complete step-by-step guide for sourdough beginners.",
     inStock: true,
     active: true,
+    type: "product",
   },
+];
+
+const RECIPES: Recipe[] = [
   {
-    id: "p_1003",
+    id: "r_1001",
     name: "Pizza Recipe",
     slug: "pizza-recipe",
-    price: 8.99,
-    currency: "CAD",
     image: "/pizzarecipe.jpg",
     images: ["/pizzarecipe.jpg"],
     category: "recipes",
     description: "Authentic sourdough pizza recipe with step-by-step instructions.",
-    inStock: true,
     active: true,
+    type: "recipe",
   },
   {
-    id: "p_1004",
+    id: "r_1002",
     name: "Loaf Recipe",
     slug: "loaf-recipe",
-    price: 6.99,
-    currency: "CAD",
     image: "/recipe.webp",
     images: ["/recipe.webp"],
     category: "recipes",
     description: "Classic sourdough bread loaf recipe for perfect homemade bread.",
-    inStock: true,
     active: true,
+    type: "recipe",
   },
 ];
 
 /* =========================
- * Product helpers
+ * Product & Recipe helpers
  * ========================= */
 // Helper to translate a product
 function translateProduct(product: Product, locale: string = "en-US"): Product {
@@ -109,6 +101,27 @@ function translateProduct(product: Product, locale: string = "en-US"): Product {
   };
 }
 
+// Helper to translate a recipe
+function translateRecipe(recipe: Recipe, locale: string = "en-US"): Recipe {
+  const messages = loadTranslations(locale);
+  const nameKey = `Products.${recipe.id}.name`;
+  const descKey = `Products.${recipe.id}.description`;
+  
+  return {
+    ...recipe,
+    name: messages[nameKey] || recipe.name,
+    description: messages[descKey] || recipe.description,
+  };
+}
+
+// Helper to translate any item (product or recipe)
+function translateItem(item: ProductOrRecipe, locale: string = "en-US"): ProductOrRecipe {
+  if (isProduct(item)) {
+    return translateProduct(item, locale);
+  }
+  return translateRecipe(item, locale);
+}
+
 async function listProducts(opts?: { limit?: number; category?: string; locale?: string }) {
   const { limit = 6, category, locale = "en-US" } = opts ?? {};
   let items = PRODUCTS;
@@ -117,13 +130,55 @@ async function listProducts(opts?: { limit?: number; category?: string; locale?:
   return sliced.map(p => translateProduct(p, locale));
 }
 
-async function getProductBySlug(slug: string, locale: string = "en-US") {
+async function listRecipes(opts?: { limit?: number; locale?: string }) {
+  const { limit = 6, locale = "en-US" } = opts ?? {};
+  const sliced = RECIPES.slice(0, limit);
+  return sliced.map(r => translateRecipe(r, locale));
+}
+
+async function listAllItems(opts?: { limit?: number; category?: string; locale?: string }): Promise<ProductOrRecipe[]> {
+  const { limit, category, locale = "en-US" } = opts ?? {};
+  
+  let items: ProductOrRecipe[] = [];
+  
+  if (!category || category === "products") {
+    items = [...items, ...PRODUCTS];
+  }
+  
+  if (!category || category === "recipes") {
+    items = [...items, ...RECIPES];
+  }
+  
+  const translated = items.map(item => translateItem(item, locale));
+  
+  if (limit) {
+    return translated.slice(0, limit);
+  }
+  
+  return translated;
+}
+
+async function getProductBySlug(slug: string, locale: string = "en-US"): Promise<Product | null> {
   const product = PRODUCTS.find((p) => p.slug === slug);
   return product ? translateProduct(product, locale) : null;
 }
 
+async function getRecipeBySlug(slug: string, locale: string = "en-US"): Promise<Recipe | null> {
+  const recipe = RECIPES.find((r) => r.slug === slug);
+  return recipe ? translateRecipe(recipe, locale) : null;
+}
+
+async function getItemBySlug(slug: string, locale: string = "en-US"): Promise<ProductOrRecipe | null> {
+  const product = await getProductBySlug(slug, locale);
+  if (product) return product;
+  
+  const recipe = await getRecipeBySlug(slug, locale);
+  return recipe;
+}
+
 async function listCategories() {
-  return Array.from(new Set(PRODUCTS.map((p) => p.category)));
+  const allItems: ProductOrRecipe[] = [...PRODUCTS, ...RECIPES];
+  return Array.from(new Set(allItems.map((item) => item.category)));
 }
 
 /* =========================
@@ -180,6 +235,21 @@ export const commerce = {
       const data = await listProducts({ limit: first, category, locale });
       return { data };
     },
+  },
+
+  recipe: {
+    list: listRecipes,
+    get: async ({ slug, locale }: { slug: string; locale?: string }) => getRecipeBySlug(slug, locale),
+    browse: async ({ first, locale }: { first?: number; locale?: string }) => {
+      const data = await listRecipes({ limit: first, locale });
+      return { data };
+    },
+  },
+
+  item: {
+    // Get any item (product or recipe)
+    get: async ({ slug, locale }: { slug: string; locale?: string }) => getItemBySlug(slug, locale),
+    list: listAllItems,
   },
 
   category: {
@@ -293,4 +363,12 @@ export const commerce = {
   },
 };
 
-export { listProducts, getProductBySlug, listCategories };
+export { 
+  listProducts, 
+  listRecipes,
+  listAllItems,
+  getProductBySlug, 
+  getRecipeBySlug,
+  getItemBySlug,
+  listCategories 
+};

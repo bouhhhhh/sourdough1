@@ -52,3 +52,53 @@ export async function addToCartClient(variantId: string, quantity = 1) {
     throw error;
   }
 }
+
+export async function updateCartItemClient(variantId: string, quantity: number) {
+  const cartId = getCartId();
+  
+  if (!cartId) {
+    throw new Error('No cart ID found');
+  }
+  
+  try {
+    const response = await fetch('/api/cart', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-cart-id': cartId,
+      },
+      body: JSON.stringify({ variantId, quantity }),
+    });
+    
+    if (!response.ok) throw new Error('Failed to update cart');
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    throw error;
+  }
+}
+
+export async function removeFromCartClient(variantId: string) {
+  const cartId = getCartId();
+  
+  if (!cartId) {
+    throw new Error('No cart ID found');
+  }
+  
+  try {
+    const response = await fetch(`/api/cart?variantId=${encodeURIComponent(variantId)}`, {
+      method: 'DELETE',
+      headers: {
+        'x-cart-id': cartId,
+      },
+    });
+    
+    if (!response.ok) throw new Error('Failed to remove from cart');
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Error removing from cart:", error);
+    throw error;
+  }
+}
