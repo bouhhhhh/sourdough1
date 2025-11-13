@@ -152,7 +152,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		try {
 			// Perform client action
 			const updatedCart = await addToCartClient(variantId, quantity);
-			// Update actual cart without transition to avoid double render
+			// Update actual cart directly without transition to avoid double render
 			setActualCart(updatedCart as any);
 		} catch (error) {
 			// Rollback on error
@@ -170,7 +170,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 		try {
 			const updatedCart = await updateCartItemClient(variantId, quantity);
-			// Update actual cart without transition to avoid double render
+			// Update actual cart directly without transition to avoid double render
 			setActualCart(updatedCart as any);
 		} catch (error) {
 			console.error("Failed to update cart item:", error);
@@ -188,7 +188,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 		try {
 			const updatedCart = await removeFromCartClient(variantId);
-			// Update actual cart without transition to avoid double render
+			// Update actual cart directly without transition to avoid double render
 			setActualCart(updatedCart as any);
 		} catch (error) {
 			console.error("Failed to remove from cart:", error);

@@ -1,6 +1,7 @@
 "use client";
 
-import type { Product } from "@/lib/commerce";
+import type { ProductOrRecipe } from "@/lib/product-utils";
+import { isProduct } from "@/lib/product-utils";
 import Image from "next/image";
 import Link from "next/link";
 import { formatMoney, getStripeAmountFromDecimal } from "@/lib/utils";
@@ -8,13 +9,16 @@ import { AddToCart } from "@/components/add-to-cart";
 import { useState } from "react";
 
 interface ProductCardProps {
-	product: Product;
+	product: ProductOrRecipe;
 	priority?: boolean;
 	locale: string;
 }
 
 export function ProductCard({ product, priority = false, locale }: ProductCardProps) {
 	const [isHovered, setIsHovered] = useState(false);
+	const isProductItem = isProduct(product);
+	const itemType = isProductItem ? 'product' : 'recipe';
+	const linkHref = `/${itemType}/${product.slug}`;
 
 	return (
 		<li 
@@ -25,7 +29,7 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 			<article className="overflow-hidden bg-white">
 				{product.images[0] && (
 					<div className="relative rounded-lg aspect-square w-full overflow-hidden bg-neutral-100">
-						<Link href={`/product/${product.slug}`}>
+						<Link href={linkHref}>
 							<Image
 								className="group-hover:rotate hover-perspective w-full h-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"
 								src={product.images[0]}
@@ -37,31 +41,33 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 							/>
 						</Link>
 						
-						{/* Bottom Positioned Add to Cart Button */}
-						<div 
-							className={`absolute bottom-3 left-3 right-3 transition-opacity duration-300 z-10 ${
-								isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-							}`}
-						>
-							<AddToCart
-								variantId={product.id}
-								quantity={1}
-								className="w-full bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-sm font-medium shadow-lg transition-colors duration-200"
-								openCartOnAdd={false}
-								onSuccess={() => {
-									// Keep user on current page, cart will update silently
-								}}
+						{/* Bottom Positioned Add to Cart Button - Only for products */}
+						{isProductItem && (
+							<div 
+								className={`absolute bottom-3 left-3 right-3 transition-opacity duration-300 z-10 ${
+									isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
+								}`}
 							>
-								Add to Basket
-							</AddToCart>
-						</div>
+								<AddToCart
+									variantId={product.id}
+									quantity={1}
+									className="w-full bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-sm font-medium shadow-lg transition-colors duration-200"
+									openCartOnAdd={false}
+									onSuccess={() => {
+										// Keep user on current page, cart will update silently
+									}}
+								>
+									Add to Basket
+								</AddToCart>
+							</div>
+						)}
 					</div>
 				)}
-				<Link href={`/product/${product.slug}`}>
+				<Link href={linkHref}>
 					<div className="p-2">
 						<h2 className="text-xl font-medium text-neutral-700">{product.name}</h2>
 						<footer className="text-base font-normal text-neutral-900">
-							{product.price && (
+							{isProductItem && product.price && (
 								<div className="flex items-center gap-2">
 									{product.discountedPrice ? (
 										<>

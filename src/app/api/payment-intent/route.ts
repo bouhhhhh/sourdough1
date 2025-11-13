@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+	// Use the API version that matches the installed Stripe types.
+	// The TypeScript types currently expect "2025-08-27.basil".
 	apiVersion: "2025-08-27.basil",
 	typescript: true,
 });

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { Product } from "@/lib/commerce";
+import type { ProductOrRecipe } from "@/lib/product-utils";
+import { isProduct } from "@/lib/product-utils";
 import { ProductCard } from "./product-card";
 import { JsonLd, mappedProductsToJsonLd } from "@/ui/json-ld";
 
 interface ResponsiveProductSectionProps {
-	allProducts: Product[];
+	allProducts: ProductOrRecipe[];
 	locale: string;
 }
 
@@ -49,7 +50,8 @@ export function ResponsiveProductSection({ allProducts, locale }: ResponsiveProd
 					/>
 				))}
 			</ul>
-			<JsonLd jsonLd={mappedProductsToJsonLd(productsToShow)} />
+			{/* Only include actual products in JSON-LD (filter out recipes) */}
+			<JsonLd jsonLd={mappedProductsToJsonLd(productsToShow.filter(isProduct))} />
 			
 			<div className="flex justify-center mt-8">
 				<Link

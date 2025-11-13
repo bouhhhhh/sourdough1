@@ -1,9 +1,10 @@
-import type { Product } from "@/lib/commerce";
+import type { ProductOrRecipe } from "@/lib/product-utils";
+import { isProduct } from "@/lib/product-utils";
 import { getLocale } from "@/i18n/server";
 import { JsonLd, mappedProductsToJsonLd } from "@/ui/json-ld";
 import { ProductCard } from "./product-card";
 
-export const ProductList = async ({ products }: { products: Product[] }) => {
+export const ProductList = async ({ products }: { products: ProductOrRecipe[] }) => {
 	const locale = await getLocale();
 
 	return (
@@ -18,7 +19,8 @@ export const ProductList = async ({ products }: { products: Product[] }) => {
 					/>
 				))}
 			</ul>
-			<JsonLd jsonLd={mappedProductsToJsonLd(products)} />
+			{/* Only include actual products in JSON-LD (filter out recipes) */}
+			<JsonLd jsonLd={mappedProductsToJsonLd(products.filter(isProduct))} />
 		</>
 	);
 };
