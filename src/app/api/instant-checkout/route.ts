@@ -7,12 +7,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
   try {
-    const { paymentMethodId, amount, currency, productId, quantity } = (await req.json()) as {
+    const { paymentMethodId, amount, shippingAmount, currency, productId, quantity, shippingAddress, shippingOptionId } = (await req.json()) as {
       paymentMethodId: string;
       amount: number; // cents
+      shippingAmount?: number; // cents
       currency: string; // e.g. "cad"
       productId?: string;
       quantity?: number;
+      shippingAddress?: any;
+      shippingOptionId?: string | null;
     };
 
     if (!paymentMethodId) {
@@ -25,10 +28,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing currency" }, { status: 400 });
     }
 
-    const orderNumber = `ORD-${Date.now()}`;
+  const orderNumber = `ORD-${Date.now()}`;
+  const totalAmount = amount + (shippingAmount || 0);
 
     const intent = await stripe.paymentIntents.create({
-      amount,
+      amount: totalAmount,
       currency: currency.toLowerCase(),
       payment_method: paymentMethodId,
       confirmation_method: "automatic",
@@ -38,7 +42,23 @@ export async function POST(req: Request) {
         productId: String(productId ?? ""),
         quantity: String(quantity ?? 1),
         orderNumber,
+        shippingOptionId: String(shippingOptionId ?? ""),
+        shippingAmount: String(shippingAmount ?? 0),
       },
+      shipping: shippingAddress
+        ? {
+            name: shippingAddress?.recipient || shippingAddress?.name || undefined,
+            phone: shippingAddress?.phone || undefined,
+            address: {
+              line1: (shippingAddress?.addressLine && shippingAddress.addressLine[0]) || undefined,
+              line2: (shippingAddress?.addressLine && shippingAddress.addressLine[1]) || undefined,
+              city: shippingAddress?.city || shippingAddress?.locality || undefined,
+              state: shippingAddress?.region || shippingAddress?.administrativeArea || undefined,
+              postal_code: shippingAddress?.postalCode || shippingAddress?.postal_code || undefined,
+              country: shippingAddress?.country || undefined,
+            },
+          }
+        : undefined,
     });
 
     if (intent.status === "requires_action" && intent.next_action?.type === "use_stripe_sdk") {

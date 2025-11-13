@@ -21,6 +21,8 @@ function ProductApplePayInner(props: ProductApplePayProps) {
   const stripe = useStripe();
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
   const [supported, setSupported] = useState<boolean>(false);
+  const [shippingAmount, setShippingAmount] = useState<number>(0);
+  const [selectedShippingId, setSelectedShippingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!stripe) return;
@@ -31,12 +33,91 @@ function ProductApplePayInner(props: ProductApplePayProps) {
       total: { label: productName || "HeirBloom", amount },
       requestPayerName: true,
       requestPayerEmail: true,
+      requestShipping: true,
     });
 
     pr.canMakePayment().then((result) => {
       const isSupported = !!result; // Apple Pay or other wallets available
       setSupported(isSupported);
       if (isSupported) setPaymentRequest(pr);
+    });
+
+    // When user changes shipping address, fetch dynamic rates and update total/options
+    pr.on("shippingaddresschange", async (ev: any) => {
+      try {
+        const addr = ev.shippingAddress || {};
+        const destination = {
+          postalCode: addr.postalCode || addr.postal_code || "",
+          country: (addr.country || "CA").toUpperCase(),
+          city: addr.city || addr.locality || undefined,
+          province: addr.region || addr.administrativeArea || undefined,
+        };
+
+        if (!destination.postalCode || !destination.country) {
+          ev.updateWith({ status: "invalid_shipping_address" });
+          return;
+        }
+
+        const res = await fetch("/api/shipping-rates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ destination, package: { weight: 1 } }),
+        });
+
+        const data = (await res.json()) as { rates: Array<{ id: string; name: string; estimatedDays: string; price: number; }> };
+        const rates = data.rates || [];
+
+        if (!res.ok || rates.length === 0) {
+          ev.updateWith({ status: "fail" });
+          return;
+        }
+
+        // Build shipping options from rates; select the cheapest by default
+        let cheapest: { id: string; name: string; estimatedDays: string; price: number } | null = null;
+        for (const r of rates) {
+          if (!cheapest || r.price < cheapest.price) cheapest = r;
+        }
+        const options = rates.map((r) => ({
+          id: r.id,
+          label: r.name,
+          detail: r.estimatedDays,
+          amount: r.price,
+        }));
+
+        if (!cheapest) {
+          ev.updateWith({ status: "fail" });
+          return;
+        }
+
+        setSelectedShippingId(cheapest.id);
+        setShippingAmount(cheapest.price);
+
+        ev.updateWith({
+          status: "success",
+          shippingOptions: options.map((o) => ({ ...o, selected: o.id === cheapest.id })),
+          total: { label: productName || "HeirBloom", amount: amount + cheapest.price },
+        });
+      } catch (error) {
+        console.error("Shipping address change error:", error);
+        ev.updateWith({ status: "fail" });
+      }
+    });
+
+    // When user selects a different shipping option, update totals
+    pr.on("shippingoptionchange", (ev: any) => {
+      try {
+        const opt = ev.shippingOption;
+        const price = Number(opt?.amount ?? 0);
+        setSelectedShippingId(opt?.id || null);
+        setShippingAmount(price);
+        ev.updateWith({
+          status: "success",
+          total: { label: productName || "HeirBloom", amount: amount + price },
+        });
+      } catch (error) {
+        console.error("Shipping option change error:", error);
+        ev.updateWith({ status: "fail" });
+      }
     });
 
     pr.on("paymentmethod", async (ev) => {
@@ -46,10 +127,13 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             paymentMethodId: ev.paymentMethod.id,
-            amount,
+            amount, // base product amount (cents)
+            shippingAmount, // dynamic shipping (cents)
             currency: currency.toLowerCase(),
             productId,
             quantity,
+            shippingAddress: ev.shippingAddress || undefined,
+            shippingOptionId: selectedShippingId,
           }),
         });
 
