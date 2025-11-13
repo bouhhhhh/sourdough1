@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatMoney, getStripeAmountFromDecimal } from "@/lib/utils";
 import { AddToCart } from "@/components/add-to-cart";
-import { useState } from "react";
+import ProductApplePay from "@/components/product-apple-pay.client";
 
 interface ProductCardProps {
 	product: ProductOrRecipe;
@@ -15,17 +15,12 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, priority = false, locale }: ProductCardProps) {
-	const [isHovered, setIsHovered] = useState(false);
 	const isProductItem = isProduct(product);
 	const itemType = isProductItem ? 'product' : 'recipe';
 	const linkHref = `/${itemType}/${product.slug}`;
 
 	return (
-		<li 
-			className="group"
-			onMouseEnter={() => setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}
-		>
+		<li className="group">
 			<article className="overflow-hidden bg-white">
 				{product.images[0] && (
 					<div className="relative rounded-lg aspect-square w-full overflow-hidden bg-neutral-100">
@@ -41,24 +36,29 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 							/>
 						</Link>
 						
-						{/* Bottom Positioned Add to Cart Button - Only for products */}
+						{/* Apple Pay Button - Only for products */}
 						{isProductItem && (
-							<div 
-								className={`absolute bottom-3 left-3 right-3 transition-opacity duration-300 z-10 ${
-									isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-								}`}
-							>
-								<AddToCart
-									variantId={product.id}
+							<div className="absolute bottom-3 left-3 right-3 z-10">
+								<ProductApplePay
+									amount={getStripeAmountFromDecimal({
+										amount: (product as any).discountedPrice ?? (product as any).price,
+										currency: (product as any).currency || "CAD",
+									})}
+									currency={(((product as any).currency && (product as any).currency.length === 3) ? (product as any).currency : "CAD").toLowerCase()}
+									productId={(product as any).id}
+									productName={(product as any).name}
 									quantity={1}
-									className="w-full bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-sm font-medium shadow-lg transition-colors duration-200"
-									openCartOnAdd={false}
-									onSuccess={() => {
-										// Keep user on current page, cart will update silently
-									}}
-								>
-									Add to Basket
-								</AddToCart>
+									fallback={
+										<AddToCart
+											variantId={(product as any).id}
+											quantity={1}
+											className="w-full bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-sm font-medium shadow-lg transition-colors duration-200"
+											openCartOnAdd={false}
+										>
+											Add to Basket
+										</AddToCart>
+									}
+								/>
 							</div>
 						)}
 					</div>

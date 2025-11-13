@@ -7,6 +7,7 @@ import { Suspense } from "react";
 
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal";
 import { AddToCart } from "@/components/add-to-cart";
+import ProductApplePay from "@/components/product-apple-pay.client";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -175,7 +176,7 @@ export default async function SingleProductPage(props: {
           </div>
         </div>
 
-        {/* Description + Add to Cart */}
+  {/* Description + Add to Cart + Apple Pay */}
         <div className="grid gap-8 lg:col-span-5">
           <section>
             <h2 className="sr-only">{t("descriptionTitle")}</h2>
@@ -184,12 +185,27 @@ export default async function SingleProductPage(props: {
             </div>
           </section>
 
+          {/* Add to Cart */}
           <AddToCart
             variantId={product.id}
             className={!product.inStock ? "opacity-50 cursor-not-allowed" : ""}
           >
             {!product.inStock ? "Out of Stock" : "Add to Cart"}
           </AddToCart>
+
+          {/* Apple Pay button below Add to Cart (shown only when in stock and supported) */}
+          {product.inStock && (
+            <div className="max-w-sm">
+              <ProductApplePay
+                amount={Math.round(((product.discountedPrice ?? product.price) || 0) * 100)}
+                currency={(product.currency || "CAD").toLowerCase()}
+                productId={product.id}
+                productName={product.name}
+                quantity={1}
+                fallback={null}
+              />
+            </div>
+          )}
         </div>
       </div>
 
