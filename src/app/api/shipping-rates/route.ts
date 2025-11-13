@@ -32,7 +32,17 @@ export async function POST(req: Request) {
 		const body = (await req.json()) as ShippingRateRequest;
 		const { destination, origin, package: pkg } = body;
 
+		console.log("[SHIPPING-RATES] Request received:", {
+			destination,
+			origin,
+			package: pkg,
+		});
+
 		if (!destination?.postalCode || !destination?.country) {
+			console.error("[SHIPPING-RATES] Missing required fields:", {
+				hasPostalCode: !!destination?.postalCode,
+				hasCountry: !!destination?.country,
+			});
 			return NextResponse.json(
 				{ error: "Destination postal code and country are required" },
 				{ status: 400 }
@@ -67,9 +77,21 @@ export async function POST(req: Request) {
 		const cleanOriginPostalCode = originPostalCode.replace(/\s+/g, "").toUpperCase();
 		const cleanDestPostalCode = destination.postalCode.replace(/\s+/g, "").toUpperCase();
 
+		console.log("[SHIPPING-RATES] Cleaned postal codes:", {
+			origin: cleanOriginPostalCode,
+			destination: cleanDestPostalCode,
+			country: destination.country,
+		});
+
 		// Strict validation for CA and US postal/zip codes
 		if (destination.country === "CA") {
-			if (cleanDestPostalCode.length !== 6 || !/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanDestPostalCode)) {
+			const isValidCA = cleanDestPostalCode.length === 6 && /^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(cleanDestPostalCode);
+			console.log("[SHIPPING-RATES] CA validation:", {
+				postalCode: cleanDestPostalCode,
+				length: cleanDestPostalCode.length,
+				isValid: isValidCA,
+			});
+			if (!isValidCA) {
 				return NextResponse.json(
 					{ error: "Invalid Canadian postal code format (expected: A1A1A1)" },
 					{ status: 400 }
@@ -77,7 +99,12 @@ export async function POST(req: Request) {
 			}
 		}
 		if (destination.country === "US") {
-			if (!/^\d{5}(\d{4})?$/.test(cleanDestPostalCode)) {
+			const isValidUS = /^\d{5}(\d{4})?$/.test(cleanDestPostalCode);
+			console.log("[SHIPPING-RATES] US validation:", {
+				zipCode: cleanDestPostalCode,
+				isValid: isValidUS,
+			});
+			if (!isValidUS) {
 				return NextResponse.json(
 					{ error: "Invalid US ZIP code format" },
 					{ status: 400 }
@@ -119,6 +146,12 @@ export async function POST(req: Request) {
 		const timeoutId = setTimeout(() => controller.abort(), 5000);
 		let response: Response;
 		try {
+			console.log("[SHIPPING-RATES] Calling Canada Post API:", {
+				url: `${apiUrl}/rs/ship/price`,
+				hasAuth: !!(apiKey && apiSecret),
+				destination: ratesRequest["mailing-scenario"].destination,
+			});
+			
 			response = await fetch(`${apiUrl}/rs/ship/price`, {
 				method: "POST",
 				headers: {
@@ -130,13 +163,16 @@ export async function POST(req: Request) {
 				body: buildCanadaPostXML(ratesRequest),
 				signal: controller.signal as any,
 			});
+			
+			console.log("[SHIPPING-RATES] Canada Post response status:", response.status);
 		} catch (err: any) {
 			if (err?.name === "AbortError") {
-				console.warn("Canada Post API request timed out, falling back to mock rates");
+				console.warn("[SHIPPING-RATES] Canada Post API request timed out, falling back to mock rates");
 				return NextResponse.json({
 					rates: getMockRates(destination.country),
 				});
 			}
+			console.error("[SHIPPING-RATES] Canada Post API fetch error:", err);
 			throw err;
 		} finally {
 			clearTimeout(timeoutId);
@@ -144,7 +180,11 @@ export async function POST(req: Request) {
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error("Canada Post API error:", errorText);
+			console.error("[SHIPPING-RATES] Canada Post API error:", {
+				status: response.status,
+				statusText: response.statusText,
+				body: errorText,
+			});
 			
 			// Fallback to mock rates on error
 			return NextResponse.json({
@@ -153,12 +193,17 @@ export async function POST(req: Request) {
 		}
 
 		const xmlResponse = await response.text();
+		console.log("[SHIPPING-RATES] Canada Post XML response length:", xmlResponse.length);
 		const rates = parseCanadaPostRates(xmlResponse);
-        console.log(rates);
+        console.log("[SHIPPING-RATES] Parsed rates:", rates);
 
 		return NextResponse.json({ rates });
 	} catch (error: any) {
-		console.error("Shipping rates error:", error);
+		console.error("[SHIPPING-RATES] Unexpected error:", {
+			message: error?.message,
+			stack: error?.stack,
+			name: error?.name,
+		});
 		
 		// Return mock rates on error
 		return NextResponse.json({
