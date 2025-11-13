@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
@@ -29,23 +29,29 @@ function ConfirmationContent() {
   const [paymentStatus, setPaymentStatus] = useState<'loading' | 'succeeded' | 'failed'>('loading');
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress | null>(null);
-  const [emailSent, setEmailSent] = useState(false);
+  const emailSentRef = useRef(false);
 
   useEffect(() => {
     const paymentIntentId = searchParams.get('payment_intent');
     const redirectStatus = searchParams.get('redirect_status');
     const urlEmail = searchParams.get('email');
 
+    console.log('[CONFIRMATION] useEffect triggered', { paymentIntentId, redirectStatus, urlEmail });
+
     if (redirectStatus === 'succeeded' && paymentIntentId) {
       fetch(`/api/payment-intent?payment_intent=${paymentIntentId}`)
         .then(r => r.json())
         .then((data: any) => {
+          console.log('[CONFIRMATION] PaymentIntent data received:', data);
           const pi = data.paymentIntent;
           if (!pi) {
+            console.error('[CONFIRMATION] No PaymentIntent in response');
             setPaymentStatus('failed');
             return;
           }
           const meta = pi.metadata || {};
+          console.log('[CONFIRMATION] PaymentIntent metadata:', meta);
+          
           const orderNumber = meta.orderNumber || `ORD-${Date.now()}`;
           const orderDate = new Date().toLocaleDateString();
           const shippingAmount = Number(meta.shippingAmount || 0);
@@ -53,6 +59,8 @@ function ConfirmationContent() {
           const quantity = Number(meta.quantity || 1);
           const productName = meta.productName || `Product ${meta.productId || ''}`;
           const payerEmail = urlEmail || meta.payerEmail || '';
+
+          console.log('[CONFIRMATION] Extracted email:', { urlEmail, metaPayerEmail: meta.payerEmail, finalPayerEmail: payerEmail });
 
           if (pi.shipping) {
             setShippingAddress(pi.shipping);
@@ -85,7 +93,7 @@ function ConfirmationContent() {
           setPaymentStatus('succeeded');
 
           // Send confirmation email (only once) using metadata-derived items
-          if (!emailSent && payerEmail) {
+          if (!emailSentRef.current && payerEmail) {
             console.log('[CONFIRMATION] Attempting to send email to:', payerEmail);
             console.log('[CONFIRMATION] Email payload:', {
               email: payerEmail,
@@ -97,6 +105,8 @@ function ConfirmationContent() {
               hasShippingAddress: !!pi.shipping,
               locale,
             });
+            
+            emailSentRef.current = true; // Mark as sent immediately to prevent duplicates
             
             fetch('/api/send-confirmation-email', {
               method: 'POST',
@@ -116,15 +126,13 @@ function ConfirmationContent() {
                 console.log('[CONFIRMATION] Email API response status:', res.status);
                 const responseData = await res.json();
                 console.log('[CONFIRMATION] Email API response:', responseData);
-                if (res.ok) {
-                  setEmailSent(true);
-                } else {
+                if (!res.ok) {
                   console.error('[CONFIRMATION] Email API returned error:', responseData);
                 }
               })
               .catch(err => console.error('[CONFIRMATION] Email send error:', err));
           } else {
-            console.log('[CONFIRMATION] Not sending email. emailSent?', emailSent, 'payerEmail?', !!payerEmail);
+            console.log('[CONFIRMATION] Not sending email. emailSent?', emailSentRef.current, 'payerEmail?', !!payerEmail);
           }
 
           // Clear cart if it existed
@@ -138,8 +146,10 @@ function ConfirmationContent() {
         });
     } else if (redirectStatus === 'failed') {
       setPaymentStatus('failed');
+    } else {
+      console.log('[CONFIRMATION] Conditions not met for processing payment intent', { redirectStatus, paymentIntentId });
     }
-  }, [searchParams, cart, locale, emailSent]);
+  }, [searchParams, cart, locale]);
 
   if (paymentStatus === 'loading') {
     return (
