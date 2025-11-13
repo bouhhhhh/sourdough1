@@ -229,6 +229,13 @@ function ProductApplePayInner(props: ProductApplePayProps) {
 
     pr.on("paymentmethod", async (ev) => {
       try {
+        console.log("[PRB] Payment method triggered:", {
+          amount,
+          shippingAmount,
+          selectedShippingId,
+          total: amount + shippingAmount,
+        });
+        
         const res = await fetch("/api/instant-checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

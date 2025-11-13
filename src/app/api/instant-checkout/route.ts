@@ -18,6 +18,16 @@ export async function POST(req: Request) {
       shippingOptionId?: string | null;
     };
 
+    console.log("[INSTANT-CHECKOUT] Request received:", {
+      amount,
+      shippingAmount,
+      totalAmount: amount + (shippingAmount || 0),
+      currency,
+      productId,
+      quantity,
+      shippingOptionId,
+    });
+
     if (!paymentMethodId) {
       return NextResponse.json({ error: "Missing paymentMethodId" }, { status: 400 });
     }
@@ -30,6 +40,11 @@ export async function POST(req: Request) {
 
   const orderNumber = `ORD-${Date.now()}`;
   const totalAmount = amount + (shippingAmount || 0);
+
+    console.log("[INSTANT-CHECKOUT] Creating PaymentIntent:", {
+      totalAmount,
+      breakdown: { product: amount, shipping: shippingAmount || 0 },
+    });
 
     const intent = await stripe.paymentIntents.create({
       amount: totalAmount,
@@ -59,6 +74,13 @@ export async function POST(req: Request) {
             },
           }
         : undefined,
+    });
+
+    console.log("[INSTANT-CHECKOUT] PaymentIntent created:", {
+      id: intent.id,
+      amount: intent.amount,
+      status: intent.status,
+      metadata: intent.metadata,
     });
 
     if (intent.status === "requires_action" && intent.next_action?.type === "use_stripe_sdk") {
