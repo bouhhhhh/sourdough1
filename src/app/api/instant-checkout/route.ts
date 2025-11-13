@@ -7,15 +7,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
   try {
-    const { paymentMethodId, amount, shippingAmount, currency, productId, quantity, shippingAddress, shippingOptionId } = (await req.json()) as {
+    const { paymentMethodId, amount, shippingAmount, currency, productId, productName, quantity, shippingAddress, shippingOptionId, payerEmail } = (await req.json()) as {
       paymentMethodId: string;
       amount: number; // cents
       shippingAmount?: number; // cents
       currency: string; // e.g. "cad"
       productId?: string;
+      productName?: string;
       quantity?: number;
       shippingAddress?: any;
       shippingOptionId?: string | null;
+      payerEmail?: string | null;
     };
 
     console.log("[INSTANT-CHECKOUT] Request received:", {
@@ -24,9 +26,16 @@ export async function POST(req: Request) {
       totalAmount: amount + (shippingAmount || 0),
       currency,
       productId,
+      productName,
       quantity,
       shippingOptionId,
+      hasPayerEmail: !!payerEmail,
     });
+    if (!shippingAmount || Number(shippingAmount) === 0) {
+      console.warn("[INSTANT-CHECKOUT] WARNING: shippingAmount is zero or missing. Request body may not include updated shipping.", {
+        shippingAmount,
+      });
+    }
 
     if (!paymentMethodId) {
       return NextResponse.json({ error: "Missing paymentMethodId" }, { status: 400 });
@@ -92,6 +101,51 @@ export async function POST(req: Request) {
     }
 
     if (intent.status === "succeeded") {
+      // Fire-and-forget confirmation email using Resend API route
+      (async () => {
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://${process.env.VERCEL_URL}`;
+          const orderDate = new Date().toLocaleString("en-CA", { timeZone: "America/Toronto" });
+          const emailPayload = {
+            email: payerEmail || "",
+            orderNumber,
+            orderDate,
+            items: [
+              {
+                name: productName || String(productId || "Item"),
+                quantity: Number(quantity || 1),
+                price: Number(amount),
+              },
+            ],
+            total: intent.amount,
+            currency: currency.toUpperCase(),
+            shippingAddress: {
+              name: intent.shipping?.name || "",
+              address: {
+                line1: intent.shipping?.address?.line1 || "",
+                line2: intent.shipping?.address?.line2 || "",
+                city: intent.shipping?.address?.city || "",
+                state: intent.shipping?.address?.state || "",
+                postal_code: intent.shipping?.address?.postal_code || "",
+                country: intent.shipping?.address?.country || "",
+              },
+            },
+          };
+
+          if (emailPayload.email) {
+            await fetch(`${baseUrl}/api/send-confirmation-email`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(emailPayload),
+            });
+          } else {
+            console.warn("[INSTANT-CHECKOUT] Skipping confirmation email: missing payerEmail");
+          }
+        } catch (e) {
+          console.error("[INSTANT-CHECKOUT] Failed to send confirmation email:", e);
+        }
+      })();
+
       return NextResponse.json({ status: "succeeded", paymentIntentId: intent.id });
     }
 

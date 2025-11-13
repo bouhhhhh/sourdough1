@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Elements, PaymentRequestButtonElement, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import type { PaymentRequest } from "@stripe/stripe-js";
@@ -23,6 +23,15 @@ function ProductApplePayInner(props: ProductApplePayProps) {
   const [supported, setSupported] = useState<boolean>(false);
   const [shippingAmount, setShippingAmount] = useState<number>(0);
   const [selectedShippingId, setSelectedShippingId] = useState<string | null>(null);
+  // Refs to avoid stale values inside PRB event handlers
+  const shippingAmountRef = useRef<number>(0);
+  const selectedShippingIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    shippingAmountRef.current = shippingAmount;
+  }, [shippingAmount]);
+  useEffect(() => {
+    selectedShippingIdRef.current = selectedShippingId;
+  }, [selectedShippingId]);
 
   useEffect(() => {
     if (!stripe) return;
@@ -196,8 +205,10 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           return;
         }
 
-        setSelectedShippingId(cheapest.id);
-        setShippingAmount(cheapest.price);
+  setSelectedShippingId(cheapest.id);
+  selectedShippingIdRef.current = cheapest.id;
+  setShippingAmount(cheapest.price);
+  shippingAmountRef.current = cheapest.price;
 
         ev.updateWith({
           status: "success",
@@ -213,10 +224,13 @@ function ProductApplePayInner(props: ProductApplePayProps) {
     // When user selects a different shipping option, update totals
     pr.on("shippingoptionchange", (ev: any) => {
       try {
-        const opt = ev.shippingOption;
-        const price = Number(opt?.amount ?? 0);
-        setSelectedShippingId(opt?.id || null);
-        setShippingAmount(price);
+  const opt = ev.shippingOption;
+  const price = Number(opt?.amount ?? 0);
+  const sid = opt?.id || null;
+  setSelectedShippingId(sid);
+  selectedShippingIdRef.current = sid;
+  setShippingAmount(price);
+  shippingAmountRef.current = price;
         ev.updateWith({
           status: "success",
           total: { label: productName || "HeirBloom", amount: amount + price },
@@ -229,11 +243,13 @@ function ProductApplePayInner(props: ProductApplePayProps) {
 
     pr.on("paymentmethod", async (ev) => {
       try {
+        const liveShippingAmount = Number(shippingAmountRef.current || 0);
+        const liveSelectedShippingId = selectedShippingIdRef.current;
         console.log("[PRB] Payment method triggered:", {
           amount,
-          shippingAmount,
-          selectedShippingId,
-          total: amount + shippingAmount,
+          shippingAmount: liveShippingAmount,
+          selectedShippingId: liveSelectedShippingId,
+          total: amount + liveShippingAmount,
         });
         
         const res = await fetch("/api/instant-checkout", {
@@ -242,12 +258,14 @@ function ProductApplePayInner(props: ProductApplePayProps) {
           body: JSON.stringify({
             paymentMethodId: ev.paymentMethod.id,
             amount, // base product amount (cents)
-            shippingAmount, // dynamic shipping (cents)
+            shippingAmount: liveShippingAmount, // dynamic shipping (cents)
             currency: currency.toLowerCase(),
             productId,
+            productName,
             quantity,
             shippingAddress: ev.shippingAddress || undefined,
-            shippingOptionId: selectedShippingId,
+            shippingOptionId: liveSelectedShippingId,
+            payerEmail: (ev as any).payerEmail || ev.paymentMethod?.billing_details?.email || undefined,
           }),
         });
 
