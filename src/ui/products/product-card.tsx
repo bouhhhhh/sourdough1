@@ -12,9 +12,10 @@ interface ProductCardProps {
 	product: ProductOrRecipe;
 	priority?: boolean;
 	locale: string;
+	showApplePay?: boolean; // New prop to control Apple Pay visibility
 }
 
-export function ProductCard({ product, priority = false, locale }: ProductCardProps) {
+export function ProductCard({ product, priority = false, locale, showApplePay = false }: ProductCardProps) {
 	const isProductItem = isProduct(product);
 	const itemType = isProductItem ? 'product' : 'recipe';
 	const linkHref = `/${itemType}/${product.slug}`;
@@ -36,8 +37,8 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 							/>
 						</Link>
 						
-						{/* Apple Pay Button - Only for products */}
-						{isProductItem && (
+						{/* Apple Pay Button - Only on home page, Add to Cart on products page */}
+						{isProductItem && showApplePay && (
 							<div className="absolute bottom-3 left-3 right-3 z-10">
 								<ProductApplePay
 									amount={getStripeAmountFromDecimal({
@@ -59,6 +60,20 @@ export function ProductCard({ product, priority = false, locale }: ProductCardPr
 										</AddToCart>
 									}
 								/>
+							</div>
+						)}
+						
+						{/* Add to Cart Button - Show on products page when not showing Apple Pay */}
+						{isProductItem && !showApplePay && (
+							<div className="absolute bottom-3 left-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+								<AddToCart
+									variantId={(product as any).id}
+									quantity={1}
+									className="w-full bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-sm font-medium shadow-lg transition-colors duration-200"
+									openCartOnAdd={false}
+								>
+									Add to Basket
+								</AddToCart>
 							</div>
 						)}
 					</div>

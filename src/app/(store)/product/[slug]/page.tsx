@@ -6,8 +6,9 @@ import type { Metadata } from "next/types";
 import { Suspense } from "react";
 
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal";
-import { AddToCart } from "@/components/add-to-cart";
-import ProductApplePay from "@/components/product-apple-pay.client";
+import { AddToCartWithQuantity } from "@/components/add-to-cart-with-quantity";
+import { FavoriteButton } from "@/components/favorite-button";
+import { ProductApplePayWithDivider } from "@/components/product-apple-pay-with-divider.client";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -93,9 +94,26 @@ export default async function SingleProductPage(props: {
       <div className="mt-4 grid gap-4 lg:grid-cols-12">
         {/* Title / Price / Availability */}
         <div className="lg:col-span-5 lg:col-start-8">
-          <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
-            {product.name}
-          </h1>
+          {/* Best Seller Badge */}
+          {product.bestSeller && (
+            <div className="inline-flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 fill-red-600" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="8" />
+              </svg>
+              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+                Best Seller
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
+              {product.name}
+            </h1>
+            
+            {/* Favorite Button */}
+            <FavoriteButton productId={product.id} />
+          </div>
 
           {/* Price Section with Discount Support */}
           <div className="mt-2 flex items-center gap-3">
@@ -176,36 +194,112 @@ export default async function SingleProductPage(props: {
           </div>
         </div>
 
-  {/* Description + Add to Cart + Apple Pay */}
-        <div className="grid gap-8 lg:col-span-5">
-          <section>
-            <h2 className="sr-only">{t("descriptionTitle")}</h2>
-            <div className="prose text-secondary-foreground">
-              <Markdown source={product.description ?? ""} />
-            </div>
-          </section>
-
-          {/* Add to Cart */}
-          <AddToCart
-            variantId={product.id}
-            className={!product.inStock ? "opacity-50 cursor-not-allowed" : ""}
-          >
-            {!product.inStock ? "Out of Stock" : "Add to Cart"}
-          </AddToCart>
-
-          {/* Apple Pay button below Add to Cart (shown only when in stock and supported) */}
-          {product.inStock && (
-            <div className="max-w-sm">
-              <ProductApplePay
-                amount={Math.round(((product.discountedPrice ?? product.price) || 0) * 100)}
-                currency={(product.currency || "CAD").toLowerCase()}
-                productId={product.id}
-                productName={product.name}
-                quantity={1}
-                fallback={null}
-              />
+  {/* Action Buttons + Product Details */}
+        <div className="grid gap-6 lg:col-span-5">
+          {/* Organic & Kosher Badges */}
+          {product.ingredients && (
+            <div className="flex flex-wrap gap-3">
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200">
+                Organic
+              </span>
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                Kosher
+              </span>
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-800 border border-red-200">
+                Made in Canada
+              </span>
+              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                Non-GMO
+              </span>
             </div>
           )}
+
+          {/* Apple Pay Button with conditional "or" divider */}
+          {product.inStock && (
+            <ProductApplePayWithDivider
+              amount={Math.round(((product.discountedPrice ?? product.price) || 0) * 100)}
+              currency={(product.currency || "CAD").toLowerCase()}
+              productId={product.id}
+              productName={product.name}
+              quantity={1}
+            />
+          )}
+
+          {/* Add to Cart with Quantity */}
+          <AddToCartWithQuantity
+            variantId={product.id}
+            disabled={!product.inStock}
+          />
+        </div>
+      </div>
+
+      {/* Product Information Section - Below the main grid */}
+      <div className="mt-12 grid gap-8 lg:grid-cols-12">
+        {/* Left Column - Main Description and Sections */}
+        <div className="lg:col-span-8 space-y-8">
+          <section className="bg-neutral-50 rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Product Information</h2>
+            
+            {/* Main Description */}
+            {product.description && (
+              <div className="mb-6">
+                <div className="prose prose-sm text-neutral-700 max-w-none">
+                  <Markdown source={product.description} />
+                </div>
+              </div>
+            )}
+
+            {/* Additional Sections */}
+            {product.sections && product.sections.length > 0 && (
+              <div className="space-y-6 mt-6">
+                {product.sections.map((section, idx) => (
+                  <div key={idx} className="border-t border-neutral-200 pt-6 first:border-t-0 first:pt-0">
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-3">
+                      {section.title}
+                    </h3>
+                    <div className="prose prose-sm text-neutral-700 max-w-none">
+                      <Markdown source={section.content} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Ingredients Section */}
+          {product.ingredients && (
+            <section className="bg-neutral-50 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+                Ingredients, Nutrition, And Allergens
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-neutral-900 mb-2">Ingredients</h3>
+                  <p className="text-sm text-neutral-700 leading-relaxed">
+                    {product.ingredients}
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
+
+        {/* Right Column - Details Sidebar */}
+        <div className="lg:col-span-4">
+          <div className="bg-neutral-50 rounded-lg p-6 sticky top-4">
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">Details:</h2>
+            <ul className="space-y-3">
+              {/* Show custom details */}
+              {product.details && product.details.map((detail, idx) => (
+                <li key={idx} className="flex items-start">
+                  <span className="text-red-600 mr-2">—</span>
+                  <span className="text-sm text-neutral-700">
+                    <strong>{detail.label}:</strong> {detail.value}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 

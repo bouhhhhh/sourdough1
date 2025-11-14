@@ -52,6 +52,22 @@ export async function POST(req: Request) {
 		const body = (await req.json()) as SendConfirmationEmailRequest;
 		const { email, orderNumber, orderDate, items, total, currency, shippingAddress, locale = "en-US" } = body;
 
+		console.log("[SEND-CONFIRMATION-EMAIL] Request received:", {
+			email,
+			orderNumber,
+			orderDate,
+			itemsCount: items?.length,
+			total,
+			currency,
+			hasShippingAddress: !!shippingAddress,
+			locale,
+		});
+
+		if (!email) {
+			console.error("[SEND-CONFIRMATION-EMAIL] No email provided");
+			return NextResponse.json({ error: "Email is required" }, { status: 400 });
+		}
+
 		// Load translations from JSON files
 		const messages = loadTranslations(locale);
 		const t = {

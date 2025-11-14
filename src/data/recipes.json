@@ -1,0 +1,24 @@
+[
+  {
+    "id": "r_1001",
+    "name": "Pizza Recipe",
+    "slug": "pizza-recipe",
+    "image": "/pizzarecipe.jpg",
+    "images": ["/pizzarecipe.jpg"],
+    "category": "recipes",
+    "description": "Authentic sourdough pizza recipe with step-by-step instructions.",
+    "active": true,
+    "type": "recipe"
+  },
+  {
+    "id": "r_1002",
+    "name": "Loaf Recipe",
+    "slug": "loaf-recipe",
+    "image": "/recipe.webp",
+    "images": ["/recipe.webp"],
+    "category": "recipes",
+    "description": "Classic sourdough bread loaf recipe for perfect homemade bread.",
+    "active": true,
+    "type": "recipe"
+  }
+]

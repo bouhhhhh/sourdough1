@@ -1,0 +1,85 @@
+[
+  {
+    "id": "p_1001",
+    "name": "Sourdough Starter",
+    "slug": "sourdough-starter",
+    "discountedPrice": 14.99,
+    "price": 20.00,
+    "currency": "CAD",
+    "image": "/Starter.jpg",
+    "images": ["/Starter.jpg"],
+    "category": "products",
+    "description": "Premium sourdough starter for making artisan bread.",
+    "ingredients": "ORGANIC WHITE UNBLEACHED ALL PURPOSE FLOUR, NIACIN, IRON, THIAMINE, RIBOFLAVIN, FOLIC ACID",
+    "inStock": true,
+    "active": true,
+    "type": "product"
+  },
+  {
+    "id": "p_1002",
+    "name": "Beginner's Guide to Sourdough",
+    "slug": "beginners-guide-to-sourdough",
+    "price": 12.99,
+    "discountedPrice": 9.99,
+    "currency": "CAD",
+    "image": "/Starter.jpg",
+    "images": ["/Starter.jpg"],
+    "category": "products",
+    "description": "Complete step-by-step guide for sourdough beginners.",
+    "inStock": true,
+    "active": true,
+    "type": "product"
+  },
+  {
+    "id": "p_1003",
+    "name": "Classic Fresh Sourdough Starter",
+    "slug": "classic-fresh-sourdough-starter",
+    "price": 18.99,
+    "currency": "CAD",
+    "image": "/Starter.jpg",
+    "images": ["/Starter.jpg"],
+    "category": "products",
+    "description": "Where else can you find FRESH sourdough starter - not dried?\n\nIf you love bread, pancakes, bagels – you name it – you'll love sourdough baking. It's versatile, delicious, and will broaden your baking horizons! The first place to start your sourdough journey is with your own sourdough starter. Ours is descended from a starter that's been lovingly nurtured here in New England for decades. When you feed it (all you need is flour, water, and a little bit of patience), it quickly becomes your own, adapting itself to your own region and climate. Thousands of bakers before you have made wonderful sourdough bread with a bit of this same bubbling brew. Join the ranks of satisfied sourdough bakers.",
+    "sections": [
+      {
+        "title": "Important Care Instructions",
+        "content": "Sourdough starter is a living entity; it needs regular feeding.\n\nWe recommend no more than 10 days elapse between when the sourdough starter you purchase leaves our facility, and when you give it its first feeding. Keep this in mind when choosing a delivery method; if you need help making the smartest shipping choice, please contact our customer service team.\n\nFor best results, please feed your fresh sourdough starter within 24 hours of receiving it."
+      },
+      {
+        "title": "Allergen Information",
+        "content": "The fresh sourdough starter that comes in this set is processed in a facility that also packages products containing eggs, milk, soy, tree nuts, and wheat."
+      },
+      {
+        "title": "Resources",
+        "content": "Care and feeding directions are included with your order, and are also available in our Sourdough Tips & Recipes Booklet (PDF).\n\nRead the blog: How to feed sourdough starter"
+      }
+    ],
+    "details": [
+      {
+        "label": "Organic",
+        "value": "Yes"
+      },
+      {
+        "label": "Kosher",
+        "value": "Yes"
+      },
+      {
+        "label": "Made in",
+        "value": "Canada"
+      },
+      {
+        "label": "Non-GMO",
+        "value": "Yes"
+      },
+      {
+        "label": "Note",
+        "value": "DO NOT CONSUME RAW STARTER"
+      }
+    ],
+    "ingredients": "ORGANIC WHITE UNBLEACHED ALL PURPOSE FLOUR, NIACIN, IRON, THIAMINE, RIBOFLAVIN, FOLIC ACID",
+    "bestSeller": true,
+    "inStock": true,
+    "active": true,
+    "type": "product"
+  }
+]

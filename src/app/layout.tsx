@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieConsent } from "@/components/cookie-consent";
+import { FavoritesProvider } from "@/context/favorites-context";
 import { env, publicUrl } from "@/env.mjs";
 import { IntlClientProvider } from "@/i18n/client";
 import { getLocale, getMessages, getTranslations } from "@/i18n/server";
@@ -26,11 +27,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 		<html lang={locale} className="h-full antialiased">
 			<body className="flex min-h-full flex-col">
 			<IntlClientProvider messages={messages} locale={locale}>
-				<div className="flex min-h-full flex-1 flex-col bg-white" vaul-drawer-wrapper="">
-					{children}
-				</div>
-				<Toaster position="top-center" offset={10} />
-				<CookieConsent />
+				<FavoritesProvider>
+					<div className="flex min-h-full flex-1 flex-col bg-white" vaul-drawer-wrapper="">
+						{children}
+					</div>
+					<Toaster position="top-center" offset={10} />
+					<CookieConsent />
+				</FavoritesProvider>
 			</IntlClientProvider>
 				{env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
 					<Script

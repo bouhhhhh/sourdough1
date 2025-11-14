@@ -49,6 +49,7 @@ export function ResponsiveProductSection({ allProducts, locale }: ResponsiveProd
 						product={product} 
 						priority={idx < 3}
 						locale={locale}
+						showApplePay={true}
 					/>
 				))}
 			</ul>

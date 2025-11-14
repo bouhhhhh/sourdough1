@@ -23,6 +23,10 @@ export async function Footer() {
 				{
 					label: t("contact"),
 					href: "/contact",
+				},
+				{
+					label: "Cookie Policy",
+					href: "/cookie-policy",
 				}
 			],
 		},

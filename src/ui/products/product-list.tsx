@@ -16,6 +16,7 @@ export const ProductList = async ({ products }: { products: ProductOrRecipe[] })
 						product={product} 
 						priority={idx < 3}
 						locale={locale}
+						showApplePay={false}
 					/>
 				))}
 			</ul>

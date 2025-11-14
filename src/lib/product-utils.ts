@@ -15,6 +15,16 @@ export type Product = {
   images: string[];
   category: "products";  // Only products category
   description?: string;
+  ingredients?: string;  // Ingredients list
+  sections?: {           // Additional product sections
+    title: string;
+    content: string;
+  }[];
+  details?: {            // Product details/notes
+    label: string;
+    value: string;
+  }[];
+  bestSeller?: boolean;  // Best seller badge
   inStock: boolean;
   active: boolean;
   type: "product";       // Discriminator

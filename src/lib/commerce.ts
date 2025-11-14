@@ -27,63 +27,31 @@ function loadTranslations(locale: string): Record<string, string> {
 /* =========================
  * Product & Recipe data
  * ========================= */
-const PRODUCTS: Product[] = [
-  {
-    id: "p_1001",
-    name: "Sourdough Starter",
-    slug: "sourdough-starter",
-    discountedPrice: 14.99,
-    price: 20.00,
-    currency: "CAD",
-    image: "/Starter.jpg",
-    images: ["/Starter.jpg"],
-    category: "products",
-    description: "Premium sourdough starter for making artisan bread.",
-    inStock: true,
-    active: true,
-    type: "product",
-  },
-  {
-    id: "p_1002",
-    name: "Beginner's Guide to Sourdough",
-    slug: "beginners-guide-to-sourdough",
-    price: 12.99,
-    discountedPrice: 9.99,
-    currency: "CAD",
-    image: "/Starter.jpg",
-    images: ["/Starter.jpg"],
-    category: "products",
-    description: "Complete step-by-step guide for sourdough beginners.",
-    inStock: true,
-    active: true,
-    type: "product",
-  },
-];
+// Load products and recipes from JSON files
+function loadProducts(): Product[] {
+	const productsPath = path.join(process.cwd(), "src", "data", "products.json");
+	try {
+		const content = fs.readFileSync(productsPath, "utf-8");
+		return JSON.parse(content) as Product[];
+	} catch (error) {
+		console.error("Failed to load products:", error);
+		return [];
+	}
+}
 
-const RECIPES: Recipe[] = [
-  {
-    id: "r_1001",
-    name: "Pizza Recipe",
-    slug: "pizza-recipe",
-    image: "/pizzarecipe.jpg",
-    images: ["/pizzarecipe.jpg"],
-    category: "recipes",
-    description: "Authentic sourdough pizza recipe with step-by-step instructions.",
-    active: true,
-    type: "recipe",
-  },
-  {
-    id: "r_1002",
-    name: "Loaf Recipe",
-    slug: "loaf-recipe",
-    image: "/recipe.webp",
-    images: ["/recipe.webp"],
-    category: "recipes",
-    description: "Classic sourdough bread loaf recipe for perfect homemade bread.",
-    active: true,
-    type: "recipe",
-  },
-];
+function loadRecipes(): Recipe[] {
+	const recipesPath = path.join(process.cwd(), "src", "data", "recipes.json");
+	try {
+		const content = fs.readFileSync(recipesPath, "utf-8");
+		return JSON.parse(content) as Recipe[];
+	} catch (error) {
+		console.error("Failed to load recipes:", error);
+		return [];
+	}
+}
+
+const PRODUCTS: Product[] = loadProducts();
+const RECIPES: Recipe[] = loadRecipes();
 
 /* =========================
  * Product & Recipe helpers
