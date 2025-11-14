@@ -1,14 +1,12 @@
-import { getTranslations } from "@/i18n/server";
 import Link from "next/link";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
 	title: "Cookie Policy",
 	description: "Learn about the cookies we use on St-henri Sourdough",
 };
 
 export default async function CookiePolicyPage() {
-	const t = await getTranslations("Global");
-
 	return (
 		<div className="container mx-auto max-w-4xl px-4 py-12">
 			<h1 className="text-4xl font-bold mb-8">Cookie Policy</h1>
