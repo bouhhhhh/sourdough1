@@ -166,6 +166,17 @@ export default async function SingleProductPage(props: {
                 <Link key={image + idx} href={`?${qs}`} scroll={false}>
                   {idx === 0 ? (
                     <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+                      {/* Banners on image: Bestseller / Sale */}
+                      {(product as any).bestSeller && (
+                        <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-3 py-1 text-sm font-semibold text-white">
+                          Bestseller
+                        </div>
+                      )}
+                      {(product as any).onSale && (
+                        <div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
+                          Sale
+                        </div>
+                      )}
                       <MainProductImage
                         className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
                         src={image}
@@ -177,6 +188,17 @@ export default async function SingleProductPage(props: {
                     </div>
                   ) : (
                     <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+                      {/* Badges for thumbnails too */}
+                      {(product as any).bestSeller && (
+                        <div className="absolute top-2 left-2 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-2 py-0.5 text-xs font-semibold text-white">
+                          Bestseller
+                        </div>
+                      )}
+                      {(product as any).onSale && (
+                        <div className="absolute top-2 right-2 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
+                          Sale
+                        </div>
+                      )}
                       <Image
                         className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
                         src={image}

@@ -11,6 +11,7 @@
     "category": "products",
     "description": "Premium sourdough starter for making artisan bread.",
     "ingredients": "ORGANIC WHITE UNBLEACHED ALL PURPOSE FLOUR, NIACIN, IRON, THIAMINE, RIBOFLAVIN, FOLIC ACID",
+    "onSale": true,
     "inStock": true,
     "active": true,
     "type": "product"
@@ -26,6 +27,7 @@
     "images": ["/Starter.jpg"],
     "category": "products",
     "description": "Complete step-by-step guide for sourdough beginners.",
+    "onSale": true,
     "inStock": true,
     "active": true,
     "type": "product"
@@ -81,5 +83,192 @@
     "inStock": true,
     "active": true,
     "type": "product"
+  },
+  {
+    "id": "p_2001",
+    "name": "Professional Bread Lame",
+    "slug": "professional-bread-lame",
+    "price": 24.99,
+    "currency": "CAD",
+    "image": "/bread-lame.jpg",
+    "images": ["/bread-lame.jpg"],
+    "category": "shop",
+    "description": "Professional-grade bread lame with replaceable blades for scoring perfect sourdough loaves. Ergonomic wooden handle provides excellent control for intricate scoring patterns.",
+    "inStock": true,
+    "active": true,
+    "type": "product",
+    "details": [
+      {
+        "label": "Material",
+        "value": "Beechwood handle, stainless steel blade"
+      },
+      {
+        "label": "Blade count",
+        "value": "5 replacement blades included"
+      },
+      {
+        "label": "Made in",
+        "value": "France"
+      }
+    ]
+  },
+  {
+    "id": "p_2002",
+    "name": "Dutch Oven 5Qt Cast Iron",
+    "slug": "dutch-oven-cast-iron",
+    "price": 89.99,
+    "discountedPrice": 74.99,
+    "currency": "CAD",
+    "image": "/dutch-oven.jpg",
+    "images": ["/dutch-oven.jpg"],
+    "category": "shop",
+    "description": "Heavy-duty cast iron Dutch oven perfect for baking artisan sourdough bread. Superior heat retention creates the ideal steamy environment for a crispy crust and soft interior.",
+    "bestSeller": true,
+  "onSale": true,
+  "inStock": true,
+    "active": true,
+    "type": "product",
+    "details": [
+      {
+        "label": "Capacity",
+        "value": "5 Quarts (4.7L)"
+      },
+      {
+        "label": "Material",
+        "value": "Pre-seasoned cast iron"
+      },
+      {
+        "label": "Oven safe",
+        "value": "Up to 500°F (260°C)"
+      },
+      {
+        "label": "Weight",
+        "value": "14 lbs (6.4 kg)"
+      }
+    ]
+  },
+  {
+    "id": "p_2003",
+    "name": "Banneton Proofing Basket Set",
+    "slug": "banneton-proofing-basket-set",
+    "price": 34.99,
+    "currency": "CAD",
+    "image": "/banneton-basket.jpg",
+    "images": ["/banneton-basket.jpg"],
+    "category": "shop",
+    "description": "Set of 2 round banneton proofing baskets (9 inch) with linen liners. Natural rattan construction provides optimal air circulation for perfect dough proofing and beautiful spiral patterns.",
+    "inStock": true,
+    "active": true,
+    "type": "product",
+    "details": [
+      {
+        "label": "Set includes",
+        "value": "2 baskets + 2 linen liners"
+      },
+      {
+        "label": "Size",
+        "value": "9 inch diameter"
+      },
+      {
+        "label": "Material",
+        "value": "Natural rattan"
+      },
+      {
+        "label": "Capacity",
+        "value": "Fits 750g - 1kg dough"
+      }
+    ]
+  },
+  {
+    "id": "p_2004",
+    "name": "Digital Kitchen Scale",
+    "slug": "digital-kitchen-scale",
+    "price": 29.99,
+    "currency": "CAD",
+    "image": "/kitchen-scale.jpg",
+    "images": ["/kitchen-scale.jpg"],
+    "category": "shop",
+    "description": "Precision digital kitchen scale with 0.1g accuracy. Essential for consistent sourdough baking with baker's percentages. Large LCD display and tare function make measuring ingredients effortless.",
+    "inStock": true,
+    "active": true,
+    "type": "product",
+    "details": [
+      {
+        "label": "Capacity",
+        "value": "5kg / 11 lbs"
+      },
+      {
+        "label": "Accuracy",
+        "value": "±0.1g"
+      },
+      {
+        "label": "Units",
+        "value": "g, oz, lb, ml"
+      },
+      {
+        "label": "Power",
+        "value": "2x AAA batteries (included)"
+      }
+    ]
+  },
+  {
+    "id": "p_2005",
+    "name": "Bread Proofing Box",
+    "slug": "bread-proofing-box",
+    "price": 49.99,
+    "currency": "CAD",
+    "image": "/proofing-box.jpg",
+    "images": ["/proofing-box.jpg"],
+    "category": "shop",
+    "description": "Temperature-controlled bread proofing box maintains consistent warmth (70-85°F) for optimal dough rise. Compact design fits on any countertop. Perfect for consistent results year-round.",
+    "inStock": true,
+    "active": true,
+    "type": "product",
+    "details": [
+      {
+        "label": "Temperature range",
+        "value": "70-85°F (21-29°C)"
+      },
+      {
+        "label": "Capacity",
+        "value": "Fits 2 loaves or 1 large bowl"
+      },
+      {
+        "label": "Dimensions",
+        "value": "15\" x 12\" x 8\""
+      },
+      {
+        "label": "Power",
+        "value": "110V, 25W"
+      }
+    ]
+  },
+  {
+    "id": "p_2006",
+    "name": "Dough Scraper Set",
+    "slug": "dough-scraper-set",
+    "price": 16.99,
+    "currency": "CAD",
+    "image": "/dough-scraper.jpg",
+    "images": ["/dough-scraper.jpg"],
+    "category": "shop",
+    "description": "Essential dough scraper set includes bench scraper and bowl scraper. Stainless steel bench scraper with measurement markings. Flexible bowl scraper for clean mixing.",
+    "inStock": true,
+    "active": true,
+    "type": "product",
+    "details": [
+      {
+        "label": "Set includes",
+        "value": "1 metal bench scraper + 1 flexible bowl scraper"
+      },
+      {
+        "label": "Material",
+        "value": "Stainless steel + food-grade silicone"
+      },
+      {
+        "label": "Measurements",
+        "value": "Inch and cm markings"
+      }
+    ]
   }
 ]

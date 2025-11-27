@@ -25,6 +25,17 @@ export function ProductCard({ product, priority = false, locale, showApplePay = 
 			<article className="overflow-hidden bg-white">
 				{product.images[0] && (
 					<div className="relative rounded-lg aspect-square w-full overflow-hidden bg-neutral-100">
+					{/* Banners: Bestseller / Sale */}
+					{(product as any).bestSeller && (
+						<div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-semibold text-white">
+							<span>Bestseller</span>
+						</div>
+					)}
+					{(product as any).onSale && (
+						<div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+							<span>Sale</span>
+						</div>
+					)}
 						<Link href={linkHref}>
 							<Image
 								className="group-hover:rotate hover-perspective w-full h-full bg-neutral-100 object-cover object-center transition-opacity group-hover:opacity-75"

@@ -6,14 +6,12 @@ import { LanguageSwitcherWrapper } from "@/components/language-switcher-wrapper"
 
 export const NavMenu = async () => {
 	const tCat = await getTranslations("Nav.category");
-	const tNav = await getTranslations("Nav");
 	
 	const links = [
 		...StoreConfig.categories.map(({ slug }) => ({
-			label: slug === "products" ? tCat("products") : tCat("recipes"),
+			label: slug === "products" ? tCat("products") : slug === "recipes" ? tCat("recipes") : tCat("shop"),
 			href: `/category/${slug}`,
 		})),
-		{ label: tNav("link.contact"), href: "/contact" },
 	];
 
 	return (

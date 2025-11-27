@@ -8,7 +8,15 @@
     "category": "recipes",
     "description": "Authentic sourdough pizza recipe with step-by-step instructions.",
     "active": true,
-    "type": "recipe"
+    "type": "recipe",
+    "recommendedProduct": {
+      "productId": "p_2001",
+      "productName": "Professional Bread Lame",
+      "productPrice": "24.99 $",
+      "productImage": "/bread-lame.jpg",
+      "productSlug": "professional-bread-lame",
+      "productDescription": "Professional-grade bread lame with replaceable blades. Essential for scoring perfect patterns on your pizza dough and sourdough loaves."
+    }
   },
   {
     "id": "r_1002",
@@ -19,6 +27,104 @@
     "category": "recipes",
     "description": "Classic sourdough bread loaf recipe for perfect homemade bread.",
     "active": true,
-    "type": "recipe"
+    "type": "recipe",
+    "recommendedProduct": {
+      "productId": "p_2002",
+      "productName": "Dutch Oven 5Qt Cast Iron",
+      "productPrice": "74.99 $",
+      "productImage": "/dutch-oven.jpg",
+      "productSlug": "dutch-oven-cast-iron",
+      "productDescription": "Heavy-duty cast iron Dutch oven perfect for baking artisan sourdough bread. Superior heat retention creates the ideal steamy environment for a crispy crust."
+    }
+  },
+  {
+    "id": "r_1003",
+    "name": "Sourdough Starter Maintenance",
+    "slug": "sourdough-starter-maintenance",
+    "image": "/starter-maintenance.jpg",
+    "images": ["/starter-maintenance.jpg"],
+    "category": "recipes",
+    "description": "Complete guide to maintaining a healthy and active sourdough starter. Learn proper feeding schedules, storage techniques, and how to troubleshoot common issues.",
+    "active": true,
+    "type": "recipe",
+    "prepTime": "10 min",
+    "cookTime": "0 min",
+    "servings": "1 starter",
+    "pricePerServing": "$0.50",
+    "tags": ["Beginner Friendly", "Essential Guide", "Starter Care"],
+    "recommendedProduct": {
+      "productId": "p_2004",
+      "productName": "Digital Kitchen Scale",
+      "productPrice": "29.99 $",
+      "productImage": "/kitchen-scale.jpg",
+      "productSlug": "digital-kitchen-scale",
+      "productDescription": "A little scale that packs a punch! Discreet yet powerful, it measures ingredients right in your go-cup for maximum no-fuss efficiency in the kitchen."
+    },
+    "ingredients": [
+      {
+        "amount": "1/2 cup (120g)",
+        "item": "mature sourdough starter (discard or active)"
+      },
+      {
+        "amount": "1/2 cup (120g)",
+        "item": "filtered or bottled water, room temperature"
+      },
+      {
+        "amount": "1/2 cup (60g)",
+        "item": "bread flour or all-purpose flour"
+      },
+      {
+        "amount": "",
+        "item": "Clean jar with loose-fitting lid"
+      },
+      {
+        "amount": "",
+        "item": "Rubber band (for marking levels)"
+      }
+    ],
+    "preparation": [
+      {
+        "step": 1,
+        "instruction": "Remove your sourdough starter from the refrigerator if storing it dormant. Let it come to room temperature for about 30 minutes. Observe its appearance – it should have a slightly sour smell but not unpleasant."
+      },
+      {
+        "step": 2,
+        "instruction": "Discard about half of your starter (or use it in recipes like pancakes or crackers). You should have approximately 1/2 cup remaining. This step prevents your starter from growing too large and ensures it gets fresh nutrients."
+      },
+      {
+        "step": 3,
+        "instruction": "Add 1/2 cup of room temperature water to your starter. Stir vigorously with a clean utensil until the starter is dissolved and the mixture is milky. This helps distribute the yeast and bacteria evenly."
+      },
+      {
+        "step": 4,
+        "instruction": "Add 1/2 cup of flour to the water-starter mixture. Stir until no dry flour remains and the mixture is smooth and thick, like a thick pancake batter. Scrape down the sides of the jar."
+      },
+      {
+        "step": 5,
+        "instruction": "Mark the level of your starter on the jar with a rubber band or piece of tape. This helps you monitor its growth. Cover loosely with a lid or breathable cloth secured with a rubber band. The starter needs airflow but protection from contaminants."
+      },
+      {
+        "step": 6,
+        "instruction": "Place the jar in a warm spot (70-75°F / 21-24°C is ideal). Avoid direct sunlight or heat sources. Let it sit for 4-12 hours, depending on temperature and starter activity. It's ready when it has doubled in size, shows lots of bubbles, and has a pleasant sour aroma."
+      }
+    ],
+    "notes": [
+      {
+        "title": "Feeding Schedule",
+        "content": "For active baking (multiple times per week): Feed daily or every 12 hours if kept at room temperature. For occasional baking: Store in refrigerator and feed weekly. Before using, give it 2-3 feedings at room temperature to reactivate."
+      },
+      {
+        "title": "Signs of a Healthy Starter",
+        "content": "Doubles or triples in 4-8 hours after feeding. Lots of bubbles throughout. Pleasant sour smell (like yogurt or beer). Passes the float test: a spoonful dropped in water should float when ready to use."
+      },
+      {
+        "title": "Troubleshooting",
+        "content": "Liquid on top (hooch): Stir it back in or pour off, then feed. Mold (pink, orange, or fuzzy growth): Discard starter and start fresh. Not rising: Increase feeding frequency, check temperature, or try switching flour types. Too sour: Feed more frequently with a higher flour-to-water ratio."
+      },
+      {
+        "title": "Storage Tips",
+        "content": "Room temperature (70-75°F): Feed daily. Warm environments (75-80°F): Feed twice daily. Refrigerator (35-40°F): Feed weekly. Freezer: Not recommended as it can damage yeast cells. Dried starter: Spread thinly on parchment, dry completely, crumble, and store in airtight container for long-term backup."
+      }
+    ]
   }
 ]

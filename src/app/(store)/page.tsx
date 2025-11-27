@@ -7,6 +7,7 @@ import { commerce } from "@/lib/commerce";
 import StoreConfig from "@/store.config";
 import { CategoryBox } from "@/ui/category-box";
 import { ResponsiveProductSection } from "@/ui/products/responsive-product-section";
+import { SourdoughMaintenanceCTA } from "@/components/sourdough-maintenance-cta";
 
 export const metadata: Metadata = {
 	alternates: { canonical: publicUrl },
@@ -53,6 +54,8 @@ export default async function Home() {
 					</div>
 				</div>
 			</section>				<ResponsiveProductSection allProducts={products} locale={locale} />
+
+				<SourdoughMaintenanceCTA />
 
 				<section className="w-full py-8">
 					<div className="grid gap-8 lg:grid-cols-2">
