@@ -3,6 +3,8 @@
 
 [![Website front](./websitefront.png)](https://maisonheirbloom.ca)
 
+[maisonheirbloom.ca](https://maisonheirbloom.ca)
+
 Opinionated starter for a modern, production-ready Next.js storefront.
 
 **Short description:** a TypeScript + Next.js e-commerce frontend with Tailwind, Stripe, i18n, and a small commerce API surface — configured for fast developer iteration and production deployment.
