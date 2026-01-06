@@ -30,3 +30,6 @@ We follow a coordinated disclosure approach: maintainers will work with reporter
 - Keep secrets out of source code — use environment variables or secrets management.
 - Rotate API keys and credentials if they may have been exposed.
 - Follow dependency update practices and run regular vulnerability scans.
+
+
+## Thank you!

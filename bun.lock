@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "yournextstore",
+      "name": "sourdough",
       "dependencies": {
         "@next/mdx": "15.5.2",
         "@radix-ui/react-checkbox": "1.3.3",

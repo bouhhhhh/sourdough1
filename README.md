@@ -1,5 +1,5 @@
 
-# YourNextStore
+# Sourdough Store
 
 Opinionated starter for a modern, production-ready Next.js storefront.
 
@@ -82,6 +82,4 @@ If you'd like, I can also:
 
 For reporting vulnerabilities and security-related information, see `SECURITY.md` in the project root. If you want me to, I can add contact details or a preferred disclosure channel.
 
-**License change**
 
-If you'd like to change the project's license, tell me which license you prefer (for example: `MIT`, `Apache-2.0`, `GPL-3.0-or-later`, `AGPL-3.0-only`, etc.). I will update `package.json` and the repo license files accordingly once you confirm.
