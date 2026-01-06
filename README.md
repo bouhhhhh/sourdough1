@@ -1,5 +1,5 @@
 
-# YourNextStore
+# Sourdough Store
 
 Opinionated starter for a modern, production-ready Next.js storefront.
 
