@@ -1,7 +1,7 @@
 
 # Sourdough Store
 
-![Website front](./websitefront.png)
+![Website front](./public/websitefront.png)
 
 [maisonheirbloom.ca](https://maisonheirbloom.ca)
 [maisonheirbloom.ca](https://maisonheirbloom.ca)
