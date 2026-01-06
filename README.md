@@ -1,8 +1,9 @@
 
 # Sourdough Store
 
-[![Website front](./websitefront.png)](https://maisonheirbloom.ca)
+![Website front](./websitefront.png)
 
+[maisonheirbloom.ca](https://maisonheirbloom.ca)
 [maisonheirbloom.ca](https://maisonheirbloom.ca)
 
 Opinionated starter for a modern, production-ready Next.js storefront.
