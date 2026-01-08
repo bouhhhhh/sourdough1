@@ -30,7 +30,7 @@ export function SourdoughMaintenanceCTA() {
               How to Maintain Your Sourdough Starter
             </h2>
 
-            <p className="text-lg text-neutral-600 leading-relaxed">
+            <p className="hidden md:block text-lg text-neutral-600 leading-relaxed">
               Keep your sourdough starter healthy and active with our comprehensive maintenance guide. 
               Learn the essential feeding schedule, temperature control, and troubleshooting tips to 
               ensure your starter produces the best bread every time.

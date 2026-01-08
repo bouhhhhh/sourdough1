@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/ui/contact/contact-form.client";
 
 export const metadata: Metadata = {
-  title: "Contact · HeirBloom",
+  title: "Contact · StHenri",
 };
 
 export default async function ContactPage() {

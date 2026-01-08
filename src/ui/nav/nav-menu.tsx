@@ -9,7 +9,7 @@ export const NavMenu = async () => {
 	
 	const links = [
 		...StoreConfig.categories.map(({ slug }) => ({
-			label: slug === "products" ? tCat("products") : slug === "recipes" ? tCat("recipes") : tCat("shop"),
+			label: tCat(slug as "products" | "recipes" | "shop-accessories"),
 			href: `/category/${slug}`,
 		})),
 	];

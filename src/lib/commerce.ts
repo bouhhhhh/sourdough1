@@ -109,12 +109,15 @@ async function listAllItems(opts?: { limit?: number; category?: string; locale?:
   
   let items: ProductOrRecipe[] = [];
   
-  if (!category || category === "products") {
-    items = [...items, ...PRODUCTS];
-  }
-  
-  if (!category || category === "recipes") {
-    items = [...items, ...RECIPES];
+  if (!category) {
+    // If no category specified, return all products and recipes
+    items = [...PRODUCTS, ...RECIPES];
+  } else if (category === "recipes") {
+    // Only recipes
+    items = [...RECIPES];
+  } else {
+    // For "products", "shop-accessories", or any other category, filter products by category
+    items = PRODUCTS.filter((p) => p.category === category);
   }
   
   const translated = items.map(item => translateItem(item, locale));

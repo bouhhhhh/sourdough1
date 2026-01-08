@@ -41,7 +41,7 @@ export const accountToWebsiteJsonLd = ({
 	return {
 		"@context": "https://schema.org",
 		"@type": "WebSite",
-		name: account?.business_profile?.name ?? "HeirBloom",
+		name: account?.business_profile?.name ?? "StHenri",
 		url: account?.business_profile?.url ?? "https://maisonheirbloom.ca",
 		mainEntityOfPage: {
 			"@type": "WebPage",

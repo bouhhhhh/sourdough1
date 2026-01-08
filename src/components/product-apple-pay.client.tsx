@@ -39,7 +39,7 @@ function ProductApplePayInner(props: ProductApplePayProps) {
     const pr = stripe.paymentRequest({
       country: "CA",
       currency: currency.toLowerCase(),
-      total: { label: productName || "HeirBloom", amount },
+      total: { label: productName || "StHenri", amount },
       requestPayerName: true,
       requestPayerEmail: true,
       requestShipping: true,
@@ -213,7 +213,7 @@ function ProductApplePayInner(props: ProductApplePayProps) {
         ev.updateWith({
           status: "success",
           shippingOptions: options.map((o) => ({ ...o, selected: o.id === cheapest.id })),
-          total: { label: productName || "HeirBloom", amount: amount + cheapest.price },
+          total: { label: productName || "StHenri", amount: amount + cheapest.price },
         });
       } catch (error) {
         console.error("Shipping address change error:", error);
@@ -233,7 +233,7 @@ function ProductApplePayInner(props: ProductApplePayProps) {
   shippingAmountRef.current = price;
         ev.updateWith({
           status: "success",
-          total: { label: productName || "HeirBloom", amount: amount + price },
+          total: { label: productName || "StHenri", amount: amount + price },
         });
       } catch (error) {
         console.error("Shipping option change error:", error);
