@@ -22,7 +22,7 @@ export const getLocale = async (localeFromProps?: string) => {
 			return localeCookie;
 		}
 	} catch (error) {
-		console.warn("Could not read cookie for locale");
+		// Expected during build/static generation - silently fall through
 	}
 	
 	// Try to read from headers (set by middleware)
@@ -35,8 +35,7 @@ export const getLocale = async (localeFromProps?: string) => {
 			return preferredLocale;
 		}
 	} catch (error) {
-		// If headers can't be read, fall back to environment variable
-		console.warn("Could not read headers for locale, falling back to env variable");
+		// Expected during build/static generation - silently fall through
 	}
 	
 	// Fall back to environment variable
