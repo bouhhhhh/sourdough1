@@ -114,9 +114,9 @@ export default async function SingleRecipePage(props: {
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
               />
-              <button className="absolute top-4 left-4 p-3 bg-white rounded-full shadow-lg hover:bg-neutral-50 transition-colors">
-                <FavoriteButton productId={recipe.id} />
-              </button>
+              <div className="absolute top-4 left-4">
+                <FavoriteButton productId={recipe.id} className="p-3 bg-white rounded-full shadow-lg hover:bg-neutral-50 transition-colors" />
+              </div>
             </div>
           )}
 

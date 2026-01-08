@@ -42,10 +42,10 @@ export const accountToWebsiteJsonLd = ({
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		name: account?.business_profile?.name ?? "HeirBloom",
-		url: account?.business_profile?.url ?? "https://yournextstore.com",
+		url: account?.business_profile?.url ?? "https://maisonheirbloom.ca",
 		mainEntityOfPage: {
 			"@type": "WebPage",
-			url: account?.business_profile?.url ?? "https://yournextstore.com",
+			url: account?.business_profile?.url ?? "https://maisonheirbloom.ca",
 		},
 		...(logoUrl && {
 			image: {
@@ -56,7 +56,7 @@ export const accountToWebsiteJsonLd = ({
 		publisher: {
 			"@type": "Organization",
 			name: account?.business_profile?.name ?? "HeirBloom",
-			url: account?.business_profile?.url ?? "https://yournextstore.com",
+			url: account?.business_profile?.url ?? "https://maisonheirbloom.ca",
 		},
 	};
 };

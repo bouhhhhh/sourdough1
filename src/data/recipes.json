@@ -13,7 +13,7 @@
       "productId": "p_2001",
       "productName": "Professional Bread Lame",
       "productPrice": "24.99 $",
-      "productImage": "/bread-lame.jpg",
+      "productImage": "/bread-lame.webp",
       "productSlug": "professional-bread-lame",
       "productDescription": "Professional-grade bread lame with replaceable blades. Essential for scoring perfect patterns on your pizza dough and sourdough loaves."
     }
@@ -32,7 +32,7 @@
       "productId": "p_2002",
       "productName": "Dutch Oven 5Qt Cast Iron",
       "productPrice": "74.99 $",
-      "productImage": "/dutch-oven.jpg",
+      "productImage": "/dutch-oven.webp",
       "productSlug": "dutch-oven-cast-iron",
       "productDescription": "Heavy-duty cast iron Dutch oven perfect for baking artisan sourdough bread. Superior heat retention creates the ideal steamy environment for a crispy crust."
     }
@@ -41,8 +41,8 @@
     "id": "r_1003",
     "name": "Sourdough Starter Maintenance",
     "slug": "sourdough-starter-maintenance",
-    "image": "/starter-maintenance.jpg",
-    "images": ["/starter-maintenance.jpg"],
+    "image": "/maintenance.jpg",
+    "images": ["/maintenance.jpg"],
     "category": "recipes",
     "description": "Complete guide to maintaining a healthy and active sourdough starter. Learn proper feeding schedules, storage techniques, and how to troubleshoot common issues.",
     "active": true,
@@ -56,7 +56,7 @@
       "productId": "p_2004",
       "productName": "Digital Kitchen Scale",
       "productPrice": "29.99 $",
-      "productImage": "/kitchen-scale.jpg",
+      "productImage": "/digital-scale.webp",
       "productSlug": "digital-kitchen-scale",
       "productDescription": "A little scale that packs a punch! Discreet yet powerful, it measures ingredients right in your go-cup for maximum no-fuss efficiency in the kitchen."
     },
