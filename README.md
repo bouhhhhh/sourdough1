@@ -76,14 +76,3 @@ Place runtime secrets in environment variables (example `.env` keys):
 **License**
 - This project includes dual licensing files in the repo; see the root-level LICENSE files for details.
 
----
-
-If you'd like, I can also:
-- add a short development checklist, or
-- create a small CONTRIBUTING.md and CODE_OF_CONDUCT.md.
-
-**Security**
-
-For reporting vulnerabilities and security-related information, see `SECURITY.md` in the project root. If you want me to, I can add contact details or a preferred disclosure channel.
-
-
