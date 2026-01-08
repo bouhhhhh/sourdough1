@@ -1,6 +1,6 @@
 const RecipesImage = "/recipe.webp";
 const ProductsImage = "/Starter.jpg";
-const ShopImage = "/shop-utensils.jpg";
+const ShopImage = "/sourdough-kit.webp";
 
 export const config = {
 	categories: [

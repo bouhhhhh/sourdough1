@@ -13,7 +13,7 @@ export async function Footer() {
 		{
 			header: t("categoriesTitle"),
 			links: StoreConfig.categories.map(({ slug }) => ({
-				label: slug === "products" ? tNav("products") : tNav("recipes"),
+				label: tNav(slug),
 				href: `/category/${slug}`,
 			})),
 		},

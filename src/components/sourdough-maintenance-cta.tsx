@@ -10,7 +10,7 @@ export function SourdoughMaintenanceCTA() {
           {/* Image Side */}
           <div className="relative h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
             <Image
-              src="/starter-maintenance.jpg"
+              src="/maintenance.jpg"
               alt="Sourdough Starter Maintenance"
               fill
               className="object-cover"
