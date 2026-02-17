@@ -7,15 +7,16 @@ import { Suspense } from "react";
 
 import { ProductImageModal } from "@/app/(store)/product/[slug]/product-image-modal";
 import { AddToCartWithQuantity } from "@/components/add-to-cart-with-quantity";
+import { CustomerBreadGallery } from "@/components/customer-bread-gallery";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ProductApplePayWithDivider } from "@/components/product-apple-pay-with-divider.client";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+	BreadcrumbPage,
+	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { publicUrl } from "@/env.mjs";
 import { getLocale, getTranslations } from "@/i18n/server";
@@ -26,319 +27,316 @@ import { Markdown } from "@/ui/markdown";
 import { MainProductImage } from "@/ui/products/main-product-image";
 
 export const generateMetadata = async (props: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ variant?: string }>;
+	params: Promise<{ slug: string }>;
+	searchParams: Promise<{ variant?: string }>;
 }): Promise<Metadata> => {
-  const params = await props.params;
+	const params = await props.params;
 
-  const p = await commerce.product.get({ slug: params.slug });
-  if (!p) return notFound();
+	const p = await commerce.product.get({ slug: params.slug });
+	if (!p) return notFound();
 
-  const t = await getTranslations("/product.metadata");
-  const canonical = new URL(`${publicUrl}/product/${params.slug}`);
+	const t = await getTranslations("/product.metadata");
+	const canonical = new URL(`${publicUrl}/product/${params.slug}`);
 
-  return {
-    title: t("title", { productName: p.name ?? "" }),
-    description: p.description ?? "",
-    alternates: { canonical },
-  } satisfies Metadata;
+	return {
+		title: t("title", { productName: p.name ?? "" }),
+		description: p.description ?? "",
+		alternates: { canonical },
+	} satisfies Metadata;
 };
 
 export default async function SingleProductPage(props: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ variant?: string; image?: string }>;
+	params: Promise<{ slug: string }>;
+	searchParams: Promise<{ variant?: string; image?: string }>;
 }) {
-  const params = await props.params;
-  const t = await getTranslations("/product.page");
-  const locale = await getLocale();
+	const params = await props.params;
+	const t = await getTranslations("/product.page");
+	const locale = await getLocale();
 
-  const product = await commerce.product.get({ slug: params.slug, locale });
-  if (!product) return notFound();
+	const product = await commerce.product.get({ slug: params.slug, locale });
+	if (!product) return notFound();
 
-  const category = product.category ?? null;
-  const images =
-    Array.isArray(product.images) && product.images.length > 0
-      ? product.images
-      : product.image
-        ? [product.image]
-        : [];
+	const category = product.category ?? null;
+	const images =
+		Array.isArray(product.images) && product.images.length > 0
+			? product.images
+			: product.image
+				? [product.image]
+				: [];
 
-  return (
-    <article className="pb-12">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="inline-flex min-h-12 min-w-12 items-center justify-center">
-              <Link href="/products">{t("allProducts")}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+	return (
+		<article className="pb-12">
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink asChild className="inline-flex min-h-12 min-w-12 items-center justify-center">
+							<Link href="/products">{t("allProducts")}</Link>
+						</BreadcrumbLink>
+					</BreadcrumbItem>
 
-          {category && (
-            <>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild className="inline-flex min-h-12 min-w-12 items-center justify-center">
-                  <Link href={`/category/${category}`}>{deslugify(category)}</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </>
-          )}
+					{category && (
+						<>
+							<BreadcrumbSeparator />
+							<BreadcrumbItem>
+								<BreadcrumbLink asChild className="inline-flex min-h-12 min-w-12 items-center justify-center">
+									<Link href={`/category/${category}`}>{deslugify(category)}</Link>
+								</BreadcrumbLink>
+							</BreadcrumbItem>
+						</>
+					)}
 
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{product.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage>{product.name}</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-12">
-        {/* Title / Price / Availability */}
-        <div className="lg:col-span-5 lg:col-start-8">
-          {/* Best Seller Badge */}
-          {product.bestSeller && (
-            <div className="inline-flex items-center gap-2 mb-2">
-              <svg className="w-4 h-4 fill-red-600" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="8" cy="8" r="8" />
-              </svg>
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
-                Best Seller
-              </span>
-            </div>
-          )}
+			<div className="mt-4 grid gap-4 lg:grid-cols-12">
+				{/* Title / Price / Availability */}
+				<div className="lg:col-span-5 lg:col-start-8">
+					{/* Best Seller Badge */}
+					{product.bestSeller && (
+						<div className="inline-flex items-center gap-2 mb-2">
+							<svg className="w-4 h-4 fill-red-600" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+								<circle cx="8" cy="8" r="8" />
+							</svg>
+							<span className="text-sm font-semibold text-red-600 uppercase tracking-wide">Best Seller</span>
+						</div>
+					)}
 
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">
-              {product.name}
-            </h1>
-            
-            {/* Favorite Button */}
-            <FavoriteButton productId={product.id} />
-          </div>
+					<div className="flex items-start justify-between gap-4">
+						<h1 className="text-3xl font-bold leading-none tracking-tight text-foreground">{product.name}</h1>
 
-          {/* Price Section with Discount Support */}
-          <div className="mt-2 flex items-center gap-3">
-            {product.discountedPrice ? (
-              <>
-                {/* Discounted Price */}
-                <p className="text-2xl font-bold leading-none tracking-tight text-red-600">
-                  {formatMoney({
-                    amount: Math.round(product.discountedPrice * 100),
-                    currency: (product.currency || "CAD").toUpperCase(),
-                    locale,
-                  })}
-                </p>
-                {/* Original Price (crossed out) */}
-                <p className="text-lg font-medium leading-none tracking-tight text-foreground/50 line-through">
-                  {formatMoney({
-                    amount: Math.round(product.price * 100),
-                    currency: (product.currency || "CAD").toUpperCase(),
-                    locale,
-                  })}
-                </p>
-                {/* Discount Percentage */}
-                <span className="bg-red-100 text-red-800 text-sm font-bold px-3 py-1 rounded-full">
-                  {Math.round(((product.price - product.discountedPrice) / product.price) * 100)}% OFF
-                </span>
-              </>
-            ) : (
-              /* Regular Price */
-              <p className="text-2xl font-medium leading-none tracking-tight text-foreground/70">
-                {formatMoney({
-                  amount: Math.round(product.price * 100),
-                  currency: (product.currency || "CAD").toUpperCase(),
-                  locale,
-                })}
-              </p>
-            )}
-          </div>
+						{/* Favorite Button */}
+						<FavoriteButton productId={product.id} />
+					</div>
 
-          <div className="mt-2">{!product.inStock && <div>Out of stock</div>}</div>
-        </div>
+					{/* Price Section with Discount Support */}
+					<div className="mt-2 flex items-center gap-3">
+						{product.discountedPrice ? (
+							<>
+								{/* Discounted Price */}
+								<p className="text-2xl font-bold leading-none tracking-tight text-red-600">
+									{formatMoney({
+										amount: Math.round(product.discountedPrice * 100),
+										currency: (product.currency || "CAD").toUpperCase(),
+										locale,
+									})}
+								</p>
+								{/* Original Price (crossed out) */}
+								<p className="text-lg font-medium leading-none tracking-tight text-foreground/50 line-through">
+									{formatMoney({
+										amount: Math.round(product.price * 100),
+										currency: (product.currency || "CAD").toUpperCase(),
+										locale,
+									})}
+								</p>
+								{/* Discount Percentage */}
+								<span className="bg-red-100 text-red-800 text-sm font-bold px-3 py-1 rounded-full">
+									{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}% OFF
+								</span>
+							</>
+						) : (
+							/* Regular Price */
+							<p className="text-2xl font-medium leading-none tracking-tight text-foreground/70">
+								{formatMoney({
+									amount: Math.round(product.price * 100),
+									currency: (product.currency || "CAD").toUpperCase(),
+									locale,
+								})}
+							</p>
+						)}
+					</div>
 
-        {/* Images */}
-        <div className="lg:col-span-7 lg:row-span-3 lg:row-start-1">
-          <h2 className="sr-only">{t("imagesTitle")}</h2>
+					<div className="mt-2">{!product.inStock && <div>Out of stock</div>}</div>
+				</div>
 
-          <div className="grid gap-4 lg:grid-cols-3 [&>*:first-child]:col-span-3">
-            {images.map((image: string, idx: number) => {
-              const qs = new URLSearchParams({ image: idx.toString() }).toString();
-              return (
-                <Link key={image + idx} href={`?${qs}`} scroll={false}>
-                  {idx === 0 ? (
-                    <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
-                      {/* Banners on image: Bestseller / Sale */}
-                      {(product as any).bestSeller && (
-                        <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-3 py-1 text-sm font-semibold text-white">
-                          Bestseller
-                        </div>
-                      )}
-                      {(product as any).onSale && (
-                        <div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
-                          Sale
-                        </div>
-                      )}
-                      <MainProductImage
-                        className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
-                        src={image}
-                        loading="eager"
-                        priority
-                        alt={product.name}
-                        fill
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
-                      {/* Badges for thumbnails too */}
-                      {(product as any).bestSeller && (
-                        <div className="absolute top-2 left-2 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-2 py-0.5 text-xs font-semibold text-white">
-                          Bestseller
-                        </div>
-                      )}
-                      {(product as any).onSale && (
-                        <div className="absolute top-2 right-2 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
-                          Sale
-                        </div>
-                      )}
-                      <Image
-                        className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
-                        src={image}
-                        sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 225px"
-                        loading="eager"
-                        priority
-                        alt={`${product.name} ${idx + 1}`}
-                        fill
-                      />
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+				{/* Images */}
+				<div className="lg:col-span-7 lg:row-span-3 lg:row-start-1">
+					<h2 className="sr-only">{t("imagesTitle")}</h2>
 
-  {/* Action Buttons + Product Details */}
-        <div className="grid gap-6 lg:col-span-5">
-          {/* Organic & Kosher Badges */}
-          {product.ingredients && (
-            <div className="flex flex-wrap gap-3">
-              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200">
-                Organic
-              </span>
-              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                Kosher
-              </span>
-              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-800 border border-red-200">
-                Made in Canada
-              </span>
-              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-purple-100 text-purple-800 border border-purple-200">
-                Non-GMO
-              </span>
-            </div>
-          )}
+					<div className="grid gap-4 lg:grid-cols-3 [&>*:first-child]:col-span-3">
+						{images.map((image: string, idx: number) => {
+							const qs = new URLSearchParams({ image: idx.toString() }).toString();
+							return (
+								<Link key={image + idx} href={`?${qs}`} scroll={false}>
+									{idx === 0 ? (
+										<div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+											{/* Banners on image: Bestseller / Sale */}
+											{(product as any).bestSeller && (
+												<div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-3 py-1 text-sm font-semibold text-white">
+													Bestseller
+												</div>
+											)}
+											{(product as any).onSale && (
+												<div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
+													Sale
+												</div>
+											)}
+											<MainProductImage
+												className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
+												src={image}
+												loading="eager"
+												priority
+												alt={product.name}
+												fill
+											/>
+										</div>
+									) : (
+										<div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-100">
+											{/* Badges for thumbnails too */}
+											{(product as any).bestSeller && (
+												<div className="absolute top-2 left-2 z-20 inline-flex items-center gap-2 rounded-full bg-yellow-500 px-2 py-0.5 text-xs font-semibold text-white">
+													Bestseller
+												</div>
+											)}
+											{(product as any).onSale && (
+												<div className="absolute top-2 right-2 z-20 inline-flex items-center gap-2 rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
+													Sale
+												</div>
+											)}
+											<Image
+												className="w-full h-full rounded-lg bg-neutral-100 object-cover object-center transition-opacity"
+												src={image}
+												sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 225px"
+												loading="eager"
+												priority
+												alt={`${product.name} ${idx + 1}`}
+												fill
+											/>
+										</div>
+									)}
+								</Link>
+							);
+						})}
+					</div>
+				</div>
 
-          {/* Apple Pay Button with conditional "or" divider */}
-          {product.inStock && (
-            <ProductApplePayWithDivider
-              amount={Math.round(((product.discountedPrice ?? product.price) || 0) * 100)}
-              currency={(product.currency || "CAD").toLowerCase()}
-              productId={product.id}
-              productName={product.name}
-              quantity={1}
-            />
-          )}
+				{/* Action Buttons + Product Details */}
+				<div className="grid gap-6 lg:col-span-5">
+					{/* Organic & Kosher Badges */}
+					{product.ingredients && (
+						<div className="flex flex-wrap gap-3">
+							<span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200">
+								Organic
+							</span>
+							<span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+								Kosher
+							</span>
+							<span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-800 border border-red-200">
+								Made in Canada
+							</span>
+							<span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+								Non-GMO
+							</span>
+						</div>
+					)}
 
-          {/* Add to Cart with Quantity */}
-          <AddToCartWithQuantity
-            variantId={product.id}
-            disabled={!product.inStock}
-          />
-        </div>
-      </div>
+					{/* Apple Pay Button with conditional "or" divider */}
+					{product.inStock && (
+						<ProductApplePayWithDivider
+							amount={Math.round(((product.discountedPrice ?? product.price) || 0) * 100)}
+							currency={(product.currency || "CAD").toLowerCase()}
+							productId={product.id}
+							productName={product.name}
+							quantity={1}
+						/>
+					)}
 
-      {/* Product Information Section - Below the main grid */}
-      <div className="mt-12 grid gap-8 lg:grid-cols-12">
-        {/* Left Column - Main Description and Sections */}
-        <div className="lg:col-span-8 space-y-8">
-          <section className="bg-neutral-50 rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-neutral-900 mb-4">Product Information</h2>
-            
-            {/* Main Description */}
-            {product.description && (
-              <div className="mb-6">
-                <div className="prose prose-sm text-neutral-700 max-w-none">
-                  <Markdown source={product.description} />
-                </div>
-              </div>
-            )}
+					{/* Add to Cart with Quantity */}
+					<AddToCartWithQuantity variantId={product.id} disabled={!product.inStock} />
+				</div>
+			</div>
 
-            {/* Additional Sections */}
-            {product.sections && product.sections.length > 0 && (
-              <div className="space-y-6 mt-6">
-                {product.sections.map((section, idx) => (
-                  <div key={idx} className="border-t border-neutral-200 pt-6 first:border-t-0 first:pt-0">
-                    <h3 className="text-lg font-semibold text-neutral-900 mb-3">
-                      {section.title}
-                    </h3>
-                    <div className="prose prose-sm text-neutral-700 max-w-none">
-                      <Markdown source={section.content} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
+			{/* Product Information Section - Below the main grid */}
+			<div className="mt-12 grid gap-8 lg:grid-cols-12">
+				{/* Left Column - Main Description and Sections */}
+				<div className="lg:col-span-8 space-y-8">
+					<section className="bg-neutral-50 rounded-lg p-6">
+						<h2 className="text-2xl font-bold text-neutral-900 mb-4">Product Information</h2>
 
-          {/* Ingredients Section */}
-          {product.ingredients && (
-            <section className="bg-neutral-50 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-                Ingredients, Nutrition, And Allergens
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-semibold text-neutral-900 mb-2">Ingredients</h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed">
-                    {product.ingredients}
-                  </p>
-                </div>
-              </div>
-            </section>
-          )}
-        </div>
+						{/* Main Description */}
+						{product.description && (
+							<div className="mb-6">
+								<div className="prose prose-sm text-neutral-700 max-w-none">
+									<Markdown source={product.description} />
+								</div>
+							</div>
+						)}
 
-        {/* Right Column - Details Sidebar */}
-        <div className="lg:col-span-4">
-          <div className="bg-neutral-50 rounded-lg p-6 sticky top-4">
-            <h2 className="text-xl font-semibold text-neutral-900 mb-4">Details:</h2>
-            <ul className="space-y-3">
-              {/* Show custom details */}
-              {product.details && product.details.map((detail, idx) => (
-                <li key={idx} className="flex items-start">
-                  <span className="text-red-600 mr-2">—</span>
-                  <span className="text-sm text-neutral-700">
-                    <strong>{detail.label}:</strong> {detail.value}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
+						{/* Additional Sections */}
+						{product.sections && product.sections.length > 0 && (
+							<div className="space-y-6 mt-6">
+								{product.sections.map((section, idx) => (
+									<div key={idx} className="border-t border-neutral-200 pt-6 first:border-t-0 first:pt-0">
+										<h3 className="text-lg font-semibold text-neutral-900 mb-3">{section.title}</h3>
+										<div className="prose prose-sm text-neutral-700 max-w-none">
+											<Markdown source={section.content} />
+										</div>
+									</div>
+								))}
+							</div>
+						)}
+					</section>
 
-      <Suspense>
-        <SimilarProducts id={product.id} />
-      </Suspense>
+					{/* Ingredients Section */}
+					{product.ingredients && (
+						<section className="bg-neutral-50 rounded-lg p-6">
+							<h2 className="text-xl font-semibold text-neutral-900 mb-4">
+								Ingredients, Nutrition, And Allergens
+							</h2>
+							<div className="space-y-4">
+								<div>
+									<h3 className="text-sm font-semibold text-neutral-900 mb-2">Ingredients</h3>
+									<p className="text-sm text-neutral-700 leading-relaxed">{product.ingredients}</p>
+								</div>
+							</div>
+						</section>
+					)}
+				</div>
 
-      <Suspense>
-        <ProductImageModal images={images} />
-      </Suspense>
+				{/* Right Column - Details Sidebar */}
+				<div className="lg:col-span-4">
+					<div className="bg-neutral-50 rounded-lg p-6 sticky top-4">
+						<h2 className="text-xl font-semibold text-neutral-900 mb-4">Details:</h2>
+						<ul className="space-y-3">
+							{/* Show custom details */}
+							{product.details &&
+								product.details.map((detail, idx) => (
+									<li key={idx} className="flex items-start">
+										<span className="text-red-600 mr-2">—</span>
+										<span className="text-sm text-neutral-700">
+											<strong>{detail.label}:</strong> {detail.value}
+										</span>
+									</li>
+								))}
+						</ul>
+					</div>
+				</div>
+			</div>
 
-      <JsonLd jsonLd={mappedProductToJsonLd(product)} />
-    </article>
-  );
+			{/* Customer Bread Gallery - Show for sourdough products */}
+			{(params.slug.includes("sourdough") || product.category === "sourdough") && (
+				<div className="mt-12">
+					<CustomerBreadGallery />
+				</div>
+			)}
+
+			<Suspense>
+				<SimilarProducts id={product.id} />
+			</Suspense>
+
+			<Suspense>
+				<ProductImageModal images={images} />
+			</Suspense>
+
+			<JsonLd jsonLd={mappedProductToJsonLd(product)} />
+		</article>
+	);
 }
 
 async function SimilarProducts({ id }: { id: string }) {
-  // TODO: Implement similar products functionality with your mock data if needed
-  return null;
+	// TODO: Implement similar products functionality with your mock data if needed
+	return null;
 }

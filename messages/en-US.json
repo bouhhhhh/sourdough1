@@ -286,9 +286,11 @@
 	"/contact.form.message": "Message",
 	"/contact.form.namePlaceholder": "Your name",
 	"/contact.form.emailPlaceholder": "you@example.com",
-		"/contact.form.messagePlaceholder": "How can we help?",
-		"/contact.form.send": "Send message",
-		"/contact.form.sending": "Sending...",
-		"/contact.form.success": "Thanks! Your message has been sent.",
-		"/contact.form.error": "We couldn't send your message. Please try again."
+	"/contact.form.messagePlaceholder": "How can we help?",
+	"/contact.form.send": "Send message",
+	"/contact.form.sending": "Sending...",
+	"/contact.form.success": "Thanks! Your message has been sent.",
+	"/contact.form.error": "We couldn't send your message. Please try again.",
+	"/contact.form.photoImplicitAgreement": "By uploading a photo, you agree to our",
+	"/contact.form.photoPolicy": "Photo Submission Policy"
 }

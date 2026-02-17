@@ -48,12 +48,22 @@
 			height: var(--radix-accordion-content-height);
 		}
 	}
+
 	@keyframes accordion-up {
 		from {
 			height: var(--radix-accordion-content-height);
 		}
 		to {
 			height: 0;
+		}
+	}
+
+	@keyframes scroll-infinite {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
 		}
 	}
 }
