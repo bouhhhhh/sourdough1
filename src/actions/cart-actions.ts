@@ -5,7 +5,7 @@ import { clearCartId, getCartId, setCartId } from "@/lib/cart-cookies";
 // Ensure you are importing the correct commerce instance that includes 'cart' operations
 import { commerce } from "@/lib/commerce";
 
-export async function getCartAction(): Promise<APICartGetResult | null> {
+export async function getCartAction(): Promise<Cart | null> {
   const cartId = await getCartId();
   console.log("getCartAction: cartId from cookies:", cartId);
   if (!cartId) {
