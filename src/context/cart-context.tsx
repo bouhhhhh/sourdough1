@@ -1,27 +1,27 @@
 "use client";
 
-import type { APICartGetResult, APIProductGetByIdResult } from "commerce-kit";
+import type { Cart, Product } from "@/lib/commerce";
 import { createContext, type ReactNode, useContext, useEffect, useOptimistic, useState, startTransition } from "react";
 import { getCartClient, addToCartClient, updateCartItemClient, removeFromCartClient } from "@/lib/cart-client";
 
 type CartAction =
-	| { type: "ADD_ITEM"; variantId: string; quantity: number; product?: APIProductGetByIdResult }
+	| { type: "ADD_ITEM"; variantId: string; quantity: number; product?: Product }
 	| { type: "UPDATE_ITEM"; variantId: string; quantity: number }
 	| { type: "REMOVE_ITEM"; variantId: string }
-	| { type: "SYNC_CART"; cart: APICartGetResult | null };
+	| { type: "SYNC_CART"; cart: Cart | null };
 
 interface CartContextType {
-	cart: APICartGetResult | null;
+	cart: Cart | null;
 	isCartOpen: boolean;
 	itemCount: number;
 	openCart: () => void;
 	closeCart: () => void;
-	optimisticAdd: (variantId: string, quantity: number, product?: APIProductGetByIdResult) => Promise<void>;
+	optimisticAdd: (variantId: string, quantity: number, product?: Product) => Promise<void>;
 	optimisticUpdate: (variantId: string, quantity: number) => Promise<void>;
 	optimisticRemove: (variantId: string) => Promise<void>;
 }
 
-function cartReducer(state: APICartGetResult | null, action: CartAction): APICartGetResult | null {
+function cartReducer(state: Cart | null, action: CartAction): Cart | null {
 	switch (action.type) {
 		case "ADD_ITEM": {
 			if (!state) {
@@ -126,7 +126,7 @@ function cartReducer(state: APICartGetResult | null, action: CartAction): APICar
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-	const [actualCart, setActualCart] = useState<APICartGetResult | null>(null);
+	const [actualCart, setActualCart] = useState<Cart | null>(null);
 	const [optimisticCart, setOptimisticCart] = useOptimistic(actualCart, cartReducer);
 	const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -143,7 +143,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	const openCart = () => setIsCartOpen(true);
 	const closeCart = () => setIsCartOpen(false);
 
-	const optimisticAdd = async (variantId: string, quantity = 1, product?: APIProductGetByIdResult) => {
+	const optimisticAdd = async (variantId: string, quantity = 1, product?: Product) => {
 		// Optimistically update UI
 		startTransition(() => {
 			setOptimisticCart({ type: "ADD_ITEM", variantId, quantity, product });
