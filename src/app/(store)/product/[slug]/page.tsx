@@ -318,7 +318,7 @@ export default async function SingleProductPage(props: {
 			</div>
 
 			{/* Customer Bread Gallery - Show for sourdough products */}
-			{(params.slug.includes("sourdough") || product.category === "sourdough") && (
+			{params.slug.includes("sourdough") && (
 				<div className="mt-12">
 					<CustomerBreadGallery />
 				</div>
