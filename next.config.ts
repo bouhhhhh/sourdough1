@@ -5,9 +5,6 @@ const withMDX = MDX();
 
 const nextConfig: NextConfig = {
 	reactStrictMode: true,
-	eslint: {
-		ignoreDuringBuilds: true,
-	},
 	output: process.env.DOCKER ? "standalone" : undefined,
 	logging: {
 		fetches: {
