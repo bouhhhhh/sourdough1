@@ -1,11 +1,11 @@
 "use server";
 
-import type { Cart } from "commerce-kit";
+import type { APICartGetResult } from "commerce-kit";
 import { clearCartId, getCartId, setCartId } from "@/lib/cart-cookies";
 // Ensure you are importing the correct commerce instance that includes 'cart' operations
 import { commerce } from "@/lib/commerce";
 
-export async function getCartAction(): Promise<Cart | null> {
+export async function getCartAction(): Promise<APICartGetResult | null> {
   const cartId = await getCartId();
   console.log("getCartAction: cartId from cookies:", cartId);
   if (!cartId) {
@@ -23,7 +23,7 @@ export async function getCartAction(): Promise<Cart | null> {
   }
 }
 
-export async function addToCartAction(variantId: string, quantity = 1): Promise<Cart | null> {
+export async function addToCartAction(variantId: string, quantity = 1): Promise<APICartGetResult | null> {
   try {
     const cartId = await getCartId();
 
@@ -45,7 +45,7 @@ export async function addToCartAction(variantId: string, quantity = 1): Promise<
   }
 }
 
-export async function updateCartItemAction(variantId: string, quantity: number): Promise<Cart | null> {
+export async function updateCartItemAction(variantId: string, quantity: number): Promise<APICartGetResult | null> {
   const cartId = await getCartId();
   if (!cartId) return null;
 
