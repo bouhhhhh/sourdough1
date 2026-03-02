@@ -1,32 +1,33 @@
 [
   {
     "id": "p_1001",
-    "name": "Sourdough Starter",
+    "name": "Classic Sourdough Starter (Dried) | Levain séché artisanal",
     "slug": "sourdough-starter",
     "discountedPrice": 14.99,
-    "price": 20.00,
+    "price": 20.0,
     "currency": "CAD",
     "image": "/sourdough-starter.png",
     "images": ["/sourdough-starter.png"],
     "category": "products",
-    "description": "Premium sourdough starter for making artisan bread.",
-    "ingredients": "ORGANIC WHITE UNBLEACHED ALL PURPOSE FLOUR, NIACIN, IRON, THIAMINE, RIBOFLAVIN, FOLIC ACID",
-    "onSale": true,
-    "inStock": true,
-    "active": true,
-    "type": "product"
-  },
-  {
-    "id": "p_1002",
-    "name": "Beginner's Guide to Sourdough",
-    "slug": "beginners-guide-to-sourdough",
-    "price": 12.99,
-    "discountedPrice": 9.99,
-    "currency": "CAD",
-    "image": "/instructions.jpg",
-    "images": ["/instructions.jpg"],
-    "category": "products",
-    "description": "Complete step-by-step guide for sourdough beginners.",
+    "description": "L'essence de l'artisanat dans un format voyage. Notre levain déshydraté est la solution idéale pour les boulangers qui veulent une souche d'exception sans le stress du transport immédiat. Créé à partir de notre culture mère active nourrie à la farine biologique La Milanaise, ce levain a été séché à basse température pour préserver l'intégrité de ses levures sauvages. Une fois réhydraté, il retrouve toute la vigueur du blé 100% canadien. C'est l'investissement d'une vie : bien entretenu, ce levain se transmettra de génération en génération.",
+    "ingredients": "Farine de blé tout usage bio non blanchie (La Milanaise), cultures de levures et bactéries sauvages.",
+    "sections": [
+      {
+        "title": "Qualité Bio Supérieure",
+        "content": "La farine La Milanaise utilisée est certifiée biologique et moulue au Québec. Son équivalent T55 permet d'obtenir une mie souple et une fermentation stable pour tous vos types de pains."
+      },
+      {
+        "title": "Allergen Information",
+        "content": "Contient : Blé (Gluten)."
+      }
+    ],
+    "details": [
+      { "label": "État", "value": "Déshydraté (Stable)" },
+      { "label": "Origine", "value": "Québec, Canada (Blé 100% Canadien)" },
+      { "label": "Farine", "value": "La Milanaise Bio Tout-usage" },
+      { "label": "Protéines", "value": "11.5% (Équivalent T55)" },
+      { "label": "Certification", "value": "Biologique & Non-OGM" }
+    ],
     "onSale": true,
     "inStock": true,
     "active": true,
@@ -34,241 +35,35 @@
   },
   {
     "id": "p_1003",
-    "name": "Classic Fresh Sourdough Starter",
-    "slug": "classic-fresh-sourdough-starter",
+    "name": "Classic Fresh Sourdough Starter | Levain Frais Actif",
+    "slug": "fresh-sourdough-starter",
     "price": 18.99,
     "currency": "CAD",
     "image": "/Starter.jpg",
     "images": ["/Starter.jpg"],
     "category": "products",
-    "description": "Where else can you find FRESH sourdough starter - not dried?\n\nIf you love bread, pancakes, bagels – you name it – you'll love sourdough baking. It's versatile, delicious, and will broaden your baking horizons! The first place to start your sourdough journey is with your own sourdough starter. Ours is descended from a starter that's been lovingly nurtured here in New England for decades. When you feed it (all you need is flour, water, and a little bit of patience), it quickly becomes your own, adapting itself to your own region and climate. Thousands of bakers before you have made wonderful sourdough bread with a bit of this same bubbling brew. Join the ranks of satisfied sourdough bakers.",
+    "description": "Une rareté absolue sur le marché. Pourquoi attendre des jours quand vous pouvez boulanger dès demain ? Il est extrêmement difficile de trouver du levain FRAIS livré à domicile, car cela demande une attention quotidienne. Contrairement aux poudres inertes, notre levain arrive chez vous bouillonnant d'activité. Nourri à la farine La Milanaise, il offre une puissance de levée immédiate et ce goût riche et complexe typique des meilleures boulangeries artisanales. Vous sautez les étapes frustrantes pour passer directement au succès.",
+    "ingredients": "Farine de blé tout usage bio non blanchie (La Milanaise), eau filtrée, cultures vivantes.",
     "sections": [
       {
-        "title": "Important Care Instructions",
-        "content": "Sourdough starter is a living entity; it needs regular feeding.\n\nWe recommend no more than 10 days elapse between when the sourdough starter you purchase leaves our facility, and when you give it its first feeding. Keep this in mind when choosing a delivery method; if you need help making the smartest shipping choice, please contact our customer service team.\n\nFor best results, please feed your fresh sourdough starter within 24 hours of receiving it."
+        "title": "Pourquoi le frais ?",
+        "content": "Le levain frais n'a jamais été mis en dormance. Il conserve une biodiversité de micro-organismes plus riche que le levain sec, ce qui se traduit par une meilleure texture de mie et une digestion facilitée."
       },
       {
-        "title": "Allergen Information",
-        "content": "The fresh sourdough starter that comes in this set is processed in a facility that also packages products containing eggs, milk, soy, tree nuts, and wheat."
-      },
-      {
-        "title": "Resources",
-        "content": "Care and feeding directions are included with your order, and are also available in our Sourdough Tips & Recipes Booklet (PDF).\n\nRead the blog: How to feed sourdough starter"
+        "title": "Conseils d'entretien",
+        "content": "C'est une culture vivante. Pour garantir sa force, nous recommandons de le nourrir dans les 24h suivant la réception."
       }
     ],
     "details": [
-      {
-        "label": "Organic",
-        "value": "Yes"
-      },
-      {
-        "label": "Kosher",
-        "value": "Yes"
-      },
-      {
-        "label": "Made in",
-        "value": "Canada"
-      },
-      {
-        "label": "Non-GMO",
-        "value": "Yes"
-      },
-      {
-        "label": "Note",
-        "value": "DO NOT CONSUME RAW STARTER"
-      }
+      { "label": "État", "value": "Frais & Actif (Prêt à l'emploi)" },
+      { "label": "Origine", "value": "Québec, Canada (Blé 100% Canadien)" },
+      { "label": "Farine", "value": "La Milanaise Bio Tout-usage" },
+      { "label": "Protéines", "value": "11.5% (Équivalent T55)" },
+      { "label": "Certification", "value": "Biologique & Non-OGM" }
     ],
-    "ingredients": "ORGANIC WHITE UNBLEACHED ALL PURPOSE FLOUR, NIACIN, IRON, THIAMINE, RIBOFLAVIN, FOLIC ACID",
     "bestSeller": true,
     "inStock": true,
     "active": true,
     "type": "product"
-  },
-  {
-    "id": "p_2001",
-    "name": "Professional Bread Lame",
-    "slug": "professional-bread-lame",
-    "price": 24.99,
-    "currency": "CAD",
-    "image": "/bread-lame.webp",
-    "images": ["/bread-lame.webp"],
-    "category": "shop-accessories",
-    "description": "Professional-grade bread lame with replaceable blades for scoring perfect sourdough loaves. Ergonomic wooden handle provides excellent control for intricate scoring patterns.",
-    "inStock": true,
-    "active": true,
-    "type": "product",
-    "details": [
-      {
-        "label": "Material",
-        "value": "Beechwood handle, stainless steel blade"
-      },
-      {
-        "label": "Blade count",
-        "value": "5 replacement blades included"
-      },
-      {
-        "label": "Made in",
-        "value": "France"
-      }
-    ]
-  },
-  {
-    "id": "p_2002",
-    "name": "Dutch Oven 5Qt Cast Iron",
-    "slug": "dutch-oven-cast-iron",
-    "price": 89.99,
-    "discountedPrice": 74.99,
-    "currency": "CAD",
-    "image": "/dutch-oven.webp",
-    "images": ["/dutch-oven.webp"],
-    "category": "shop-accessories",
-    "description": "Heavy-duty cast iron Dutch oven perfect for baking artisan sourdough bread. Superior heat retention creates the ideal steamy environment for a crispy crust and soft interior.",
-    "bestSeller": true,
-  "onSale": true,
-  "inStock": true,
-    "active": true,
-    "type": "product",
-    "details": [
-      {
-        "label": "Capacity",
-        "value": "5 Quarts (4.7L)"
-      },
-      {
-        "label": "Material",
-        "value": "Pre-seasoned cast iron"
-      },
-      {
-        "label": "Oven safe",
-        "value": "Up to 500°F (260°C)"
-      },
-      {
-        "label": "Weight",
-        "value": "14 lbs (6.4 kg)"
-      }
-    ]
-  },
-  {
-    "id": "p_2003",
-    "name": "Banneton Proofing Basket Set",
-    "slug": "banneton-proofing-basket-set",
-    "price": 34.99,
-    "currency": "CAD",
-    "image": "/banneton.jpg",
-    "images": ["/banneton.jpg"],
-    "category": "shop-accessories",
-    "description": "Set of 2 round banneton proofing baskets (9 inch) with linen liners. Natural rattan construction provides optimal air circulation for perfect dough proofing and beautiful spiral patterns.",
-    "inStock": true,
-    "active": true,
-    "type": "product",
-    "details": [
-      {
-        "label": "Set includes",
-        "value": "2 baskets + 2 linen liners"
-      },
-      {
-        "label": "Size",
-        "value": "9 inch diameter"
-      },
-      {
-        "label": "Material",
-        "value": "Natural rattan"
-      },
-      {
-        "label": "Capacity",
-        "value": "Fits 750g - 1kg dough"
-      }
-    ]
-  },
-  {
-    "id": "p_2004",
-    "name": "Digital Kitchen Scale",
-    "slug": "digital-kitchen-scale",
-    "price": 29.99,
-    "currency": "CAD",
-    "image": "/digital-scale.webp",
-    "images": ["/digital-scale.webp"],
-    "category": "shop-accessories",
-    "description": "Precision digital kitchen scale with 0.1g accuracy. Essential for consistent sourdough baking with baker's percentages. Large LCD display and tare function make measuring ingredients effortless.",
-    "inStock": true,
-    "active": true,
-    "type": "product",
-    "details": [
-      {
-        "label": "Capacity",
-        "value": "5kg / 11 lbs"
-      },
-      {
-        "label": "Accuracy",
-        "value": "±0.1g"
-      },
-      {
-        "label": "Units",
-        "value": "g, oz, lb, ml"
-      },
-      {
-        "label": "Power",
-        "value": "2x AAA batteries (included)"
-      }
-    ]
-  },
-  {
-    "id": "p_2005",
-    "name": "Bread Proofing Box",
-    "slug": "bread-proofing-box",
-    "price": 49.99,
-    "currency": "CAD",
-    "image": "/bread-proofing-box.png",
-    "images": ["/bread-proofing-box.png"],
-    "category": "shop-accessories",
-    "description": "Temperature-controlled bread proofing box maintains consistent warmth (70-85°F) for optimal dough rise. Compact design fits on any countertop. Perfect for consistent results year-round.",
-    "inStock": true,
-    "active": true,
-    "type": "product",
-    "details": [
-      {
-        "label": "Temperature range",
-        "value": "70-85°F (21-29°C)"
-      },
-      {
-        "label": "Capacity",
-        "value": "Fits 2 loaves or 1 large bowl"
-      },
-      {
-        "label": "Dimensions",
-        "value": "15\" x 12\" x 8\""
-      },
-      {
-        "label": "Power",
-        "value": "110V, 25W"
-      }
-    ]
-  },
-  {
-    "id": "p_2006",
-    "name": "Dough Scraper Set",
-    "slug": "dough-scraper-set",
-    "price": 16.99,
-    "currency": "CAD",
-    "image": "/dough-scraper.webp",
-    "images": ["/dough-scraper.webp"],
-    "category": "shop-accessories",
-    "description": "Essential dough scraper set includes bench scraper and bowl scraper. Stainless steel bench scraper with measurement markings. Flexible bowl scraper for clean mixing.",
-    "inStock": true,
-    "active": true,
-    "type": "product",
-    "details": [
-      {
-        "label": "Set includes",
-        "value": "1 metal bench scraper + 1 flexible bowl scraper"
-      },
-      {
-        "label": "Material",
-        "value": "Stainless steel + food-grade silicone"
-      },
-      {
-        "label": "Measurements",
-        "value": "Inch and cm markings"
-      }
-    ]
   }
 ]

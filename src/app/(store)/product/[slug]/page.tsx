@@ -10,6 +10,7 @@ import { AddToCartWithQuantity } from "@/components/add-to-cart-with-quantity";
 import { CustomerBreadGallery } from "@/components/customer-bread-gallery";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ProductApplePayWithDivider } from "@/components/product-apple-pay-with-divider.client";
+import { StickyProductBar } from "@/components/sticky-product-bar";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -332,6 +333,16 @@ export default async function SingleProductPage(props: {
 			</Suspense>
 
 			<JsonLd jsonLd={mappedProductToJsonLd(product)} />
+
+			<StickyProductBar
+				productId={product.id}
+				productName={product.name}
+				price={product.price}
+				discountedPrice={product.discountedPrice}
+				currency={product.currency || "CAD"}
+				locale={locale}
+				inStock={product.inStock}
+			/>
 		</article>
 	);
 }

@@ -33,9 +33,6 @@ const customerPhotos = [
 ];
 
 export function CustomerBreadGallery() {
-	// Duplicate the photos array for seamless infinite scroll
-	const duplicatedPhotos = [...customerPhotos, ...customerPhotos];
-
 	return (
 		<section className="py-12 bg-gradient-to-b from-amber-50 to-white overflow-hidden">
 			<div className="container mx-auto px-4 mb-8">
@@ -67,27 +64,47 @@ export function CustomerBreadGallery() {
 			</div>
 
 			<div className="relative">
-				{/* Gradient overlays for fade effect */}
-				<div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-				<div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+				{/* Gradient overlays for fade effect - hidden on mobile */}
+				<div className="hidden md:block absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+				<div className="hidden md:block absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-				{/* Scrolling container */}
-				<div className="flex gap-6 [animation:scroll-infinite_40s_linear_infinite] hover:[animation-play-state:paused]">
-					{duplicatedPhotos.map((photo, index) => (
-						<div
-							key={`${photo.id}-${index}`}
-							className="flex-shrink-0 w-72 h-72 relative rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
-						>
-							<Image
-								src={photo.src}
-								alt={photo.alt}
-								fill
-								className="object-cover group-hover:scale-105 transition-transform duration-500"
-								sizes="288px"
-							/>
-							<div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+				{/* Scrolling container - manual scroll on mobile, auto-scroll on desktop */}
+				<div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory md:overflow-x-visible px-4 md:px-0">
+					<div className="flex gap-3 sm:gap-4 md:gap-6 md:[animation:scroll-infinite_40s_linear_infinite] md:hover:[animation-play-state:paused]">
+						{customerPhotos.map((photo) => (
+							<div
+								key={photo.id}
+								className="flex-shrink-0 w-40 h-40 sm:w-56 sm:h-56 md:w-72 md:h-72 relative rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group snap-center"
+							>
+								<Image
+									src={photo.src}
+									alt={photo.alt}
+									fill
+									className="object-cover group-hover:scale-105 transition-transform duration-500"
+									sizes="(max-width: 640px) 160px, (max-width: 768px) 224px, 288px"
+								/>
+								<div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+							</div>
+						))}
+						{/* Duplicate photos only for desktop animation */}
+						<div className="hidden md:flex gap-6">
+							{customerPhotos.map((photo) => (
+								<div
+									key={`duplicate-${photo.id}`}
+									className="flex-shrink-0 w-72 h-72 relative rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
+								>
+									<Image
+										src={photo.src}
+										alt={photo.alt}
+										fill
+										className="object-cover group-hover:scale-105 transition-transform duration-500"
+										sizes="288px"
+									/>
+									<div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+								</div>
+							))}
 						</div>
-					))}
+					</div>
 				</div>
 			</div>
 		</section>
