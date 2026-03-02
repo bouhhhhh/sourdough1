@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { addToCartAction } from "@/actions/cart-actions";
+import { FavoriteButton } from "@/components/favorite-button";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/utils";
 
@@ -95,22 +96,28 @@ export function StickyProductBar({
 					</div>
 				</div>
 
-				{/* Add to Cart Button */}
-				<Button
-					onClick={handleAddToCart}
-					disabled={!inStock || isAdding}
-					className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-5 disabled:bg-gray-300"
-					size="lg"
-				>
-					<Image 
-						src="/icons/add-to-cart.png" 
-						alt="Add to cart" 
-						width={20} 
-						height={20} 
-						className="brightness-0 invert" 
-					/>
-					<span className="hidden sm:inline">{isAdding ? "Adding..." : "Add to Cart"}</span>
-				</Button>
+				{/* Action Buttons */}
+				<div className="flex items-center gap-3">
+					{/* Favorite Button */}
+					<FavoriteButton productId={productId} />
+
+					{/* Add to Cart Button */}
+					<Button
+						onClick={handleAddToCart}
+						disabled={!inStock || isAdding}
+						className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-5 disabled:bg-gray-300"
+						size="lg"
+					>
+						<Image 
+							src="/icons/add-to-cart.png" 
+							alt="Add to cart" 
+							width={20} 
+							height={20} 
+							className="brightness-0 invert" 
+						/>
+						<span className="hidden sm:inline">{isAdding ? "Adding..." : "Add to Cart"}</span>
+					</Button>
+				</div>
 			</div>
 		</div>
 	);

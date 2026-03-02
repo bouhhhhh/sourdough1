@@ -15,6 +15,12 @@ export default async function StoreLayout({
 	return (
 		<CartProvider>
 			<Nav />
+			{/* Free Shipping Banner */}
+			<div className="bg-neutral-800 text-white py-3 px-4 text-center">
+				<p className="text-sm font-semibold">
+					✓ Free Shipping Across Canada on all orders
+				</p>
+			</div>
 			<TooltipProvider>
 				<main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-6 pt-2 sm:px-6 lg:px-8">
 					{children}
