@@ -7,6 +7,11 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+type ModerationResult = {
+	safe: boolean;
+	categories?: string[];
+};
+
 export async function sendContactMessage(formData: FormData) {
 	const name = String(formData.get("name") || "").trim();
 	const email = String(formData.get("email") || "").trim();
@@ -34,7 +39,7 @@ export async function sendContactMessage(formData: FormData) {
 
 		// Only block if moderation service is working AND content is flagged
 		if (textModerationResponse.ok) {
-			const textModerationResult = await textModerationResponse.json();
+			const textModerationResult = (await textModerationResponse.json()) as ModerationResult;
 
 			if (!textModerationResult.safe) {
 				return {
@@ -79,7 +84,7 @@ export async function sendContactMessage(formData: FormData) {
 
 			// Only block if moderation service is working AND content is flagged
 			if (moderationResponse.ok) {
-				const moderationResult = await moderationResponse.json();
+				const moderationResult = (await moderationResponse.json()) as ModerationResult;
 
 				if (!moderationResult.safe) {
 					return {
