@@ -28,8 +28,6 @@ const nextConfig: NextConfig = {
 		scrollRestoration: true,
 		ppr: false,
 		cpus: 1,
-		reactCompiler: true,
-		mdxRs: true,
 		inlineCss: true,
 	},
 	webpack: (config) => {
