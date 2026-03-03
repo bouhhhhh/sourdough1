@@ -38,6 +38,7 @@ function cartReducer(state: Cart | null, action: CartAction): Cart | null {
 							product: action.product,
 						},
 					],
+					subtotal: 0,
 					total: 0,
 					currency: "USD",
 				};
