@@ -83,14 +83,6 @@ export function ProductImageModal({ images }: ImageModalProps) {
 
 	return (
 		<div className="fixed inset-0 bg-neutral-100 z-50 flex flex-col animate-in fade-in">
-			<button
-				type="button"
-				onClick={() => onDismiss()}
-				className="ml-auto text-neutral-500 hover:text-neutral-700 p-2"
-			>
-				<XIcon className="w-6 h-6" />
-			</button>
-
 			<div className="grow flex items-center justify-center overflow-hidden">
 				<div key={src} className="relative w-full h-full animate-in fade-in">
 					<ImageElement src={src} />
@@ -113,6 +105,16 @@ export function ProductImageModal({ images }: ImageModalProps) {
 					className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 hover:bg-gray-100 transition-colors"
 				>
 					<ChevronRightIcon className="w-6 h-6" />
+				</button>
+
+				{/* Close button - centered at bottom for easy mobile reach, positioned higher */}
+				<button
+					type="button"
+					onClick={() => onDismiss()}
+					className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-white/95 rounded-full p-3 hover:bg-gray-100 transition-all shadow-lg"
+					aria-label="Close image"
+				>
+					<XIcon className="w-6 h-6" />
 				</button>
 			</div>
 

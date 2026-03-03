@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import Stripe from "stripe";
 import path from "path";
 import fs from "fs";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+	apiVersion: "2025-08-27.basil",
+	typescript: true,
+});
 
 // Load translations from JSON files
 function loadTranslations(locale: string): Record<string, string> {
@@ -34,6 +39,7 @@ interface SendConfirmationEmailRequest {
 	total: number;
 	currency: string;
 	locale?: string;
+	paymentIntentId?: string;
 	shippingAddress: {
 		name: string;
 		address: {
@@ -50,7 +56,7 @@ interface SendConfirmationEmailRequest {
 export async function POST(req: Request) {
 	try {
 		const body = (await req.json()) as SendConfirmationEmailRequest;
-		const { email, orderNumber, orderDate, items, total, currency, shippingAddress, locale = "en-US" } = body;
+		const { email, orderNumber, orderDate, items, total, currency, shippingAddress, locale = "en-US", paymentIntentId } = body;
 
 		console.log("[SEND-CONFIRMATION-EMAIL] Request received:", {
 			email,
@@ -257,6 +263,20 @@ export async function POST(req: Request) {
 		} catch (adminError) {
 			// Don't fail the main request if admin email fails
 			console.error("Error sending admin notification:", adminError);
+		}
+	}
+
+	// Mark email as sent in PaymentIntent metadata to prevent duplicates on refresh
+	if (paymentIntentId) {
+		try {
+			const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+			await stripe.paymentIntents.update(paymentIntentId, {
+				metadata: { ...paymentIntent.metadata, emailSent: 'true' }
+			});
+			console.log("[SEND-CONFIRMATION-EMAIL] PaymentIntent metadata updated with emailSent flag");
+		} catch (stripeError) {
+			console.error("Error updating PaymentIntent metadata:", stripeError);
+			// Don't fail the request if metadata update fails
 		}
 	}
 

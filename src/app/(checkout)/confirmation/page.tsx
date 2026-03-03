@@ -93,7 +93,10 @@ function ConfirmationContent() {
           setPaymentStatus('succeeded');
 
           // Send confirmation email (only once) using metadata-derived items
-          if (!emailSentRef.current && payerEmail) {
+          // Check server-side flag to prevent duplicates on page refresh
+          const emailAlreadySent = meta.emailSent === 'true';
+          
+          if (!emailSentRef.current && !emailAlreadySent && payerEmail) {
             console.log('[CONFIRMATION] Attempting to send email to:', payerEmail);
             console.log('[CONFIRMATION] Email payload:', {
               email: payerEmail,
@@ -120,6 +123,7 @@ function ConfirmationContent() {
                 currency: pi.currency.toUpperCase(),
                 shippingAddress: pi.shipping || undefined,
                 locale,
+                paymentIntentId, // Add payment intent ID to update metadata
               }),
             })
               .then(async (res) => {
@@ -132,7 +136,7 @@ function ConfirmationContent() {
               })
               .catch(err => console.error('[CONFIRMATION] Email send error:', err));
           } else {
-            console.log('[CONFIRMATION] Not sending email. emailSent?', emailSentRef.current, 'payerEmail?', !!payerEmail);
+            console.log('[CONFIRMATION] Not sending email. emailSent?', emailSentRef.current, 'emailAlreadySent?', emailAlreadySent, 'payerEmail?', !!payerEmail);
           }
 
           // Clear cart if it existed

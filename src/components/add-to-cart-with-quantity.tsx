@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
 import { useCart } from "@/context/cart-context";
 
 interface AddToCartWithQuantityProps {
@@ -10,7 +10,11 @@ interface AddToCartWithQuantityProps {
 	disabled?: boolean;
 }
 
-export function AddToCartWithQuantity({ variantId, className = "", disabled = false }: AddToCartWithQuantityProps) {
+export function AddToCartWithQuantity({
+	variantId,
+	className = "",
+	disabled = false,
+}: AddToCartWithQuantityProps) {
 	const [quantity, setQuantity] = useState(1);
 	const { openCart, optimisticAdd } = useCart();
 
@@ -35,6 +39,22 @@ export function AddToCartWithQuantity({ variantId, className = "", disabled = fa
 
 	return (
 		<div className="space-y-4">
+			{/* Shipping Message - Moved above button */}
+			<div className="flex items-center gap-2 text-sm bg-green-50 px-4 py-3 rounded-lg border border-green-200">
+				<svg
+					className="w-5 h-5 text-green-600 flex-shrink-0"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+				</svg>
+				<span className="text-neutral-700">
+					<strong className="text-green-800">IN STOCK & READY TO SHIP!</strong> Ships within 24 hours
+				</span>
+			</div>
+
 			{/* Quantity Controls + Add to Cart Button */}
 			<div className="flex items-center gap-4">
 				{/* Quantity Selector */}
@@ -72,16 +92,6 @@ export function AddToCartWithQuantity({ variantId, className = "", disabled = fa
 				>
 					ADD TO CART
 				</button>
-			</div>
-
-			{/* Shipping Message */}
-			<div className="flex items-center gap-2 text-sm text-neutral-600">
-				<svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-				</svg>
-				<span>
-					<strong className="text-neutral-900">IN STOCK & READY TO SHIP!</strong> We ship within 24 hours
-				</span>
 			</div>
 		</div>
 	);
