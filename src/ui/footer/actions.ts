@@ -20,7 +20,7 @@ export async function signForNewsletter(formData: FormData) {
 
 	if (!result.success) {
 		// On renvoie une erreur 400 propre, sans charger le reste
-		return { status: 400, error: result.error.errors[0].message };
+		return { status: 400, error: result.error.errors[0]?.message ?? "Invalid email" };
 	}
 
 	// Ici, l'email est PROPRE, COURT et VALIDE.
