@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { z } from "zod";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const emailSchema = z
+	.string()
+	.min(5)
+	.max(150, "Requête trop volumineuse")
+	.email("Format d'email invalide")
+	.trim();
+
 export async function POST(request: Request) {
 	try {
-		const body = (await request.json()) as { email: string };
-		const { email } = body;
+		const body = await request.json();
 
-		if (!email || typeof email !== "string" || !email.includes("@")) {
-			return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+		const result = emailSchema.safeParse(body.email);
+
+		if (!result.success) {
+			return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
 		}
+
+		const email = result.data;
 
 		// Add contact to Resend audience
 		// You'll need to create an audience in your Resend dashboard first
@@ -30,12 +41,12 @@ export async function POST(request: Request) {
 
 		if (response.error) {
 			console.error("Resend API error:", response.error);
-			return NextResponse.json({ error: "Failed to subscribe" }, { status: 500 });
+			return NextResponse.json({ error: "Service momentanément indisponible" }, { status: 500 });
 		}
 
 		return NextResponse.json({ status: 200, message: "Successfully subscribed" });
 	} catch (error) {
 		console.error("Newsletter subscription error:", error);
-		return NextResponse.json({ error: "Failed to subscribe" }, { status: 500 });
+		return NextResponse.json({ error: "Service momentanément indisponible" }, { status: 500 });
 	}
 }

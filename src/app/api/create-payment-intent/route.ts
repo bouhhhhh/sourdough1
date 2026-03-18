@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { commerce } from "@/lib/commerce";
@@ -8,11 +9,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
 	try {
-		const { cartId } = (await req.json()) as { cartId?: string };
+		const { cartId: clientCartId } = (await req.json()) as { cartId?: string };
 
-		if (!cartId) {
-			return NextResponse.json({ error: "Missing cartId" }, { status: 400 });
+		// 1. Récupérer le cartId "officiel" depuis le cookie de session
+		const cookieStore = await cookies();
+		const sessionCartId = cookieStore.get("cart_id")?.value;
+
+		// 2. LE TEST DE SÉCURITÉ : Comparaison
+		if (!clientCartId || clientCartId !== sessionCartId) {
+			return NextResponse.json({ error: "Unauthorized cart access" }, { status: 403 });
 		}
+
+		const cartId = clientCartId;
 
 		const cart = await commerce.cart.get({ cartId });
 		if (!cart || cart.items.length === 0) {
@@ -45,7 +53,10 @@ export async function POST(req: Request) {
 
 		return NextResponse.json({ clientSecret: pi.client_secret, orderNumber });
 	} catch (err: any) {
-		console.error("create-payment-intent error:", err);
-		return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });
+		console.error("Détails pour moi :", err);
+		return NextResponse.json(
+			{ error: "Transaction impossible. Veuillez rafraîchir votre panier." },
+			{ status: 500 },
+		);
 	}
 }
