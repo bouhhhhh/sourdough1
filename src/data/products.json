@@ -1,69 +1,69 @@
 [
-  {
-    "id": "p_1001",
-    "name": "Classic Sourdough Starter (Dried) | Levain séché artisanal",
-    "slug": "sourdough-starter",
-    "discountedPrice": 14.99,
-    "price": 20.0,
-    "currency": "CAD",
-    "image": "/sourdough-starter.png",
-    "images": ["/sourdough-starter.png"],
-    "category": "products",
-    "description": "L'essence de l'artisanat dans un format voyage. Notre levain déshydraté est la solution idéale pour les boulangers qui veulent une souche d'exception sans le stress du transport immédiat. Créé à partir de notre culture mère active nourrie à la farine biologique La Milanaise, ce levain a été séché à basse température pour préserver l'intégrité de ses levures sauvages. Une fois réhydraté, il retrouve toute la vigueur du blé 100% canadien. C'est l'investissement d'une vie : bien entretenu, ce levain se transmettra de génération en génération.",
-    "ingredients": "Farine de blé tout usage bio non blanchie (La Milanaise), cultures de levures et bactéries sauvages.",
-    "sections": [
-      {
-        "title": "Qualité Bio Supérieure",
-        "content": "La farine La Milanaise utilisée est certifiée biologique et moulue au Québec. Son équivalent T55 permet d'obtenir une mie souple et une fermentation stable pour tous vos types de pains."
-      },
-      {
-        "title": "Allergen Information",
-        "content": "Contient : Blé (Gluten)."
-      }
-    ],
-    "details": [
-      { "label": "État", "value": "Déshydraté (Stable)" },
-      { "label": "Origine", "value": "Québec, Canada (Blé 100% Canadien)" },
-      { "label": "Farine", "value": "La Milanaise Bio Tout-usage" },
-      { "label": "Protéines", "value": "11.5% (Équivalent T55)" },
-      { "label": "Certification", "value": "Biologique & Non-OGM" }
-    ],
-    "onSale": true,
-    "inStock": true,
-    "active": true,
-    "type": "product"
-  },
-  {
-    "id": "p_1003",
-    "name": "Classic Fresh Sourdough Starter | Levain Frais Actif",
-    "slug": "fresh-sourdough-starter",
-    "price": 18.99,
-    "currency": "CAD",
-    "image": "/Starter.jpg",
-    "images": ["/Starter.jpg"],
-    "category": "products",
-    "description": "Une rareté absolue sur le marché. Pourquoi attendre des jours quand vous pouvez boulanger dès demain ? Il est extrêmement difficile de trouver du levain FRAIS livré à domicile, car cela demande une attention quotidienne. Contrairement aux poudres inertes, notre levain arrive chez vous bouillonnant d'activité. Nourri à la farine La Milanaise, il offre une puissance de levée immédiate et ce goût riche et complexe typique des meilleures boulangeries artisanales. Vous sautez les étapes frustrantes pour passer directement au succès.",
-    "ingredients": "Farine de blé tout usage bio non blanchie (La Milanaise), eau filtrée, cultures vivantes.",
-    "sections": [
-      {
-        "title": "Pourquoi le frais ?",
-        "content": "Le levain frais n'a jamais été mis en dormance. Il conserve une biodiversité de micro-organismes plus riche que le levain sec, ce qui se traduit par une meilleure texture de mie et une digestion facilitée."
-      },
-      {
-        "title": "Conseils d'entretien",
-        "content": "C'est une culture vivante. Pour garantir sa force, nous recommandons de le nourrir dans les 24h suivant la réception."
-      }
-    ],
-    "details": [
-      { "label": "État", "value": "Frais & Actif (Prêt à l'emploi)" },
-      { "label": "Origine", "value": "Québec, Canada (Blé 100% Canadien)" },
-      { "label": "Farine", "value": "La Milanaise Bio Tout-usage" },
-      { "label": "Protéines", "value": "11.5% (Équivalent T55)" },
-      { "label": "Certification", "value": "Biologique & Non-OGM" }
-    ],
-    "bestSeller": true,
-    "inStock": true,
-    "active": true,
-    "type": "product"
-  }
+	{
+		"id": "p_1001",
+		"name": "Dried Organic Sourdough Starter",
+		"slug": "sourdough-starter",
+		"discountedPrice": 14.99,
+		"price": 20.0,
+		"currency": "CAD",
+		"image": "/sourdough-starter.png",
+		"images": ["/sourdough-starter.png"],
+		"category": "products",
+		"description": "L'essence de l'artisanat dans un format voyage. Notre levain déshydraté est la solution idéale pour les boulangers qui veulent une souche d'exception sans le stress du transport immédiat. Créé à partir de notre culture mère active nourrie à la farine biologique La Milanaise, ce levain a été séché à basse température pour préserver l'intégrité de ses levures sauvages. Une fois réhydraté, il retrouve toute la vigueur du blé 100% canadien. C'est l'investissement d'une vie : bien entretenu, ce levain se transmettra de génération en génération.",
+		"ingredients": "Farine de blé bio non blanchie, cultures de levures et bactéries sauvages.",
+		"sections": [
+			{
+				"title": "Qualité Bio Supérieure",
+				"content": "La farine La Milanaise utilisée est certifiée biologique et moulue au Québec. Son équivalent T55 permet d'obtenir une mie souple et une fermentation stable pour tous vos types de pains."
+			},
+			{
+				"title": "Allergen Information",
+				"content": "Contient : Blé (Gluten)."
+			}
+		],
+		"details": [
+			{ "label": "État", "value": "Déshydraté (Stable)" },
+			{ "label": "Origine", "value": "Québec, Canada (Blé 100% Canadien)" },
+			{ "label": "Farine", "value": "La Milanaise Bio Tout-usage" },
+			{ "label": "Protéines", "value": "11.5% (Équivalent T55)" },
+			{ "label": "Certification", "value": "Biologique & Non-OGM" }
+		],
+		"onSale": true,
+		"inStock": true,
+		"active": true,
+		"type": "product"
+	},
+	{
+		"id": "p_1003",
+		"name": "Fresh Organic Sourdough Starter",
+		"slug": "fresh-sourdough-starter",
+		"price": 18.99,
+		"currency": "CAD",
+		"image": "/Starter.jpg",
+		"images": ["/Starter.jpg"],
+		"category": "products",
+		"description": "Une rareté absolue sur le marché. Pourquoi attendre des jours quand vous pouvez boulanger dès demain ? Il est extrêmement difficile de trouver du levain FRAIS livré à domicile, car cela demande une attention quotidienne. Contrairement aux poudres inertes, notre levain arrive chez vous bouillonnant d'activité. Nourri à la farine La Milanaise, il offre une puissance de levée immédiate et ce goût riche et complexe typique des meilleures boulangeries artisanales. Vous sautez les étapes frustrantes pour passer directement au succès.",
+		"ingredients": "Farine de blé tout usage bio non blanchie (La Milanaise), eau filtrée, cultures vivantes.",
+		"sections": [
+			{
+				"title": "Pourquoi frais?",
+				"content": "Le levain frais n'a jamais été mis en dormance. Il conserve une biodiversité de micro-organismes plus riche que le levain sec, ce qui se traduit par une meilleure texture de mie et une digestion facilitée."
+			},
+			{
+				"title": "Conseils d'entretien",
+				"content": "C'est une culture vivante. Pour garantir sa force, nous recommandons de le nourrir dans les 24h suivant la réception."
+			}
+		],
+		"details": [
+			{ "label": "État", "value": "Frais & Actif (Prêt à l'emploi)" },
+			{ "label": "Origine", "value": "Québec, Canada (Blé 100% Canadien)" },
+			{ "label": "Farine", "value": "La Milanaise Bio Tout-usage" },
+			{ "label": "Protéines", "value": "11.5% (Équivalent T55)" },
+			{ "label": "Certification", "value": "Biologique & Non-OGM" }
+		],
+		"bestSeller": true,
+		"inStock": true,
+		"active": true,
+		"type": "product"
+	}
 ]

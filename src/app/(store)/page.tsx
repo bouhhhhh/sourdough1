@@ -1,13 +1,13 @@
 import Image from "next/image";
-import type { Metadata } from "next/types";
 import Link from "next/link";
+import type { Metadata } from "next/types";
+import { SourdoughMaintenanceCTA } from "@/components/sourdough-maintenance-cta";
 import { publicUrl } from "@/env.mjs";
-import { getTranslations, getLocale } from "@/i18n/server";
+import { getLocale, getTranslations } from "@/i18n/server";
 import { commerce } from "@/lib/commerce";
 import StoreConfig from "@/store.config";
 import { CategoryBox } from "@/ui/category-box";
 import { ResponsiveProductSection } from "@/ui/products/responsive-product-section";
-import { SourdoughMaintenanceCTA } from "@/components/sourdough-maintenance-cta";
 
 export const metadata: Metadata = {
 	alternates: { canonical: publicUrl },
@@ -24,7 +24,7 @@ export default async function Home() {
 
 		return (
 			<main>
-				<section className="relative rounded overflow-hidden py-16 sm:py-24 min-h-[600px] flex items-center">
+				<section className="relative rounded overflow-hidden py-12 sm:py-16 min-h-[420px] flex items-center">
 					{/* Background Image */}
 					<Image
 						alt="St-Henri Sourdough Background"
@@ -37,28 +37,27 @@ export default async function Home() {
 					/>
 					{/* Overlay */}
 					<div className="absolute inset-0 bg-black/40"></div>
-					
-				{/* Content */}
-				<div className="relative z-10 mx-auto max-w-4xl px-8 sm:px-16">
-					<div className="max-w-md space-y-6">
-						<h2 className="text-balance text-4xl font-bold tracking-tight md:text-5xl text-white">
-							{t("hero.title")}
-						</h2>
-						<p className="text-pretty text-white/90 text-lg">{t("hero.description")}</p>
-						<Link
-							className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 font-medium text-neutral-900 transition-colors hover:bg-white/90 focus:outline-hidden focus:ring-2 focus:ring-white"
-							href={t("hero.link")}
-						>
-							{t("hero.action")}
-						</Link>
+
+					{/* Content */}
+					<div className="relative z-10 mx-auto max-w-3xl px-6 sm:px-12">
+						<div className="max-w-md space-y-4">
+							<h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl text-white">
+								{t("hero.title")}
+							</h2>
+							<p className="text-pretty text-white/90 text-base">{t("hero.description")}</p>
+							<Link
+								className="inline-flex h-10 items-center justify-center rounded-full bg-white px-6 font-medium text-sm text-neutral-900 transition-colors hover:bg-white/90 focus:outline-hidden focus:ring-2 focus:ring-white"
+								href={t("hero.link")}
+							>
+								{t("hero.action")}
+							</Link>
+						</div>
 					</div>
-				</div>
-			</section>				<ResponsiveProductSection allProducts={products} locale={locale} />
-
+				</section>{" "}
+				<ResponsiveProductSection allProducts={products} locale={locale} />
 				<SourdoughMaintenanceCTA />
-
-				<section className="w-full py-8">
-					<div className="grid gap-8 lg:grid-cols-2">
+				<section className="w-full py-6">
+					<div className="grid gap-6 lg:grid-cols-2">
 						{StoreConfig.categories.map(({ slug, image: src }) => (
 							<CategoryBox key={slug} categorySlug={slug} src={src} />
 						))}
@@ -78,18 +77,18 @@ export default async function Home() {
 			<main>
 				<section className="rounded bg-neutral-100 py-8 sm:py-12">
 					<div className="mx-auto grid grid-cols-1 items-center justify-items-center gap-8 px-8 sm:px-16 md:grid-cols-2">
-					<div className="max-w-md space-y-4">
-						<h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">
-							{t("hero.title")}
-						</h2>
-						<p className="text-pretty text-neutral-600">{t("hero.description")}</p>
-						<Link
-							className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-900 px-6 font-medium text-neutral-50 transition-colors hover:bg-neutral-900/90 focus:outline-hidden focus:ring-1 focus:ring-neutral-950"
-							href={t("hero.link")}
-						>
-							{t("hero.action")}
-						</Link>
-					</div>
+						<div className="max-w-md space-y-4">
+							<h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">
+								{t("hero.title")}
+							</h2>
+							<p className="text-pretty text-neutral-600">{t("hero.description")}</p>
+							<Link
+								className="inline-flex h-10 items-center justify-center rounded-full bg-neutral-900 px-6 font-medium text-neutral-50 transition-colors hover:bg-neutral-900/90 focus:outline-hidden focus:ring-1 focus:ring-neutral-950"
+								href={t("hero.link")}
+							>
+								{t("hero.action")}
+							</Link>
+						</div>
 						<Image
 							alt="Cup of Coffee"
 							loading="eager"

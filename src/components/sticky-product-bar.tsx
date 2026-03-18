@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { addToCartAction } from "@/actions/cart-actions";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart-context";
@@ -30,7 +29,7 @@ export function StickyProductBar({
 }: StickyProductBarProps) {
 	const [isVisible, setIsVisible] = useState(false);
 	const [isAdding, setIsAdding] = useState(false);
-	const { isCartOpen } = useCart();
+	const { isCartOpen, optimisticAdd, openCart } = useCart();
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -47,7 +46,8 @@ export function StickyProductBar({
 
 		setIsAdding(true);
 		try {
-			await addToCartAction(productId, 1);
+			await optimisticAdd(productId, 1);
+			openCart();
 		} catch (error) {
 			console.error("Failed to add to cart:", error);
 		} finally {

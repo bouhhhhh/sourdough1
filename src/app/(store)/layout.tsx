@@ -16,8 +16,8 @@ export default async function StoreLayout({
 		<CartProvider>
 			<Nav />
 			{/* Free Shipping Banner */}
-			<div className="bg-neutral-800 text-white py-3 px-4 text-center">
-				<p className="text-sm font-semibold">
+			<div className="bg-neutral-800 text-white py-1.5 px-3 text-center">
+				<p className="text-xs font-medium">
 					✓ Free Shipping Across Canada on all orders
 				</p>
 			</div>

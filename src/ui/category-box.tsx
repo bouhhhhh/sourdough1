@@ -18,9 +18,9 @@ export async function CategoryBox({ categorySlug, src }: { categorySlug: string;
 					height={465}
 				/>
 			</div>
-			<div className="justify-end gap-2 px-4 py-2 text-neutral-600">
-				<h3 className="text-lg font-bold tracking-tight">{deslugify(categorySlug)}</h3>
-				<p>{t("shopNow")}</p>
+			<div className="justify-end gap-2 px-3 py-1.5 text-neutral-600">
+				<h3 className="text-base font-bold tracking-tight">{deslugify(categorySlug)}</h3>
+				<p className="text-sm">{t("shopNow")}</p>
 			</div>
 		</Link>
 	);
